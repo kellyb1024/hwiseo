@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600&family=Noto+Sans+KR:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #E9A24A; } a:hover { color: #FFDCA8; }
+  </style>
+</helmet>
+<div style="width: 880px; min-height: 1560px; background: #100D16; color: #EFEAF2; font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; padding: 56px; box-sizing: border-box; display: flex; flex-direction: column; gap: 44px;">
+
+  <div style="display: flex; flex-direction: column; gap: 14px;">
+    <div style="font-size: 11px; letter-spacing: 0.22em; color: #6E6579; font-weight: 500;">DESIGN SYSTEM · v0 · 2026.08.25</div>
+    <div style="display: flex; align-items: baseline; gap: 20px;">
+      <div style="font-family: 'Noto Serif KR', 'Nanum Myeongjo', serif; font-size: 46px; font-weight: 600; letter-spacing: 0.08em;">輝敍</div>
+      <div style="font-family: 'Noto Serif KR', 'Nanum Myeongjo', serif; font-size: 19px; color: #B3A5DC; letter-spacing: 0.3em;">HWISEO</div>
+    </div>
+    <div style="font-size: 13px; color: #8C839B; line-height: 1.8; max-width: 580px; text-wrap: pretty;">빛이 둘이다. 연보라는 체험 없는 기계가 던지는 질문의 빛, 앰버는 사람이 꺼낸 기억의 온기. 세션이 진행될수록 연보라가 물러나고 화면은 앰버로 끝난다 — 그것이 輝敍다.</div>
+  </div>
+
+  <div style="height: 1px; background: rgba(239,234,242,0.10);"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 22px;">
+    <div style="font-size: 11px; letter-spacing: 0.18em; color: #6E6579; font-weight: 500;">01 — 어둠과 두 개의 빛</div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 9px;">
+        <div style="height: 88px; background: #100D16; border: 1px solid rgba(239,234,242,0.16); border-radius: 2px;"></div>
+        <div style="font-size: 13px; font-weight: 500;">어둠</div>
+        <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#100D16</div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7;">배경. 보라 기운이 미세하게 도는 검정 — 순검정보다 빛을 잘 품는다.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 9px;">
+        <div style="height: 88px; background: #1B1724; border: 1px solid rgba(239,234,242,0.10); border-radius: 2px;"></div>
+        <div style="font-size: 13px; font-weight: 500;">어둠 · 표면</div>
+        <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#1B1724</div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7;">카드 · 입력창 등 한 겹 떠 있는 면.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 9px;">
+        <div style="height: 88px; background: #EFEAF2; border-radius: 2px;"></div>
+        <div style="font-size: 13px; font-weight: 500;">선 · 텍스트</div>
+        <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#EFEAF2</div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7;">흰 색연필 선. 순백이 아니라 아주 옅은 보라가 섞인 종이빛.</div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; padding-top: 8px;">
+
+      <div style="display: flex; flex-direction: column; gap: 12px; border: 1px solid rgba(179,165,220,0.25); border-radius: 3px; padding: 22px;">
+        <div style="font-size: 11px; letter-spacing: 0.14em; color: #B3A5DC;">輝 — 휘서의 빛</div>
+        <div style="display: flex; gap: 12px;">
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
+            <div style="height: 68px; background: #B3A5DC; border-radius: 2px;"></div>
+            <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#B3A5DC</div>
+          </div>
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
+            <div style="height: 68px; background: #DDD4F2; border-radius: 2px;"></div>
+            <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#DDD4F2</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7;">질문, 사진에서 읽어낸 라벨, 확인 문장. 체험이 없는 쪽의 색이라 차갑고 얕게 쓴다. <span style="color:#B3A5DC;">그라데이션 금지</span> — 평면 광원으로만.</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; border: 1px solid rgba(233,162,74,0.25); border-radius: 3px; padding: 22px;">
+        <div style="font-size: 11px; letter-spacing: 0.14em; color: #E9A24A;">敍 — 사람의 등불</div>
+        <div style="display: flex; gap: 12px;">
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
+            <div style="height: 68px; background: #E9A24A; border-radius: 2px;"></div>
+            <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#E9A24A</div>
+          </div>
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
+            <div style="height: 68px; background: #FFDCA8; border-radius: 2px;"></div>
+            <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#FFDCA8</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7;">사용자가 말한 것, 생성된 이야기, 마지막 등불. 사람이 입을 연 뒤부터만 등장한다.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="height: 1px; background: rgba(239,234,242,0.10);"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 22px;">
+    <div style="display: flex; align-items: baseline; gap: 14px;">
+      <div style="font-size: 11px; letter-spacing: 0.18em; color: #6E6579; font-weight: 500;">02 — 연보라 두 안</div>
+      <div style="font-size: 11px; color: #E9A24A;">오늘 결정 · 영상 작업에 바로 들어감</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px;">
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 15px; height: 15px; background: #B3A5DC; border-radius: 1px;"></div>
+          <div style="font-size: 13px; font-weight: 500;">A. 라벤더</div>
+          <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#B3A5DC</div>
+        </div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7; min-height: 52px;">보라 쪽에 붙은 연보라. 앰버와 거의 보색이라 대비가 가장 세고, 보라라는 인상이 분명하게 남는다.</div>
+        <div style="background: #100D16; border: 1px solid rgba(239,234,242,0.12); border-radius: 3px; padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <div style="font-size: 10px; color: #B3A5DC; border: 1px solid rgba(179,165,220,0.42); border-radius: 2px; padding: 4px 8px;">실내</div>
+            <div style="font-size: 10px; color: #B3A5DC; border: 1px solid rgba(179,165,220,0.42); border-radius: 2px; padding: 4px 8px;">교복</div>
+            <div style="font-size: 10px; color: #B3A5DC; border: 1px solid rgba(179,165,220,0.42); border-radius: 2px; padding: 4px 8px;">2019.11</div>
+          </div>
+          <div style="font-family: 'Noto Serif KR', serif; font-size: 16px; line-height: 1.75; color: #EFEAF2;">그때 매일 몇 시에 등교했어요?</div>
+          <div style="font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.75; color: #E9A24A;">7시 반쯤? 겨울엔 아직 어두웠어요.</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 15px; height: 15px; background: #A9B6E8; border-radius: 1px;"></div>
+          <div style="font-size: 13px; font-weight: 500;">B. 푸른 연보라</div>
+          <div style="font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8C839B;">#A9B6E8</div>
+        </div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7; min-height: 52px;">파랑 쪽으로 반 발 옮긴 연보라. 촛불 불꽃의 색에 가깝고 더 차갑게 읽히지만, 보라라는 인상은 옅어진다.</div>
+        <div style="background: #100D16; border: 1px solid rgba(239,234,242,0.12); border-radius: 3px; padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <div style="font-size: 10px; color: #A9B6E8; border: 1px solid rgba(169,182,232,0.42); border-radius: 2px; padding: 4px 8px;">실내</div>
+            <div style="font-size: 10px; color: #A9B6E8; border: 1px solid rgba(169,182,232,0.42); border-radius: 2px; padding: 4px 8px;">교복</div>
+            <div style="font-size: 10px; color: #A9B6E8; border: 1px solid rgba(169,182,232,0.42); border-radius: 2px; padding: 4px 8px;">2019.11</div>
+          </div>
+          <div style="font-family: 'Noto Serif KR', serif; font-size: 16px; line-height: 1.75; color: #EFEAF2;">그때 매일 몇 시에 등교했어요?</div>
+          <div style="font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.75; color: #E9A24A;">7시 반쯤? 겨울엔 아직 어두웠어요.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="height: 1px; background: rgba(239,234,242,0.10);"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 22px;">
+    <div style="font-size: 11px; letter-spacing: 0.18em; color: #6E6579; font-weight: 500;">03 — 타이포</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="font-family: 'Noto Serif KR', 'Nanum Myeongjo', serif; font-size: 25px; line-height: 1.6; color: #EFEAF2;">그때 매일 몇 시에<br>등교했어요?</div>
+        <div style="height: 1px; background: rgba(239,234,242,0.10);"></div>
+        <div style="font-size: 12px; font-weight: 500;">명조 — 질문 · 이야기 · 로고</div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7;">사람에게 말을 거는 목소리와 발화된 이야기. 輝敍 한자 로고도 여기. 시안은 Noto Serif KR, 실서비스는 본명조.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 20px; font-weight: 500; color: #EFEAF2;">사진 한 장 올리기</div>
+          <div style="font-size: 13px; color: #B3A5DC;">실내 · 교복 · 2019.11</div>
+        </div>
+        <div style="height: 1px; background: rgba(239,234,242,0.10); margin-top: 12px;"></div>
+        <div style="font-size: 12px; font-weight: 500;">산세리프 — UI · 라벨 · 데이터</div>
+        <div style="font-size: 11px; color: #6E6579; line-height: 1.7;">기계의 표면 읽기와 조작 요소. 시안은 Noto Sans KR, 실서비스는 Pretendard.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 1px; background: rgba(239,234,242,0.10);"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 18px;">
+    <div style="font-size: 11px; letter-spacing: 0.18em; color: #6E6579; font-weight: 500;">04 — 색 규칙</div>
+    <div style="display: flex; flex-direction: column; gap: 11px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 9px; height: 9px; border-radius: 50%; background: #B3A5DC;"></div>
+        <div style="font-size: 13px; color: #B7ADC4;">기계가 읽은 것 — 라벨 · 분석 · 확인 질문 · 던지는 질문</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 9px; height: 9px; border-radius: 50%; background: #E9A24A;"></div>
+        <div style="font-size: 13px; color: #B7ADC4;">사람이 말한 것 — 답변 · 생성된 이야기</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 9px; height: 9px; border-radius: 50%; background: #FFDCA8;"></div>
+        <div style="font-size: 13px; color: #B7ADC4;">빛의 코어 — 등불 심지 · 단 하나의 강조</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #6E6579; box-sizing: border-box;"></div>
+        <div style="font-size: 13px; color: #7D7489;">금지 — 보라 그라데이션, 보라→파랑 블렌드. 평면 광원으로만.</div>
+      </div>
+    </div>
+    <div style="font-family: 'Noto Serif KR', serif; font-size: 15px; color: #E9A24A; line-height: 1.8; padding-top: 6px;">세션이 진행될수록 연보라가 물러나고, 화면이 따뜻해진다.</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

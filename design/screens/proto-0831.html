@@ -1,0 +1,524 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>휘서 프로토타입 0831 — 전체 화면 · 와이어프레임 · 전환</title>
+<style>
+  :root{--pu:#7B5CD6;--dp:#3D2A7A;--ye:#FFD54A;--gr:#E6E3DE;--lv:#EADFEE;--ink:#1D1B22;--mute:#6F6A78;--line:#EFEDF3}
+  *{box-sizing:border-box;margin:0}
+  body{background:#EFEDF3;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:var(--ink);min-height:100vh}
+  a{color:inherit}
+  /* ── 상단 컨트롤 ── */
+  .bar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #E2DEE8;padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .bar b{font-size:14px;color:var(--dp);margin-right:6px}
+  .bar .grp{display:flex;gap:4px;flex-wrap:wrap}
+  .bar button{border:1.5px solid #D9D4E3;background:#fff;color:var(--mute);font-size:12px;font-weight:700;padding:6px 10px;border-radius:14px;cursor:pointer;font-family:inherit}
+  .bar button.on{background:var(--dp);border-color:var(--dp);color:#fff}
+  .bar .sep{width:1px;height:22px;background:#E2DEE8;margin:0 6px}
+  .bar .mode button.on{background:var(--ye);border-color:#3E294C;color:#3E294C}
+  /* ── 무대 ── */
+  .wrap{display:flex;gap:40px;padding:32px 24px 60px;align-items:flex-start;justify-content:center}
+  .side{width:330px;font-size:13px;color:var(--mute);line-height:1.75;padding-top:8px}
+  .side h3{font-size:14px;color:var(--dp);margin-bottom:6px}
+  .side .k{display:inline-block;background:#fff;border:1px solid #D9D4E3;border-radius:6px;padding:0 6px;font-size:11px;font-family:ui-monospace,monospace;color:var(--dp)}
+  .side ul{padding-left:16px;margin:4px 0 14px}
+  .side .flow{font-family:ui-monospace,monospace;font-size:11px;background:#fff;border-radius:12px;padding:12px 14px;line-height:1.9;white-space:pre;overflow:auto}
+  /* ── 폰 ── */
+  .phone{width:390px;height:844px;border-radius:46px;overflow:hidden;background:#fff;position:relative;border:6px solid #1D1B22;flex:0 0 auto}
+  .scr{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff}
+  .stage{background:var(--pu);position:relative;overflow:hidden;flex:0 0 auto}
+  .stage.deep{background:var(--dp)}
+  .sb{height:54px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px;font-size:14px;font-weight:700;color:#fff;position:relative;z-index:3}
+  .sb.dark{color:var(--ink)}
+  .hd{display:flex;justify-content:space-between;align-items:center;padding:8px 24px 0;position:relative;z-index:3;min-height:44px}
+  .mark{font-size:24px;font-weight:900;color:var(--ye);letter-spacing:-.03em;font-style:italic}
+  .me{width:36px;height:36px;border-radius:50%;background:var(--ye);border:2.5px solid #3E294C;display:grid;place-items:center;font-size:13px;font-weight:800;color:#3E294C;cursor:pointer}
+  .x{width:36px;height:36px;display:grid;place-items:center;font-size:22px;color:#fff;cursor:pointer}
+  .x.dark{color:var(--ink)}
+  .skip{font-size:13px;font-weight:700;color:#fff;opacity:.8;cursor:pointer}
+  /* 캐릭터 슬롯 */
+  .slot{position:absolute;z-index:1}
+  .slot svg{width:100%;height:100%;display:block}
+  .slot path,.slot rect,.slot circle{vector-effect:non-scaling-stroke}
+  .slot path[stroke],.slot rect[stroke]{stroke-width:2.5px}
+  .slot path[fill="#FFE58A"]{stroke-width:1.5px}
+  .slot.giant,.slot.full{left:50%;transform:translateX(-50%)}
+  .spark{position:absolute;color:#fff;font-size:22px;z-index:2}
+  .bubble{position:absolute;z-index:3;background:#fff;color:var(--ink);font-size:14px;font-weight:700;padding:10px 14px;border-radius:18px;border:2.5px solid #3E294C;max-width:230px;line-height:1.4}
+  .bubble:after{content:"";position:absolute;left:24px;bottom:-10px;width:14px;height:14px;background:#fff;border-right:2.5px solid #3E294C;border-bottom:2.5px solid #3E294C;transform:rotate(45deg)}
+  /* 흰 패널 */
+  .panel{background:#fff;border-radius:40px 40px 0 0;margin-top:-40px;position:relative;z-index:4;flex:1;display:flex;flex-direction:column;padding:28px 24px 0;overflow:hidden}
+  .panel.flat{border-radius:0;margin-top:0}
+  .h2{font-size:30px;font-weight:900;line-height:1.22;letter-spacing:-.02em}
+  .h2 small{display:block;font-size:15px;font-weight:600;color:var(--mute);margin-top:8px;letter-spacing:0;line-height:1.5}
+  .h2.w,.h2.w small{color:#fff}
+  .cta{margin-top:20px;height:58px;border-radius:29px;background:var(--ye);color:#3E294C;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;border:2.5px solid #3E294C;cursor:pointer;flex:0 0 auto}
+  .cta.ghost{background:#fff;color:var(--dp);border-color:var(--dp)}
+  .cta.ink{background:#3E294C;color:#fff}
+  .cta.wh{background:#fff;color:#3E294C}
+  .btm{margin-top:auto;padding-bottom:var(--safe)}
+  .sec{margin-top:22px}
+  .sec .t{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:800;color:var(--dp);margin-bottom:10px}
+  .sec .t span{font-weight:600;color:var(--mute);cursor:pointer}
+  .card{background:var(--gr);border-radius:22px;padding:12px;display:flex;gap:12px;align-items:center;cursor:pointer}
+  .ph{border-radius:14px;flex:0 0 auto;position:relative;overflow:hidden;background:#C9B79A}
+  .ph i{position:absolute;left:8px;bottom:6px;font-style:normal;font-size:10px;font-weight:800;color:#fff;opacity:.9}
+  .card .tx{font-size:12px;color:var(--mute);line-height:1.5;min-width:0}
+  .card .tx b{display:block;font-size:14px;color:var(--ink);margin-bottom:3px}
+  .card .tag{margin-left:auto;background:var(--pu);color:#fff;font-size:11px;font-weight:800;padding:6px 10px;border-radius:12px;white-space:nowrap}
+  .grid{display:flex;gap:10px}
+  .grid .ph{flex:1;height:100px;cursor:pointer}
+  .hint{margin-top:22px;font-size:13px;color:var(--mute);line-height:1.7;text-align:center}
+  :root{--safe:34px}
+  .tabs{margin-top:auto;height:84px;border-top:1.5px solid var(--line);display:flex;padding:8px 12px var(--safe);flex:0 0 auto;background:#fff;position:relative;z-index:5}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#B5B0C0;cursor:pointer}
+  .tab.on{color:var(--pu)}
+  .tab svg{width:26px;height:26px}
+  .homebar{width:100px;height:5px;border-radius:3px;background:#1D1B22;position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:6}
+  .dots{display:flex;gap:6px;justify-content:center;margin-top:16px;height:6px}
+  .dots i{width:6px;height:6px;border-radius:3px;background:#D9D4E3}
+  .dots i.on{width:18px;background:var(--pu)}
+  /* 온보딩 */
+  .lang{display:flex;flex-direction:column;gap:14px;margin-top:40px}
+  .lang div{height:64px;border-radius:32px;border:2.5px solid #3E294C;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;cursor:pointer;background:#fff}
+  .lang div.on{background:var(--ye)}
+  .input{margin-top:24px;height:58px;border-radius:18px;border:2.5px solid #3E294C;display:flex;align-items:center;padding:0 18px;font-size:18px;font-weight:700;color:var(--ink)}
+  .input span{color:#B5B0C0;font-weight:600}
+  .chips{display:flex;gap:12px;margin-top:18px}
+  .avrow{display:flex;gap:16px;align-items:center;margin-top:8px}
+  .av{width:84px;height:84px;border-radius:50%;border:2.5px solid #3E294C;position:relative;display:grid;place-items:center;flex:0 0 auto}
+  .av b{font-size:30px;font-weight:900;color:#fff}
+  .av i{position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;background:var(--ye);border:2.5px solid #3E294C;font-style:normal;font-size:16px;font-weight:800;display:grid;place-items:center;color:#3E294C}
+  .avopts{flex:1}
+  .avopts .chips{margin-top:12px;gap:10px}
+  .avopts .chips i{width:32px;height:32px}
+  .avbtn{height:40px;border-radius:20px;border:2px solid #3E294C;display:inline-flex;align-items:center;padding:0 16px;font-size:13px;font-weight:800;cursor:pointer}
+  .chips i{width:40px;height:40px;border-radius:50%;border:2.5px solid transparent;cursor:pointer}
+  .chips i.on{border-color:#3E294C;outline:3px solid #fff;outline-offset:-5px}
+  .freq{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+  .freq div{border-radius:24px;padding:16px 18px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;height:88px;cursor:pointer;border:2.5px solid transparent}
+  .freq div.on{border-color:#3E294C}
+  .freq b{font-size:18px;font-weight:900;display:block}
+  .freq small{font-size:12px;font-weight:600;opacity:.8}
+  .freq .slot{right:-28px;bottom:-30px;width:110px;height:110px;position:absolute}
+  /* 사진 고르기 */
+  .pick{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;flex:1;overflow:hidden;align-content:start}
+  .pick div{aspect-ratio:1;border-radius:6px;position:relative;cursor:pointer}
+  .pick div.on{outline:3px solid var(--pu);outline-offset:-3px}
+  .pick div.on:after{content:"✓";position:absolute;right:6px;top:6px;width:22px;height:22px;border-radius:50%;background:var(--pu);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
+  /* 채팅 */
+  .chat{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .chd{display:flex;justify-content:space-between;align-items:center;padding:6px 20px 8px;font-size:14px;font-weight:800;color:var(--ink)}
+  .chd .yr{background:var(--lv);color:var(--dp);padding:6px 12px;border-radius:12px;font-size:13px;cursor:pointer}
+  .chd .ic{width:36px;height:36px;display:grid;place-items:center;font-size:20px;cursor:pointer}
+  .chd .wrap-btn{font-size:13px;font-weight:800;color:var(--pu);cursor:pointer;padding:6px 0 6px 10px}
+  .chd .wrap-btn.off{color:#C9C4D3}
+  .dim{position:absolute;inset:0;background:rgba(29,27,34,.35);z-index:20}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:32px 32px 0 0;padding:14px 24px var(--safe);z-index:21}
+  .grab{width:44px;height:5px;border-radius:3px;background:#D9D4E3;margin:0 auto 18px}
+  .sheet .cta{margin-top:20px}
+  .photo{margin:0 20px;height:150px;border-radius:20px;background:#C9B79A;position:relative;overflow:hidden;flex:0 0 auto}
+  .photo i{position:absolute;left:12px;bottom:10px;font-style:normal;font-size:11px;font-weight:800;color:#fff}
+  .prog{margin:12px 20px 0;height:6px;border-radius:3px;background:var(--gr);position:relative;flex:0 0 auto}
+  .prog b{position:absolute;left:0;top:0;height:100%;border-radius:3px;background:var(--pu)}
+  .prog i{position:absolute;top:8px;font-size:9px;color:var(--pu);transform:translateX(-50%)}
+  .prog em{position:absolute;right:0;top:-18px;font-size:11px;font-style:normal;font-weight:800;color:var(--dp)}
+  .msgs{flex:1;overflow:hidden;padding:20px 20px 0;display:flex;flex-direction:column;gap:10px}
+  .m{max-width:78%;padding:12px 16px;border-radius:20px;font-size:15px;line-height:1.5;font-weight:600}
+  .m.h{background:var(--lv);color:var(--ink);align-self:flex-start;border-bottom-left-radius:6px}
+  .m.u{background:var(--ye);color:#3E294C;align-self:flex-end;border-bottom-right-radius:6px}
+  .band{background:var(--ye);padding:14px 20px 6px;border-radius:28px 28px 0 0;flex:0 0 auto}
+  .band .cta{margin-top:0;height:52px}
+  .band p{font-size:12px;font-weight:700;color:#3E294C;text-align:center;margin-bottom:10px}
+  .inp{display:flex;gap:10px;padding:12px 20px var(--safe);align-items:center;flex:0 0 auto;background:#fff}
+  .inp div{flex:1;height:50px;border-radius:25px;border:2px solid #D9D4E3;display:flex;align-items:center;padding:0 18px;font-size:14px;color:#B5B0C0;font-weight:600}
+  .inp b{width:50px;height:50px;border-radius:50%;background:#3E294C;color:#fff;display:grid;place-items:center;font-size:18px}
+  /* 결과 · 상세 */
+  .story{flex:1;overflow:hidden;padding:0 24px}
+  .story .photo{margin:0;height:200px;border-radius:24px}
+  .story .kicker{font-size:12px;font-weight:800;color:var(--pu);margin-top:20px;letter-spacing:.04em}
+  .story h2{font-size:26px;font-weight:900;line-height:1.3;margin-top:6px;letter-spacing:-.02em}
+  .story .body{margin-top:14px;font-family:'Noto Serif KR','Apple Myungjo','Nanum Myeongjo',serif;font-size:15.5px;line-height:1.85;color:#3A3644}
+  .story .saved{margin-top:16px;font-size:12px;font-weight:700;color:var(--mute);display:flex;align-items:center;gap:6px}
+  .story .fold{margin-top:16px;border:1.5px solid #D9D4E3;border-radius:16px;padding:12px 16px;font-size:13px;font-weight:800;color:var(--dp);display:flex;justify-content:space-between;cursor:pointer}
+  .two{display:flex;gap:10px;padding:14px 24px var(--safe);flex:0 0 auto}
+  .two .cta{flex:1;margin:0;height:54px;font-size:15px}
+  /* 아카이브 */
+  .arc{flex:1;overflow:hidden;padding:0 24px}
+  .arc .cnt{font-size:13px;font-weight:600;color:var(--mute);margin-top:4px}
+  .agrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+  .agrid .ph{height:170px;border-radius:20px;cursor:pointer}
+  .agrid .ph b{position:absolute;left:12px;top:12px;font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,.25);padding:4px 8px;border-radius:8px}
+  .agrid .ph i{left:12px;bottom:12px;font-size:13px;font-weight:800;line-height:1.3;right:12px;opacity:1}
+  /* 나 */
+  .list{margin-top:8px}
+  .list div{display:flex;justify-content:space-between;align-items:center;height:60px;border-bottom:1.5px solid var(--line);font-size:16px;font-weight:700;cursor:pointer}
+  .list div span{font-size:14px;font-weight:600;color:var(--mute)}
+  .list div.red{color:#D64545;border-bottom:0;margin-top:18px}
+  .prof{display:flex;align-items:center;gap:14px;margin-top:8px}
+  .prof i{width:56px;height:56px;border-radius:50%;background:var(--pu);border:2.5px solid #3E294C}
+  .prof b{font-size:22px;font-weight:900}
+  .prof span{font-size:13px;font-weight:700;color:var(--pu);margin-left:auto;cursor:pointer}
+  /* 스플래시 */
+  .splash .brand{position:absolute;left:32px;top:110px;color:var(--ye);font-size:64px;font-weight:900;font-style:italic;letter-spacing:-.04em;z-index:3;line-height:1}
+  .splash .tag{position:absolute;left:34px;top:190px;color:#fff;font-size:15px;font-weight:700;z-index:3;opacity:.9}
+  /* ── 상태: 호버(데스크탑) · 누름(폰) — 그림자 없이 색·크기만 ── */
+  .cta,.card,.tab,.lang div,.freq>div,.chips i,.pick div,.grid .ph,.agrid .ph,.list div,.me,.avbtn,.chd .yr,.chd .wrap-btn,.sec .t span,.prof span,.inp b,.x,.skip,.story .fold{transition:transform .12s ease,filter .15s ease,background-color .15s ease,color .15s ease}
+  .cta:hover{filter:brightness(.95)} .cta:active{transform:scale(.97);filter:brightness(.9)}
+  .card:hover,.grid .ph:hover,.agrid .ph:hover{filter:brightness(.96)} .card:active,.grid .ph:active,.agrid .ph:active{transform:scale(.98)}
+  .lang div:hover,.freq>div:hover,.avbtn:hover,.chd .yr:hover,.story .fold:hover{filter:brightness(.96)} .lang div:active,.freq>div:active,.avbtn:active{transform:scale(.98)}
+  .chips i:hover,.pick div:hover{transform:scale(1.06)} .chips i:active,.pick div:active{transform:scale(.96)}
+  .tab:hover{color:var(--dp)} .tab:active svg{transform:scale(.9)} .tab svg{transition:transform .12s}
+  .list div:hover{background:linear-gradient(90deg,transparent,transparent) ;color:var(--pu)} .list div.red:hover{color:#B23232}
+  .me:hover,.inp b:hover{filter:brightness(.94)} .me:active,.inp b:active{transform:scale(.94)}
+  .x:hover,.skip:hover,.chd .wrap-btn:hover,.sec .t span:hover,.prof span:hover{opacity:.7}
+    .wire *{transition:none!important;filter:none!important}
+  /* ── 하늘 (시간별) 톤 ── */
+  .bar .tone button.on{background:#4A3B7C;border-color:#4A3B7C;color:#fff}
+  .bar .time{align-items:center;gap:8px}
+  .bar .time input{width:160px;accent-color:#4A3B7C}
+  .bar .time span{font-size:12px;font-weight:800;color:var(--dp);min-width:110px}
+  body.light .time{display:none}
+  /* 시간별로 바뀌는 건 무대 배경(색·구름·별·해)뿐. 패널·버튼·캐릭터·말풍선은 밝음 톤 그대로 */
+  .sky[data-sky="morning"]{--sky:#C9BCE6;--c1:#D9CFEF;--c2:#EAE4F7;--c3:#FFFFFF;--txs:var(--ink);--star:0;--sun:block}
+  .sky[data-sky="day"]{--sky:#A99BD1;--c1:#BDB2DE;--c2:#D2CAEA;--c3:#E6E1F3;--txs:var(--ink);--star:0;--sun:block}
+  .sky[data-sky="evening"]{--sky:#6E5A9E;--c1:#7F6BB0;--c2:#9B84BE;--c3:#C69EC6;--txs:#FFFFFF;--star:.5;--sun:none}
+  .sky[data-sky="night"]{--sky:#4A3B7C;--c1:#5D4D96;--c2:#7A66B5;--c3:#8F79BE;--txs:#FFFFFF;--star:.9;--sun:none}
+  .sky .stage,.sky .stage.deep{background:var(--sky);transition:background-color .8s}
+  .sky .stage .sb,.sky .stage .x,.sky .stage .skip,.sky .splash .tag,.sky .h2.w,.sky .h2.w small{color:var(--txs)}
+  .sky .spark{color:var(--txs)}
+  .sky .cloud{position:absolute;z-index:0;pointer-events:none}
+  .sky .cloud svg{display:block;overflow:visible}
+  .sky .cloud.c1 g{fill:var(--c1)} .sky .cloud.c2 g{fill:var(--c2)} .sky .cloud.c3 g{fill:var(--c3)}
+  .sky .cloud g{transition:fill .8s}
+  .sky .star{position:absolute;border-radius:50%;background:#fff;z-index:0;opacity:var(--star);transition:opacity .8s}
+  .sky .sun{position:absolute;right:40px;top:96px;width:56px;height:56px;border-radius:50%;background:var(--ye);border:2.5px solid #3E294C;z-index:0;display:var(--sun)}
+  /* ── 불 켜기 ── */
+  .stage.unlit,.sky .stage.unlit{background:#2A2150;cursor:pointer;transition:background-color 1s}
+  .stage.unlit .cloud,.stage.unlit .star,.stage.unlit .sun,.stage.unlit .lit-only{opacity:0;transition:opacity 1s .2s}
+  .stage.unlit.lit,.sky .stage.unlit.lit{background:var(--sky,var(--pu))}
+  .stage.unlit.lit .cloud,.stage.unlit.lit .sun,.stage.unlit.lit .lit-only{opacity:1}
+  .stage.unlit.lit .star{opacity:var(--star,0)}
+  .stage.unlit .mark.faint{opacity:.45;transition:opacity 1s} .stage.unlit.lit .mark.faint{opacity:1}
+  .lhint{position:absolute;left:0;right:0;bottom:90px;text-align:center;color:#B9A9E4;font-size:15px;font-weight:700;z-index:3;transition:opacity .4s}
+  .stage.unlit.lit .lhint{opacity:0}
+  .stage.unlit .sb{color:#B9A9E4}
+  .stage.unlit.lit .sb{color:var(--txs,#fff)}
+  @keyframes ignite{0%{transform:translateX(-50%) scale(.96)}40%{transform:translateX(-50%) scale(1.06)}100%{transform:translateX(-50%) scale(1)}}
+  .slot.ignite{animation:ignite .7s ease-out}
+  /* ── 와이어프레임 모드 ── */
+  .wire .stage,.wire .stage.deep,.wire .band{background:#fff!important;border-bottom:1.5px dashed #9A94A6}
+  .wire .panel{border-radius:0;margin-top:0}
+  .wire .slot svg,.wire .spark{display:none}
+  .wire .slot{border:1.5px dashed #9A94A6;border-radius:12px;background:#ECEAF0}
+  .wire .slot:after{content:attr(data-slot);position:absolute;inset:0;display:grid;place-items:center;font-size:11px;font-weight:800;color:#7A7488;text-align:center;font-family:ui-monospace,monospace}
+  .wire .sb,.wire .x,.wire .skip,.wire .h2.w,.wire .h2.w small,.wire .splash .tag{color:#333!important}
+  .wire .mark,.wire .splash .brand{color:#333!important}
+  .wire .me,.wire .cta,.wire .lang div,.wire .band .cta,.wire .m,.wire .card,.wire .freq>div,.wire .chd .yr,.wire .inp b,.wire .tag{background:#fff!important;color:#333!important;border:1.5px solid #333!important}
+  .wire .ph,.wire .photo,.wire .pick div,.wire .chips i,.wire .prof i{background:#F3F1F6!important;border:1.5px dashed #9A94A6}
+  .wire .prog b,.wire .dots i.on{background:#333}
+  .wire .tab.on{color:#333}
+  .wire .bubble{border-color:#333}
+  .wire .story .kicker,.wire .sec .t,.wire .prof span,.wire .story .fold{color:#333}
+  .wire .list div.red{color:#333}
+  .wire .pick div.on{outline-color:#333}
+  .wire .pick div.on:after{background:#333}
+  .wire .prog i,.wire .prog em{color:#333}
+  .wire .ph i,.wire .photo i,.wire .agrid .ph b{color:#7A7488;background:none}
+  /* 와이어 주석 */
+  .wire .note-w{display:block}
+  .note-w{display:none;position:absolute;z-index:9;background:#333;color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:6px;font-family:ui-monospace,monospace;pointer-events:none}
+  /* ── 전체 흐름 보기 ── */
+  .flowview{display:none;padding:24px;overflow-x:auto}
+  .flowview .lane{display:flex;gap:18px;align-items:flex-start;min-width:max-content}
+  .flowview .mini{width:390px;height:844px;transform:scale(.46);transform-origin:top left;pointer-events:none}
+  .flowview figure{width:calc(390px*.46);flex:0 0 auto}
+  .flowview figure .box{width:calc(402px*.46);height:calc(856px*.46);position:relative}
+  .flowview figcaption{font-size:11px;color:var(--mute);margin-top:8px;font-weight:700;text-align:center}
+  .flowview figcaption b{display:block;color:var(--dp)}
+  .flowview .arrow{align-self:center;color:#B5B0C0;font-size:20px;padding-top:0;margin-top:190px}
+  body.flow .wrap{display:none}
+  body.flow .flowview{display:block}
+</style>
+
+<div class="bar">
+  <b>휘서 프로토</b>
+  <div class="grp" id="nav"></div>
+  <div class="sep"></div>
+  <div class="grp mode">
+    <button id="mDesign" class="on" onclick="setWire(false)">시안</button>
+    <button id="mWire" onclick="setWire(true)">와이어프레임</button>
+  </div>
+  <div class="sep"></div>
+  <div class="grp"><button id="mFlow" onclick="toggleFlow()">전체 흐름 보기</button></div>
+  <div class="sep"></div>
+  <div class="grp tone">
+    <button id="tLight" onclick="setTone('light')">배경 고정</button>
+    <button id="tSky" class="on" onclick="setTone('sky')">배경 시간별</button>
+  </div>
+  <div class="grp time" id="timeCtl">
+    <input type="range" id="hour" min="0" max="23" step="1" value="21" oninput="setHour(+this.value)">
+    <span id="hourLbl"></span>
+    <button onclick="setHour(new Date().getHours())">지금</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="side" id="side"></div>
+  <div class="phone" id="phone"></div>
+</div>
+<div class="flowview" id="flow"></div>
+
+<script src="hw-character.js"></script>
+<script>
+// ── 공통 조각 ─────────────────────────────────────────────
+const SB = (dark)=>`<div class="sb ${dark?'dark':''}"><span>9:41</span><span>●●● ▲ ▮</span></div>`;
+const PH = (w,h,col,label)=>`<div class="ph" style="${w?`width:${w}px;height:${h}px;`:''}background:${col}"><i>${label||''}</i></div>`;
+const giantAt = (mood, stageH, width=400, margin=64, cls='')=>{
+  const b=HW.giantBox, h=width*b.h/b.w, mouthPx=h*b.mouthY/b.h;
+  return `<div class="slot giant ${cls}" data-slot="캐릭터 슬롯: 거대 얼굴 (폭 ${width})" style="top:${stageH-40-margin-mouthPx}px;width:${width}px;height:${h}px">${HW.giant(mood)}</div>`;
+};
+const fullAt = (mood, stageH, px=292, bh=139, bottomGap=44)=>{
+  const H=HW.meta.total(bh), w=px*HW.meta.unit/H;
+  return `<div class="slot full" data-slot="캐릭터 슬롯: 전신" style="top:${stageH-bottomGap-px}px;width:${w}px;height:${px}px">${HW.full({mood,bh})}</div>`;
+};
+const chipAt = (mood, style)=>`<div class="slot" data-slot="칩" style="${style}">${HW.chip(mood)}</div>`;
+const TABS = (on)=>`<div class="tabs">
+  <div class="tab ${on==='home'?'on':''}" onclick="go('home')"><svg viewBox="${HW.markBox}"><path d="${HW.mark}" fill="currentColor"/></svg>홈</div>
+  <div class="tab ${on==='arc'?'on':''}" onclick="go('archive')"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="3" y="7" width="16" height="16" rx="4"/><path d="M8 3h13a2 2 0 0 1 2 2v13"/></svg>아카이브</div>
+  <div class="tab ${on==='me'?'on':''}" onclick="go('me')"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="13" cy="13" r="10"/><circle cx="13" cy="11" r="3.2"/><path d="M6.5 20c1.5-3 4-4.5 6.5-4.5s5 1.5 6.5 4.5"/></svg>나</div>
+</div>`;
+const HD = `<div class="hd"><span class="mark">휘서</span><span class="me" onclick="go('me')">민</span></div>`;
+const DOTS = (n)=>`<div class="dots">${[0,1,2,3].map(i=>`<i class="${i===n?'on':''}"></i>`).join('')}</div>`;
+const OBHD = (next)=>`<div class="hd"><span class="x" onclick="back()">‹</span><span class="skip" onclick="go('${next}')">건너뛰기</span></div>`;
+
+// ── 화면 정의 ─────────────────────────────────────────────
+const S = {};
+const ORDER = ['splash','light','ob0','ob1','ob2','ob3','homeFirst','pick','chat','chatDone','result','home','archive','detail','me','about'];
+const LABEL = {splash:'스플래시',light:'불 켜기',ob0:'온보딩 A0 언어',ob1:'A1 인사',ob2:'A2 이름',ob3:'A3 알림',homeFirst:'홈 (첫 방문)',pick:'사진 고르기',chat:'채팅',chatDone:'정리하기 시트',result:'결과 · 이야기',home:'홈 (평소)',archive:'아카이브',detail:'이야기 상세',me:'나',about:'휘서에 대해'};
+const NOTE = {
+  splash:['보라 풀블리드. 마크 + 한 줄. 거대 얼굴은 아래에서 올라와 잘림','탭 → 불 켜기 (평소) / A0 언어 (첫 실행)'],
+  light:['꺼진 초. 시간과 상관없이 어두움 — 아직 휘서가 없으니까','초를 누르면 불꽃이 붙고, 그 시각의 하늘로 밝아지며 휘서 등장','→ 홈 (평소) / A1 인사 (첫 실행, A0 다음에 옴)','A 시안(mock-0831-A)의 불 켜기 화면을 진입 의식으로 채택'],
+  ob0:['글자 둘뿐. 캐릭터 없음','선택 즉시 → 불 켜기 → A1'],
+  ob1:['온보딩에서 캐릭터가 크게 나오는 유일한 화면. 전신 + 말풍선','문장 3줄로 휘서가 누군지·뭘 하는지'],
+  ob2:['이름 입력 + 프로필: 사진 고르기 또는 단색 5개 (같은 자리, 같은 무게)','사진 안 고르면 단색 + 이름 첫 글자. 비워도 "친구"로 진행','프로필 사진은 기기에만 저장. 대화 사진과 별개'],
+  ob3:['Langvi 카드: 카드마다 단색 + 칩 캐릭터가 모서리에서 잘림','"시작하기" → 홈(첫 방문)'],
+  homeFirst:['전신 + 말풍선. 이어서 하기·최근 이야기 없음','CTA → 사진 고르기'],
+  pick:['시스템 피커 대용 목업. 한 장만 선택','"이 사진으로" → 채팅'],
+  chat:['사진 상단 고정. 캐릭터 ✗, 휘서는 연보라 면으로만','턴 수 표시·중간 개입 없음 — 앱은 턴 무제한. 3턴 규칙은 전시 모드만','"정리하기"는 헤더 우측에 조용히. 답이 1개 이상이면 활성'],
+  chatDone:['정리하기를 누르면 바텀시트로 한 번만 확인','[이야기로 정리하기] → 결과 / [조금 더] → 대화로'],
+  result:['채팅의 마지막 장. 사진 + 제목 + 본문(명조) + 저장됨','[다른 사진으로] → 사진 고르기 / [홈으로] → 홈'],
+  home:['거대 얼굴 + 상태 인사 + CTA + 이어서 하기 + 최근 이야기','카드 → 채팅 / 상세'],
+  archive:['완성된 이야기만. 2열, 대화한 날 최신순','카드 → 상세'],
+  detail:['결과 화면과 같은 틀 + 대화 다시 보기(접힘)','··· 에서 삭제'],
+  me:['이름·색 / 알림 / 언어 / 휘서에 대해 / 이 앱에 대해 / 지우기','"휘서에 대해" → about'],
+  about:['옛 휘서 프로필의 자리. 거대 얼굴 + 소개 3줄','되돌아가기만'],
+};
+
+S.splash = ()=>`<div class="scr"><div class="stage splash" style="flex:1" onclick="go('light')">${SB()}
+  <div class="brand">휘서</div><div class="tag">사진 한 장, 이야기 한 편</div>
+  ${giantAt('friendly',844,520,150)}
+  <div class="spark" style="left:40px;top:300px">✦</div><div class="spark" style="left:320px;top:250px;font-size:16px">✦</div>
+</div></div>`;
+
+S.light = ()=>`<div class="scr"><div class="stage unlit" id="lightStage" style="flex:1" onclick="lightUp()">${SB()}
+  <div class="hd"><span class="mark faint">휘서</span><span style="width:36px"></span></div>
+  <div class="bubble lit-only" style="left:50%;top:150px;transform:translateX(-50%)">${hist.includes('ob0')?'안녕하세요, 저는 휘서예요.':'다시 왔네요, 민지님.'}</div>
+  <div class="slot full" id="candle" style="top:${844-140-300}px;width:${300*300/HW.meta.total(139)}px;height:300px">${HW.full({level:0,bh:139})}</div>
+  <div class="lhint">초를 눌러 불을 켜주세요</div>
+</div><div class="homebar"></div></div>`;
+function lightUp(){
+  const st=document.getElementById('lightStage'); if(!st||st.classList.contains('lit')) return;
+  st.classList.add('lit');
+  const c=document.getElementById('candle'); c.innerHTML=HW.full({mood:'friendly',bh:139}); c.classList.add('ignite');
+  setTimeout(()=>go(hist.includes('ob0')?'ob1':'home'),2200);
+}
+S.ob0 = ()=>`<div class="scr"><div class="stage" style="height:300px">${SB()}${OBHD('ob1')}
+  <div style="padding:20px 24px 0;position:relative;z-index:3"><div class="h2 w">언어를<br>골라주세요<small>Choose your language</small></div></div>
+</div><div class="panel">
+  <div class="lang"><div class="on" onclick="go('light')">한국어</div><div onclick="go('light')">ENGLISH</div></div>
+  <div class="btm">${DOTS(0)}</div>
+</div></div>`;
+
+S.ob1 = ()=>`<div class="scr"><div class="stage" style="height:470px">${SB()}${OBHD('ob2')}
+  <div class="bubble" style="left:38px;top:120px">안녕하세요, 저는 휘서예요.</div>
+  <div class="spark" style="left:52px;top:200px">✦</div><div class="spark" style="left:318px;top:150px;font-size:16px">✦</div><div class="spark" style="left:300px;top:380px;font-size:14px">✦</div>
+  ${fullAt('friendly',470)}
+</div><div class="panel">
+  <div class="h2">사진 한 장을 보고<br>질문을 드려요.<small>답하다 보면 그날의 이야기가 한 편 만들어져요. 사진은 저장하지 않아요.</small></div>
+  <div class="btm"><div class="cta" onclick="go('ob2')">다음</div>${DOTS(1)}</div>
+</div></div>`;
+
+S.ob2 = ()=>`<div class="scr"><div class="stage" style="height:300px">${SB()}${OBHD('ob3')}
+  <div style="padding:20px 24px 0;position:relative;z-index:3"><div class="h2 w">뭐라고<br>부를까요?<small>휘서가 이 이름으로 불러요</small></div></div>
+</div><div class="panel">
+  <div class="input">민지<span>|</span></div>
+  <div class="sec"><div class="t">프로필 <span>사진이나 단색, 아무거나</span></div>
+    <div class="avrow">
+      <div class="av" style="background:#7B5CD6"><b>민</b><i>＋</i></div>
+      <div class="avopts">
+        <div class="avbtn">사진 고르기</div>
+        <div class="chips"><i class="on" style="background:#7B5CD6"></i><i style="background:#FFD54A"></i><i style="background:#F5B92E"></i><i style="background:#BAA4CD"></i><i style="background:#3D2A7A"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="btm"><div class="cta" onclick="go('ob3')">다음</div>${DOTS(2)}</div>
+</div></div>`;
+
+S.ob3 = ()=>`<div class="scr"><div class="stage" style="height:300px">${SB()}${OBHD('homeFirst')}
+  <div style="padding:20px 24px 0;position:relative;z-index:3"><div class="h2 w">얼마나 자주<br>찾아올까요?<small>알림은 나중에 '나'에서 바꿀 수 있어요</small></div></div>
+</div><div class="panel">
+  <div class="freq">
+    <div class="on" style="background:var(--ye);color:#3E294C"><div><b>주 1회</b><small>일요일 저녁, 사진 한 장</small></div>${chipAt('friendly','')}</div>
+    <div style="background:var(--lv);color:var(--dp)"><div><b>2주에 한 번</b><small>천천히, 부담 없이</small></div>${chipAt('watching','')}</div>
+    <div style="background:var(--gr);color:var(--ink)"><div><b>한 달에 한 번</b><small>월초에 한 번만</small></div>${chipAt('sleep','')}</div>
+  </div>
+  <div class="btm"><div class="cta" onclick="go('homeFirst')">시작하기</div>${DOTS(3)}</div>
+</div></div>`;
+
+S.homeFirst = ()=>`<div class="scr"><div class="stage" style="height:470px">${SB()}${HD}
+  <div class="bubble" style="left:38px;top:122px">안녕하세요, 민지님!</div>
+  <div class="spark" style="left:52px;top:170px">✦</div><div class="spark" style="left:318px;top:130px;font-size:16px">✦</div><div class="spark" style="left:300px;top:360px;font-size:14px">✦</div>
+  ${fullAt('friendly',470)}
+</div><div class="panel">
+  <div class="h2">첫 사진을<br>골라볼까요?<small>사진 한 장이면 돼요. 나머지는 휘서가 물어볼게요.</small></div>
+  <div class="cta" onclick="go('pick')">＋ 사진 고르고 시작</div>
+  <p class="hint">이야기가 완성되면 여기에 쌓여요.</p>
+</div>${TABS('home')}</div>`;
+
+const PICKCOLS=['#C9B79A','#B9A6C8','#A8BCC9','#D8B4A0','#9AA88F','#C8C0B0','#B0A0A8','#A3B4C4','#D0C39A','#B8B0C8','#C4A8A0','#A8C0B8'];
+S.pick = ()=>`<div class="scr">${SB(true)}
+  <div class="hd"><span class="x dark" onclick="back()">✕</span><span style="font-size:15px;font-weight:800">사진 고르기</span><span style="width:36px"></span></div>
+  <div class="pick">${PICKCOLS.map((c,i)=>`<div class="${i===3?'on':''}" style="background:${c}"></div>`).join('')}</div>
+  <div class="two"><div class="cta" onclick="go('chat')">이 사진으로</div></div>
+</div>`;
+
+const CHAT = (n, sheet)=>`<div class="scr">${SB(true)}
+  <div class="chd"><span class="x dark" onclick="go('home')">‹</span><span class="yr">1998년쯤 · 고치기</span><span class="wrap-btn ${n>=1?'':'off'}" onclick="go('chatDone')">정리하기</span></div>
+  <div class="photo"><i>선택한 사진</i></div>
+  <div class="msgs">
+    <div class="m h">실내에서 여럿이 모여 있네요. 가운데 계신 분이 민지님이에요?</div>
+    <div class="m u">네, 동아리 종강 날이었어요.</div>
+    ${n>=2?`<div class="m h">종강이면 다들 들떠 있었겠어요. 그날 무슨 얘기를 제일 많이 했는지 기억나요?</div>`:''}
+    ${n>=2?`<div class="m u">김밥 두 줄 사 와서 나눠 먹었는데, 그게 왜 그렇게 웃겼는지…</div>`:''}
+    ${n>=3?`<div class="m h">김밥 두 줄이 그날의 주인공이었네요. 누가 사 왔어요?</div>`:''}
+    ${n>=3?`<div class="m u">제가요. 돈이 없어서 두 줄만.</div>`:''}
+  </div>
+  <div class="inp"><div>답을 적어주세요</div><b>↑</b></div>
+  ${sheet?`<div class="dim" onclick="go('chat')"></div><div class="sheet">
+    <div class="grab"></div>
+    <div class="h2" style="font-size:24px">지금까지를<br>이야기로 정리할까요?<small>3개의 답이 모였어요. 더 이어가도 괜찮아요.</small></div>
+    <div class="cta" onclick="go('result')">이야기로 정리하기</div>
+    <div class="cta ghost" style="margin-top:10px" onclick="go('chat')">조금 더 이야기할래요</div>
+  </div>`:''}
+</div>`;
+S.chat = ()=>CHAT(3,false);
+S.chatDone = ()=>CHAT(3,true);
+
+const STORY = (back, isDetail)=>`<div class="scr">${SB(true)}
+  <div class="hd"><span class="x dark" onclick="${back}">‹</span><span style="font-size:13px;font-weight:800;color:var(--mute)">${isDetail?'8월 21일에 나눈 이야기':'이야기 완성'}</span><span class="ic" style="width:36px;text-align:right">···</span></div>
+  <div class="story">
+    <div class="photo"><i>1998년쯤</i></div>
+    <div class="kicker">1998 · 동아리 종강</div>
+    <h2>김밥 두 줄이 주인공이었던 날</h2>
+    <div class="body">종강 날이라 다들 들떠 있었다. 돈이 없어서 김밥을 두 줄만 사 왔는데, 그걸 여덟 명이 나눠 먹느라 한 조각씩 돌아갔다. 왜 그렇게 웃겼는지는 아직도 모르겠다. 사진 속 가운데에 내가 있고, 양옆으로 그날의 얼굴들이 있다.</div>
+    ${isDetail?`<div class="fold">대화 다시 보기 <span>▾</span></div>`:`<div class="saved">✓ 아카이브에 저장됐어요 · 사진은 저장하지 않아요</div>`}
+  </div>
+  ${isDetail?`<div class="two"><div class="cta ghost" onclick="go('archive')">아카이브로</div></div>`:`<div class="two"><div class="cta ghost" onclick="go('pick')">다른 사진으로</div><div class="cta" onclick="go('home')">홈으로</div></div>`}
+</div>`;
+S.result = ()=>STORY("go('home')",false);
+S.detail = ()=>STORY("back()",true);
+
+S.home = ()=>`<div class="scr"><div class="stage" style="height:344px">${SB()}${HD}
+  ${giantAt('watching',344)}
+</div><div class="panel">
+  <div class="h2">민지님, 3일 만이에요.<small>오늘은 어떤 사진이 있나요?</small></div>
+  <div class="cta" onclick="go('pick')">＋ 사진 고르고 시작</div>
+  <div class="sec"><div class="t">이어서 하기</div>
+    <div class="card" onclick="go('chat')">${PH(64,64,'#C9B79A','1998')}<div class="tx"><b>8월 21일 · 2턴 진행</b>"동아리 종강 날이었어요…"</div><span class="tag">이어서</span></div>
+  </div>
+  <div class="sec"><div class="t">최근 이야기 <span onclick="go('archive')">전체 12편 →</span></div>
+    <div class="grid" onclick="go('detail')">${PH(0,0,'#B9A6C8','2004')}${PH(0,0,'#A8BCC9','1996')}${PH(0,0,'#D8B4A0','2011')}</div>
+  </div>
+</div>${TABS('home')}</div>`;
+
+const ARC=[['#B9A6C8','8월 21일','김밥 두 줄이 주인공이던 날'],['#A8BCC9','8월 14일','우산이 하나뿐이던 저녁'],['#D8B4A0','8월 2일','엄마는 늘 뒤에 서 있었다'],['#9AA88F','7월 25일','처음 바다를 본 날'],['#C8C0B0','7월 11일','골목 끝 문방구'],['#B0A0A8','6월 30일','졸업식, 비']];
+S.archive = ()=>`<div class="scr">${SB(true)}
+  <div class="hd"><span class="h2" style="font-size:26px">아카이브</span><span class="ic">···</span></div>
+  <div class="arc"><div class="cnt">12편 · 1996 ~ 2011</div>
+    <div class="agrid">${ARC.map(([c,d,t])=>`<div class="ph" style="background:${c}" onclick="go('detail')"><b>${d}</b><i>${t}</i></div>`).join('')}</div>
+  </div>
+  ${TABS('arc')}
+</div>`;
+
+S.me = ()=>`<div class="scr">${SB(true)}
+  <div class="hd"><span class="h2" style="font-size:26px">나</span><span style="width:36px"></span></div>
+  <div class="arc">
+    <div class="prof"><i style="display:grid;place-items:center;color:#fff;font-size:22px;font-weight:900;font-style:normal">민</i><b>민지</b><span>프로필 고치기</span></div>
+    <div class="list" style="margin-top:22px">
+      <div onclick="">알림 <span>주 1회 ›</span></div>
+      <div onclick="">언어 <span>한국어 ›</span></div>
+      <div onclick="go('about')" style="margin-top:14px">휘서에 대해 <span>›</span></div>
+      <div onclick="">이 앱에 대해 <span>›</span></div>
+      <div class="red">모든 기록 지우기</div>
+    </div>
+  </div>
+  ${TABS('me')}
+</div>`;
+
+S.about = ()=>`<div class="scr"><div class="stage" style="height:420px">${SB()}
+  <div class="hd"><span class="x" onclick="back()">‹</span><span style="width:36px"></span></div>
+  ${giantAt('joy',420,400,64)}
+</div><div class="panel">
+  <div class="h2">휘서는 사진을 보고<br>질문을 하는 친구예요.<small>답을 대신 쓰지 않아요. 기억을 꺼내는 건 언제나 민지님이고, 휘서는 옆에서 묻기만 해요.<br><br>輝敍 — 빛날 휘, 펼 서. 사진 속 빛을 이야기로 펼친다는 뜻이에요.</small></div>
+  <div class="btm"><div class="cta ghost" onclick="back()">돌아가기</div></div>
+</div></div>`;
+
+// ── 하늘(시간별) ─────────────────────────────────────────
+const cloud=(x,y,w,cls,flip)=>`<div class="cloud ${cls}" style="left:${x}px;top:${y}px;width:${w}px;height:${w*.5}px;${flip?'transform:scaleX(-1)':''}"><svg viewBox="0 0 200 100" width="${w}" height="${w*.5}"><g><ellipse cx="100" cy="72" rx="100" ry="28"/><circle cx="60" cy="52" r="34"/><circle cx="110" cy="40" r="42"/><circle cx="160" cy="58" r="30"/></g></svg></div>`;
+const star=(x,y,r)=>`<div class="star" style="left:${x}px;top:${y}px;width:${r}px;height:${r}px"></div>`;
+const DECOR = cloud(-50,70,230,'c1')+cloud(210,50,240,'c1',true)+cloud(240,220,210,'c2')+cloud(-70,260,220,'c3',true)+cloud(150,380,200,'c2')
+  +star(300,140,4)+star(90,180,3)+star(340,300,5)+star(60,340,3)+star(200,120,3)+`<div class="sun"></div>`;
+const skyName=h=> h>=6&&h<11?'morning' : h>=11&&h<17?'day' : h>=17&&h<20?'evening' : 'night';
+const SKY_KO={morning:'아침',day:'낮',evening:'저녁',night:'밤'};
+let hour=21;
+function setHour(h){ hour=h; document.body.dataset.sky=skyName(h); document.getElementById('hour').value=h; document.getElementById('hourLbl').textContent=`${String(h).padStart(2,'0')}:00 · ${SKY_KO[skyName(h)]}`; }
+function setTone(t){ document.body.classList.toggle('sky',t==='sky'); setTimeout(()=>{render(); if(document.body.classList.contains('flow')) buildFlow();},0); document.body.classList.toggle('light',t!=='sky'); document.getElementById('tSky').classList.toggle('on',t==='sky'); document.getElementById('tLight').classList.toggle('on',t!=='sky'); }
+function decorate(root){
+  if(!document.body.classList.contains('sky')) return;
+  root.querySelectorAll('.stage').forEach(st=>{
+    st.insertAdjacentHTML('afterbegin',DECOR);
+  });
+}
+// ── 라우팅 ─────────────────────────────────────────────
+let cur='splash', hist=[];
+function render(){
+  document.getElementById('phone').innerHTML = S[cur]() + '<div class="homebar"></div>';
+  decorate(document.getElementById('phone'));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===cur));
+  const i=ORDER.indexOf(cur), n=NOTE[cur]||[];
+  document.getElementById('side').innerHTML = `<h3>${i+1}/${ORDER.length} · ${LABEL[cur]}</h3>
+    <ul>${n.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <h3>흐름</h3><div class="flow">첫 실행  스플래시 → A0 → 불 켜기 → A1 → A2 → A3 → 홈(첫)
+        → 사진 → 채팅 → 정리 → 결과 → 홈
+평소     스플래시 → 불 켜기 → 홈 → 사진 → 채팅 → 결과
+         홈 › 이어서 하기 → 채팅
+         홈 › 최근 / 아카이브 → 상세
+         나 › 휘서에 대해</div>
+    <p style="margin-top:12px">폰 안의 버튼·카드·탭이 실제로 이동해요. <span class="k">←</span><span class="k">→</span> 키로 화면 순서 이동, <span class="k">W</span> 와이어프레임 토글.</p>`;
+}
+function go(s){ if(s===cur) return; hist.push(cur); cur=s; render(); }
+function back(){ cur = hist.pop() || 'home'; render(); }
+function setWire(on){ document.body.classList.toggle('wire',on); document.getElementById('mWire').classList.toggle('on',on); document.getElementById('mDesign').classList.toggle('on',!on); }
+function toggleFlow(){ const on=document.body.classList.toggle('flow'); document.getElementById('mFlow').classList.toggle('on',on); if(on) buildFlow(); }
+function buildFlow(){
+  const el=document.getElementById('flow');
+  el.innerHTML = `<div class="lane">${ORDER.map((s,i)=>`<figure><div class="box"><div class="phone mini">${S[s]()}<div class="homebar"></div></div></div><figcaption><b>${i+1}</b>${LABEL[s]}</figcaption></figure>${i<ORDER.length-1?'<div class="arrow">→</div>':''}`).join('')}</div>`;
+  decorate(el);
+}
+document.getElementById('nav').innerHTML = ORDER.map((s,i)=>`<button data-s="${s}" onclick="cur='${s}';hist=[];render()">${i+1} ${LABEL[s]}</button>`).join('');
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'){cur=ORDER[Math.min(ORDER.length-1,ORDER.indexOf(cur)+1)];render();}
+  if(e.key==='ArrowLeft'){cur=ORDER[Math.max(0,ORDER.indexOf(cur)-1)];render();}
+  if(e.key==='w'||e.key==='W'){setWire(!document.body.classList.contains('wire'));}
+});
+setTone('sky'); setHour(21); render();
+</script>

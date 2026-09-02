@@ -1,0 +1,177 @@
+<!-- ══════════════════════════════════════════════════════════════
+     ⚠️ 폐기됨 (DEPRECATED) — 2026-08-27
+     이 파일은 단일 HTML 목업이며 더 이상 쓰지 않습니다.
+     · 실제 앱: 프로젝트 휘서/hwiseo-app/  (Next.js, npm run dev → :3210)
+     · 여기 쓰인 다크 팔레트는 폐기된 방향입니다.
+       현재 방향은 밝은 화면 + 노랑/연보라 — design/ref/레퍼런스/ 참고
+     보관 이유: 말풍선 꼬리·목소리 구분을 처음 검증한 기록
+     ══════════════════════════════════════════════════════════════ -->
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>휘서 — 채팅 화면</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#0B0910;color:#EFEAF2;
+  font-family:'Pretendard','Apple SD Gothic Neo',system-ui,sans-serif;
+  min-height:100vh;padding:48px 32px 80px;
+}
+.head{max-width:900px;margin:0 auto 40px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:#5A5368;margin-bottom:10px}
+.head h1{font-size:20px;font-weight:500;margin-bottom:8px}
+.head p{font-size:14px;line-height:1.8;color:#948CA3;max-width:600px}
+
+.stage{display:flex;gap:56px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.slot{display:flex;flex-direction:column;gap:14px;align-items:center}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#5A5368}
+
+/* ───────── 프레임 390×844 ───────── */
+.frame{
+  width:390px;height:844px;display:flex;flex-direction:column;overflow:hidden;
+  border-radius:12px;
+}
+
+/* 상단 바 — 사진 썸네일 + 시기 */
+.topbar{
+  flex:0 0 auto;display:flex;align-items:center;gap:12px;
+  padding:16px 20px;border-bottom:1px solid var(--rule);
+}
+.thumb{
+  width:44px;height:44px;border-radius:6px;flex:0 0 auto;background:var(--thumb);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);
+}
+.topbar .meta{display:flex;flex-direction:column;gap:2px}
+.topbar .t1{font-size:15px;font-weight:500;color:var(--fg)}
+.topbar .t2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim)}
+
+/* 대화 */
+.thread{flex:1 1 auto;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex}
+.row.me{justify-content:flex-end}
+.row + .row.ai{margin-top:10px}
+.bubble{max-width:80%;padding:12px 16px;font-size:16px;line-height:25px;border-radius:16px}
+.ai  .bubble{background:var(--ai-bg); color:var(--ai-fg); border-bottom-left-radius:5px}
+.me  .bubble{background:var(--me-bg); color:var(--me-fg); border-bottom-right-radius:5px}
+
+.dots{display:flex;gap:5px;align-items:center;padding:15px 16px;background:var(--ai-bg);border-radius:16px;border-bottom-left-radius:5px}
+.dots i{width:6px;height:6px;border-radius:99px;background:var(--dim);display:block}
+.dots i:nth-child(2){opacity:.65}
+.dots i:nth-child(3){opacity:.35}
+
+/* 입력 */
+.compose{flex:0 0 auto;padding:12px 16px 22px;border-top:1px solid var(--rule);display:flex;gap:10px;align-items:center}
+.field{
+  flex:1;background:var(--field);border-radius:20px;padding:11px 16px;
+  font-size:16px;line-height:24px;color:var(--ph);
+}
+.field.on{color:var(--fg)}
+.caret{display:inline-block;width:1.5px;height:19px;background:var(--accent);vertical-align:-4px}
+.send{
+  width:38px;height:38px;flex:0 0 auto;border-radius:99px;background:var(--send-bg);
+  display:flex;align-items:center;justify-content:center;color:var(--send-fg);font-size:16px;
+}
+
+/* ───────── 다크 ───────── */
+.dark{
+  --bg:#15121D; --fg:#EFEAF2; --dim:#8B melhorar;
+  --dim:#8B84A0; --rule:#282237; --thumb:#2A2438; --field:#221D30; --ph:#6E6884;
+  --ai-bg:#2E2740; --ai-fg:#EDE7F5;
+  --me-bg:#E9A24A; --me-fg:#231603;
+  --accent:#C9BCEA; --send-bg:#E9A24A; --send-fg:#231603;
+  background:var(--bg);
+}
+/* ───────── 라이트 ───────── */
+.light{
+  --bg:#F6F3EE; --fg:#241F2E; --dim:#8A8494; --rule:#E4DFD7; --thumb:#E8E3DA;
+  --field:#FFFFFF; --ph:#9A94A4;
+  --ai-bg:#ECE8F8; --ai-fg:#332C48;
+  --me-bg:#E9A24A; --me-fg:#241703;
+  --accent:#7C6BB5; --send-bg:#E9A24A; --send-fg:#241703;
+  background:var(--bg);
+}
+.note{font-size:12px;line-height:1.75;color:#948CA3;max-width:390px}
+</style>
+</head>
+<body>
+<div style="background:#3B2F4A;color:#FFD54A;font:600 13px/1.6 -apple-system,sans-serif;
+  padding:14px 20px;text-align:center;letter-spacing:.01em">
+  ⚠️ 폐기된 목업입니다 · 실제 앱은 <code style="color:#EDE7FF">hwiseo-app/</code> (npm run dev → localhost:3210)
+  <br><span style="font-weight:400;opacity:.75">여기 쓰인 어두운 팔레트는 더 이상 프로젝트 방향이 아닙니다</span>
+</div>
+
+<div class="head">
+  <div class="eyebrow">HWISEO · CHAT · 2026.08.27</div>
+  <h1>채팅 화면 — 앱 기준 390 × 844</h1>
+  <p>전시는 뺐다. 앱 화면만. 이전 안이 어두웠던 건 컨셉 때문이 아니라 말풍선과 배경의 명도 차이가
+     거의 없어서였다. 대비를 올린 다크와 라이트를 나란히 둔다.</p>
+</div>
+
+<div class="stage">
+
+  <div class="slot">
+    <div class="tag">다크</div>
+    <div class="frame dark">
+      <div class="topbar">
+        <div class="thumb">PHOTO</div>
+        <div class="meta">
+          <div class="t1">휘서</div>
+          <div class="t2">2019 · 03</div>
+        </div>
+      </div>
+      <div class="thread">
+        <div class="row ai"><div class="bubble">실내에서 여럿이 모여 있는 사진이네요. 2019년 3월쯤으로 보이는데 맞나요?</div></div>
+        <div class="row me"><div class="bubble">네 맞아요. 동아리 종강 모임이었어요.</div></div>
+        <div class="row ai"><div class="bubble">그날 그 자리에, 사진에 안 찍힌 사람이 또 있었나요?</div></div>
+        <div class="row me"><div class="bubble">사진 찍어준 친구요. 이름이 기억이 안 나는데 얼굴은 선명해요.</div></div>
+        <div class="row ai"><div class="bubble">그 친구가 무슨 말을 했는지 기억나세요? 사소한 말이어도 괜찮아요.</div></div>
+        <div class="row me"><div class="bubble">뭐 웃으라고 계속 이상한 소리를 했어요. 그래서 다들 웃고 있는 거예요.</div></div>
+        <div class="row ai"><div class="dots"><i></i><i></i><i></i></div></div>
+      </div>
+      <div class="compose">
+        <div class="field">답을 적어주세요</div>
+        <div class="send">↑</div>
+      </div>
+    </div>
+    <div class="note">배경 #15121D · 휘서 말풍선 #2E2740 · 내 말풍선 앰버 #E9A24A.
+      보라와 앰버가 그대로 살아 있으면서 글자가 읽힌다.</div>
+  </div>
+
+  <div class="slot">
+    <div class="tag">라이트</div>
+    <div class="frame light">
+      <div class="topbar">
+        <div class="thumb">PHOTO</div>
+        <div class="meta">
+          <div class="t1">휘서</div>
+          <div class="t2">2019 · 03</div>
+        </div>
+      </div>
+      <div class="thread">
+        <div class="row ai"><div class="bubble">실내에서 여럿이 모여 있는 사진이네요. 2019년 3월쯤으로 보이는데 맞나요?</div></div>
+        <div class="row me"><div class="bubble">네 맞아요. 동아리 종강 모임이었어요.</div></div>
+        <div class="row ai"><div class="bubble">그날 그 자리에, 사진에 안 찍힌 사람이 또 있었나요?</div></div>
+        <div class="row me"><div class="bubble">사진 찍어준 친구요. 이름이 기억이 안 나는데 얼굴은 선명해요.</div></div>
+        <div class="row ai"><div class="bubble">그 친구가 무슨 말을 했는지 기억나세요? 사소한 말이어도 괜찮아요.</div></div>
+        <div class="row me"><div class="bubble">뭐 웃으라고 계속 이상한 소리를 했어요. 그래서 다들 웃고 있는 거예요.</div></div>
+        <div class="row ai"><div class="bubble">그 웃음이 사진에 남았네요. 그 친구는 지금 어떻게 지내나요?</div></div>
+      </div>
+      <div class="compose">
+        <div class="field on">이제 연락이 안 되는데<span class="caret"></span></div>
+        <div class="send">↑</div>
+      </div>
+    </div>
+    <div class="note">종이 #F6F3EE · 휘서 말풍선 연보라 #ECE8F8 · 내 말풍선 앰버.
+      두 색 체계가 라이트에서도 그대로 유지된다.</div>
+  </div>
+
+</div>
+
+</body>
+</html>

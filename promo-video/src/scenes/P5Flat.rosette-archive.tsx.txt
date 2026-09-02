@@ -1,0 +1,179 @@
+import React from 'react';
+import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig, interpolate, interpolateColors, spring, Easing} from 'remotion';
+import {Subtitle} from '../components/Stage';
+import {rand} from '../components/Draw';
+import {CUTS, cutStart, partDur} from '../cuts';
+import {theme} from '../theme';
+import {Candle} from './P3Flat';
+import {Rosette} from './P4Flat';
+
+/**
+ * P5 플랫 — C21~C24. 2026-08-27 '주체성의 역전' 버전 (Gemini 스토리보드, 사용자 채택).
+ * P4 끝(아이보리 여백 위 로제트 궤도 — 2026-08-27 딥 다이브 결말)에서 이어짐.
+ * C21 촛불(AI)이 다시 등장하지만 작아지며 디오라마 바깥 궤도로 물러나 위성처럼 천천히 공전 (조력자)
+ * C22 디오라마의 온기(빛)가 화면 전체로 팽창, 종이가 가장 밝은 웜 아이보리로, 카메라 살짝 줌인. 촛불은 빛 속으로 물러남
+ * C23 환해진 캔버스 위로 사람이 붓으로 그린 듯한 굵고 유기적인 선들이 사방으로 쓱쓱 (스태거 draw-on), 디오라마는 부드럽게 사라짐
+ * C24 선들이 흩어지고 輝 → 敍 금박이 차례로 찍힘, 대사 뒤에도 숨 쉬듯 반짝이며 여운 → 부드럽게 끝.
+ */
+const P5CUTS = CUTS.filter((c) => c.part === 'P5');
+const G0 = cutStart('C21');
+const END = partDur('P5');
+
+const C = {
+  ivory: '#FFF9F0', wash: '#F6E3D2', warm: '#FBF2E4', ink: '#4A3D52',
+  amber: '#E9A24A', gold: '#F2C069', goldDeep: '#C98A2E', core: '#FFF1C9',
+  pink: '#F2A6B8', sky: '#8FB3D9', green: '#B8D68A', orange: '#F08A4B', lavender: '#C9BCE8',
+};
+const soft = theme.ease.soft, inOut = theme.ease.inOut;
+const clamp = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
+const F = (f: number, a: number, b: number, v0: number, v1: number, e = soft) => interpolate(f, [a, b], [v0, v1], {...clamp, easing: e});
+
+/* 붓 선: 중심에서 바깥으로, 물결치며 뻗는 3차 베지어 */
+const brushPath = (cx: number, cy: number, ang: number, len: number, wob: number, k: number) => {
+  const dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx;
+  const p = (t: number, w: number) => [cx + dx * len * t + nx * w, cy + dy * len * t + ny * w];
+  const a = p(0, 0), b = p(0.33, wob * (rand(k, 3) - 0.5) * 2), c = p(0.66, wob * (rand(k, 4) - 0.5) * 2), d = p(1, wob * (rand(k, 5) - 0.5));
+  return `M${a[0]},${a[1]} C${b[0]},${b[1]} ${c[0]},${c[1]} ${d[0]},${d[1]}`;
+};
+
+export const P5Flat: React.FC = () => {
+  const f = useCurrentFrame();
+  const {fps, width, height} = useVideoConfig();
+  const seed = Math.floor(f / theme.boilEvery) * 7;
+  const T = {c21: 0, c22: cutStart('C22') - G0, c23: cutStart('C23') - G0, c24: cutStart('C24') - G0};
+  const B = {c24: T.c24 + 74};                        // "당신이 스스로 이야기를 펼칩니다(敍)"
+  const DC: [number, number] = [640, 390];            // 로제트(궤도) 중심 = P4 RC
+  const SUN: [number, number] = DC;
+  const rosRot = 12 + F(f, 0, END, 0, 14, Easing.linear);   // P4 끝(12°)에서 이어 아주 느리게
+  const ink = C.ink;
+
+  /* ── C21: 촛불 등장 → 작아지며 궤도로 → 위성처럼 공전 ── */
+  const candIn = F(f, 6, 30, 0, 1);
+  const recede = F(f, 36, 96, 0, 1, inOut);
+  const orbitR: [number, number] = [470, 250];
+  const ang = Math.PI * 0.9 + (f - 36) * 0.006;     // 왼쪽에서 출발해 천천히
+  const orbitPt: [number, number] = [DC[0] + Math.cos(ang) * orbitR[0], DC[1] + Math.sin(ang) * orbitR[1] + 40];
+  const candStart: [number, number] = [300, 560];
+  const candPos: [number, number] = [candStart[0] + (orbitPt[0] - candStart[0]) * recede, candStart[1] + (orbitPt[1] - candStart[1]) * recede];
+  const candScale = 0.62 - 0.34 * recede;
+  const candFar = ang > Math.PI * 1.5 && ang < Math.PI * 2.5 ? 1 : 0;   // 뒤쪽 궤도(위) 지날 땐 조금 옅게
+  /* ── C22: 온기 팽창 ── */
+  const expand = F(f, T.c22 + 4, T.c22 + 80, 0, 1, Easing.bezier(0.3, 0, 0.2, 1));
+  const zoom = 1;
+  const rosGrow = 1 + 1.9 * F(f, T.c22 + 4, T.c23 + 30, 0, 1, Easing.bezier(0.3, 0, 0.2, 1));   // 궤도가 화면을 집어삼킬 듯 팽창
+  const candOut = 1 - F(f, T.c22 + 30, T.c22 + 90, 0, 1);
+  /* ── C23: 붓 선 ── */
+  const NB = 16;
+  const dioOut = 1 - F(f, T.c23 + 20, T.c23 + 90, 0, 1);
+  const brush = (i: number) => F(f, T.c23 + 4 + i * 5, T.c23 + 40 + i * 5, 0, 1, Easing.bezier(0.2, 0.7, 0.2, 1));
+  const brushOut = 1 - F(f, T.c24 + 6, T.c24 + 50, 0, 1);
+  /* ── C24: 輝 → 敍 금박 도장 → 숨 → 여운 ── */
+  const hwiS = spring({frame: f - (T.c24 + 12), fps, config: {damping: 12, stiffness: 140}});
+  const seoS = spring({frame: f - B.c24, fps, config: {damping: 12, stiffness: 140}});
+  const breath = 1 + Math.sin(f / 22) * 0.012;
+  const shimmer = 0.85 + 0.15 * Math.sin(f / 13);
+  const twinkle = (i: number) => 0.5 + 0.5 * Math.sin(f / (4 + (i % 3)) + i * 2.1);
+  const endFade = 1 - F(f, END - 36, END - 4, 0, 1);
+
+  const paper = interpolateColors(expand, [0, 1], [C.ivory, C.warm]);
+  const COLS = [C.sky, C.green, C.amber, C.pink, C.orange];
+
+  return (
+    <AbsoluteFill style={{backgroundColor: paper}}>
+      {P5CUTS.map((c) => (
+        <Sequence key={c.id} from={c.start - G0} durationInFrames={c.duration} name={c.id}>
+          <Audio src={staticFile(`vo/${c.vo}`)} />
+        </Sequence>
+      ))}
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{display: 'block'}}>
+        <defs>
+          <filter id="wob" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={2} seed={seed} result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale={4} xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="wob2" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves={2} seed={seed + 3} result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale={7} xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="brushy" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves={2} seed={seed + 7} result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale={6} xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="chalk" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={2} seed={seed + 40} result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale={1.6} />
+          </filter>
+          <filter id="grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={3} seed={seed + 90} />
+            <feColorMatrix type="matrix" values="0 0 0 0 .3  0 0 0 0 .25  0 0 0 0 .2  0 0 0 .12 0" />
+          </filter>
+          <filter id="brush" x="0" y="0" width="1" height="1">
+            <feTurbulence type="fractalNoise" baseFrequency="0.004 0.03" numOctaves={3} seed={11} />
+            <feColorMatrix type="matrix" values="0 0 0 0 .5  0 0 0 0 .35  0 0 0 0 .2  0 0 0 .10 0" />
+          </filter>
+        </defs>
+        <rect width={width} height={height} filter="url(#brush)" />
+
+        <g transform={`translate(${width / 2} ${height / 2}) scale(${zoom}) translate(${-width / 2} ${-height / 2})`}>
+          {/* C22 온기 팽창: 디오라마의 해에서 화면 전체로 */}
+          {expand > 0 && (
+            <g>
+              <circle cx={SUN[0]} cy={SUN[1]} r={120 + 1300 * expand} fill={C.gold} opacity={0.16 * (1 - expand * 0.6)} filter="url(#chalk)" />
+              {[0, 0.15].map((d, i) => { const w = Math.max(0, Math.min(1, (expand - d) / (1 - d))); return w > 0 && w < 1 && <circle key={i} cx={SUN[0]} cy={SUN[1]} r={40 + 1100 * w} fill="none" stroke={C.amber} strokeWidth={5 - i * 2} opacity={0.35 * (1 - w)} filter="url(#wob)" />; })}
+            </g>
+          )}
+
+          {/* 로제트 궤도 (P4 끝에서 계속) → C22 팽창 → C23 붓 선에 자리를 내주며 사라짐 */}
+          {dioOut > 0 && (
+            <g transform={`translate(${DC[0]} ${DC[1]}) scale(${rosGrow}) translate(${-DC[0]} ${-DC[1]})`}>
+              <Rosette cx={DC[0]} cy={DC[1]} p={() => 1} rot={rosRot} glow={0.6 + 0.4 * expand} o={dioOut} sw={5 / Math.sqrt(rosGrow)} />
+            </g>
+          )}
+
+          {/* C21 촛불(AI): 등장 → 작아지며 궤도로 → 위성처럼 공전 → C22 빛 속으로 물러남 */}
+          {candIn > 0 && candOut > 0 && (
+            <g transform={`translate(${candPos[0]} ${candPos[1]}) scale(${candScale}) translate(${-candStart[0]} ${-candStart[1]})`} opacity={candIn * candOut * (1 - candFar * 0.25)}>
+              {[[200, 0.06], [110, 0.12]].map(([r, o], i) => <circle key={i} cx={candStart[0]} cy={candStart[1] - 230} r={r} fill={C.amber} opacity={o} filter="url(#chalk)" />)}
+              <Candle x={candStart[0]} y={candStart[1]} ink={ink} flick={f} lit={1} />
+            </g>
+          )}
+
+          {/* C23 붓 선: 중심에서 사방으로, 스태거 draw-on, 춤추듯 */}
+          {f >= T.c23 && brushOut > 0 && Array.from({length: NB}).map((_, i) => {
+            const p = brush(i);
+            if (p <= 0) return null;
+            const a = (i / NB) * Math.PI * 2 + rand(i, 1) * 0.5, len = 260 + rand(i, 2) * 320;
+            const sway = Math.sin(f / 16 + i) * 2.5 * p;
+            return (
+              <g key={i} transform={`rotate(${sway} ${DC[0]} ${DC[1]})`} opacity={brushOut}>
+                <path d={brushPath(DC[0], DC[1], a, len, 70, i)} fill="none" stroke={COLS[i % 5]} strokeWidth={7 + rand(i, 6) * 6} strokeLinecap="round"
+                  pathLength={1} strokeDasharray={1} strokeDashoffset={1 - p} filter="url(#brushy)" opacity={0.9} />
+              </g>
+            );
+          })}
+
+          {/* C24: 輝 → 敍 금박 도장, 숨 쉬듯 반짝이며 여운 */}
+          {hwiS > 0 && (
+            <g opacity={endFade} filter="url(#wob)">
+              {([[540, hwiS, '輝', 0], [740, seoS, '敍', 4]] as const).map(([x, sp, ch, ti]) => sp > 0 && (
+                <g key={ch} opacity={Math.min(1, sp * 1.4) * shimmer} transform={`translate(${x} 340) scale(${(1.35 - 0.35 * Math.min(1, sp)) * breath}) translate(${-x} -340)`}>
+                  <circle cx={x} cy={340} r={150} fill={C.gold} opacity={0.12} filter="url(#chalk)" />
+                  <text x={x} y={340} textAnchor="middle" dominantBaseline="central" fontFamily={theme.font.sans} fontSize={140} fontWeight={500} fill={C.gold} stroke={C.goldDeep} strokeWidth={3} strokeLinejoin="round">{ch}</text>
+                  {[0, 1, 2, 3].map((i) => <circle key={i} cx={x - 60 + rand(i + ti, 81) * 120} cy={280 + rand(i + ti, 82) * 120} r={2.5} fill={C.core} opacity={twinkle(i + ti)} />)}
+                </g>
+              ))}
+            </g>
+          )}
+        </g>
+
+        <rect width={width} height={height} filter="url(#grain)" />
+      </svg>
+      {P5CUTS.map((c) => (
+        <Sequence key={'s' + c.id} from={c.start - G0} durationInFrames={c.duration} name={'sub ' + c.id}>
+          <Subtitle cut={c} />
+        </Sequence>
+      ))}
+      <AbsoluteFill style={{pointerEvents: 'none', background: 'radial-gradient(ellipse at center, transparent 60%, rgba(60,40,20,0.12) 100%)'}} />
+    </AbsoluteFill>
+  );
+};

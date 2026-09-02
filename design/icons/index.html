@@ -1,0 +1,36 @@
+<!doctype html><meta charset="utf-8"><title>휘서 탭 아이콘</title>
+<style>
+ :root{--sub:#7B5CD6;--main:#FFD54A;--ink:#1D1B22;--dim:#B5B0C0}
+ body{font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;background:#F1EEE7;color:var(--ink);padding:40px}
+ h1{font-size:18px;margin:0 0 4px}p.s{font-size:13px;color:#6F6A78;margin:0 0 28px}
+ .row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+ .card{background:#fff;border-radius:20px;padding:20px;width:190px}
+ .card h2{font-size:13px;margin:0 0 12px;color:var(--sub)}
+ .big{display:flex;align-items:flex-end;gap:16px;margin-bottom:14px}
+ .big svg{width:52px;height:52px}
+ .st{display:flex;gap:18px;align-items:flex-end}
+ .t{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--dim)}
+ .t.on{color:var(--sub)} .t svg{width:26px;height:26px}
+ .bar{width:390px;height:84px;background:#fff;border-radius:0 0 24px 24px;display:flex;padding:10px 12px 20px;border-top:1.5px solid #F0EDE6}
+ .bar .t{flex:1}
+ code{font-family:ui-monospace,monospace;font-size:11px;color:#6F6A78}
+</style>
+<h1>휘서 탭 아이콘</h1><p class="s">비활성 <code>#B5B0C0</code> · 활성 <code>#7B5CD6</code> · 26×26 · <code>currentColor</code> 상속 (색은 CSS로)</p>
+<div class="row" id="cards"></div>
+<h1>탭바 미리보기</h1><p class="s">활성 = 홈</p>
+<div class="bar" id="bar"></div>
+<script>
+const ICONS={
+ home:`<svg viewBox="40 0 220 340" fill="currentColor"><path d="M150,122 C126,110 114,84 124,60 C130,74 138,82 142,76 C136,58 142,40 150,26 C170,50 176,90 150,122 Z M60,166 a36,36 0 0 1 36,-36 h108 a36,36 0 0 1 36,36 v140 a18,18 0 0 1 -36,0 a18,18 0 0 1 -36,0 a18,18 0 0 1 -36,0 a18,18 0 0 1 -36,0 a18,18 0 0 1 -36,0 Z"/></svg>`,
+ drawer:`<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="20" height="17" rx="3.2"/><path d="M3 13h20"/><path d="M10.6 8.7h4.8M10.6 17.3h4.8"/></svg>`,
+ me:`<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="13" r="10"/><circle cx="13" cy="11" r="3.2"/><path d="M6.5 20c1.5-3 4-4.5 6.5-4.5s5 1.5 6.5 4.5"/></svg>`};
+const LABEL={home:'홈',drawer:'서랍',me:'나'};
+const FILE={home:'tab-home.svg',drawer:'tab-drawer.svg',me:'tab-me.svg'};
+document.getElementById('cards').innerHTML=Object.keys(ICONS).map(k=>
+ `<div class="card"><h2>${LABEL[k]}</h2>
+   <div class="big" style="color:var(--sub)">${ICONS[k]}</div>
+   <div class="st"><span class="t">${ICONS[k]}${LABEL[k]}</span><span class="t on">${ICONS[k]}${LABEL[k]}</span></div>
+   <p style="margin:12px 0 0"><code>${FILE[k]}</code></p></div>`).join('');
+document.getElementById('bar').innerHTML=Object.keys(ICONS).map((k,i)=>
+ `<span class="t ${i===0?'on':''}">${ICONS[k]}${LABEL[k]}</span>`).join('');
+</script>

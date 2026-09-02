@@ -1,0 +1,26 @@
+# 의존성
+node_modules/
+
+# 빌드 산출물
+.next/
+dist/
+build/
+
+# 렌더된 영상 — 코드로 다시 뽑을 수 있음 (800MB)
+promo-video/out/
+*.mp4
+
+# 비밀키
+.env
+.env.local
+.env*.local
+!.env*.example
+
+# 개인 사진 — 필요하면 이 줄을 지우세요
+photos/
+
+# 작업 임시
+.omc/
+.DS_Store
+*.log
+hwiseo-app/public/_preview/

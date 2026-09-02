@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- 휘서 앱 아이콘 가이드 · 1024×1024 · 2026-08-27
+       이 레이어는 참고용입니다. 내보내기 전에 반드시 삭제하세요. -->
+
+  <!-- 배경: 반드시 꽉 채울 것 (투명 금지) -->
+  <rect width="1024" height="1024" fill="#FFD54A"/>
+
+  <!-- ① iOS 마스크 (실제로 보이는 모양) -->
+  <rect x="0" y="0" width="1024" height="1024" rx="229" ry="229"
+        fill="none" stroke="#E8412F" stroke-width="4" stroke-dasharray="14 10"/>
+
+  <!-- ② maskable 안전영역 · 지름 819 (80%) -->
+  <circle cx="512" cy="512" r="409.6" fill="none" stroke="#7B5CD6" stroke-width="4" stroke-dasharray="14 10"/>
+
+  <!-- ③ 안드로이드 최소 안전영역 · 지름 683 (66.7%) — 여기 안이면 무조건 안전 -->
+  <circle cx="512" cy="512" r="341.3" fill="none" stroke="#1D1B22" stroke-width="4"/>
+
+  <!-- 중심선 -->
+  <path d="M512 0v1024M0 512h1024" stroke="#1D1B22" stroke-width="1" stroke-opacity=".22"/>
+
+  <!-- 라벨 -->
+  <g font-family="-apple-system, sans-serif" font-size="21" font-weight="600">
+    <text x="30" y="40" fill="#E8412F">① iOS 마스크 (모서리 r=229)</text>
+    <text x="30" y="70" fill="#7B5CD6">② maskable 안전영역 · 819px</text>
+    <text x="30" y="100" fill="#1D1B22">③ 최소 안전영역 · 683px ← 캐릭터는 여기 안에</text>
+    <text x="30" y="994" fill="#1D1B22" font-size="19" font-weight="400">1024 × 1024 · 배경 꽉 채움 · 모서리 직접 깎지 말 것 · 내보낼 때 이 가이드 레이어 삭제</text>
+  </g>
+</svg>

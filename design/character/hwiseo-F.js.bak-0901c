@@ -1,0 +1,232 @@
+// ── 휘서 F — 네모 양초 캐릭터 (2026-09-01, 9/1 밤 재작업) ─────────────────────────
+// 레퍼: Lumi 시트(ChatGPT Image Sep 1 06_21_28) + 3/4 컷(image-cache 23). 아웃라인 없음, 완전 플랫.
+// 애니메이션을 전제로 부품을 나눈다. 모든 움직이는 부품에 class 가 있고, transform-origin 은 CSS 또는 inline 으로 잡는다.
+//   .hw-figure > .hw-posed   포즈(회전·이동)는 .hw-posed 의 attribute, 반복 모션은 .hw-figure 의 CSS — 둘이 안 싸움
+//   .hw-cap    촛농 캡 (몸 위에 얹힘, 몸보다 6px 넓음)   .hw-drips 캡 안의 방울 path   .hw-body 몸통(원통+물결 밑단)
+//   .hw-flame  불꽃 (origin 150,100 = 심지 끝)          .hw-wick  심지 (origin 150,120)  .hw-glow 후광(레벨4만)
+//   .hw-eye .hw-pupil .hw-lid .hw-brow .hw-mouth .hw-cheek   얼굴 부품
+//   .hw-arm-l / .hw-arm-r  팔 (origin 어깨, inline)     .hw-foot  발     .hw-prop  소품(깃발·하트·모자·친구…)
+//   .hw-sparks 반짝   .hw-shadow 바닥 그림자
+// 좌표계 viewBox 0 0 300 340.
+//   몸  x60~240 · y120~294 (+물결 밑단 ~314), 모서리 r24.  캡 = 몸과 같은 실루엣, 아랫선은 레퍼 '기본' 타일(image-cache 24)을 픽셀로 잰 프로파일
+//   눈  y203 (흰자 r15 · 동공 r6.5)  x116/179       입 (149,232) 폭19       심지 y100~120 폭9   불꽃 밑 y100
+// 실측(레퍼 24, 몸 폭=100%): 캡 두께 왼 23%/오른 14%(비대칭) · 방울 왼 x34% 깊이33% / 오른 x75% 깊이40% / 오른 모서리 흐름 · 눈 높이46% 간격35% r8.3% · 입 높이64% 폭10% · 기본 표정엔 볼 없음
+(function(root){
+const C={body:'#FFD54A',wax:'#F2B233',top:'#FFE9A0',fl:'#FFC12E',fm:'#FFD54A',fi:'#FFF0B8',glow:'#FFE9A0',
+         ink:'#2E2418',white:'#FFFBF3',cheek:'#F7A59B',smoke:'#C9C2B8',red:'#FF7A45',pink:'#FF8FA0',tear:'#8FD3F4',
+         purple:'#7B5CD6',lilac:'#EADFEE',mint:'#9FE0C8'};
+
+// ── 불꽃 ─────────────────────────────────────────────────────
+const FL={
+  small:'M150,100 C140,92 138,80 150,66 C162,80 160,92 150,100 Z',
+  base:'M150,100 C136,91 133,70 150,46 C167,70 164,91 150,100 Z',      // 레퍼 24: 높이 54 · 폭 32
+  big:'M150,100 C130,91 122,68 130,50 C135,60 141,64 144,58 C140,46 144,36 150,26 C168,46 170,80 150,100 Z',
+  bright:'M150,100 C122,90 108,62 118,36 C124,52 132,58 138,50 C134,34 140,18 150,0 C160,18 166,34 162,50 C168,58 176,52 182,36 C192,62 178,90 150,100 Z',
+  spiky:'M150,100 L128,92 L134,70 L122,60 L140,52 L138,30 L150,44 L162,30 L160,52 L178,60 L166,70 L172,92 Z',
+  heart:'M150,100 C132,88 122,74 128,60 C132,50 144,50 150,60 C156,50 168,50 172,60 C178,74 168,88 150,100 Z',
+};
+const LV={0:'off',1:'small',2:'base',3:'big',4:'bright'};
+const flameEl=(kind)=>{
+  if(kind==='off') return `<g class="hw-flame hw-smoke"><path d="M150,90 c8,-8 -8,-16 2,-26 c6,-6 -2,-12 4,-18" stroke="${C.smoke}" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".9"/></g>`;
+  const d=FL[kind]||FL.base, col=kind==='spiky'?C.red:kind==='heart'?C.pink:C.fl;
+  const s=(k)=>`transform="translate(150,100) scale(${k}) translate(-150,-100)"`;
+  return `<g class="hw-flame"><path d="${d}" fill="${col}"/><path d="${d}" fill="${C.fm}" ${s(.72)}/><path d="${d}" fill="${C.fi}" ${s(.42)}/></g>`;
+};
+const glowEl=(level)=> level>=4 ? `<ellipse class="hw-glow" cx="150" cy="62" rx="64" ry="70" fill="${C.glow}" opacity=".18"/>` : '';
+const wickEl=()=>`<path class="hw-wick" d="M150,${TOP} c-2,-7 2,-11 0,-20" stroke="${C.ink}" stroke-width="9" fill="none" stroke-linecap="round"/>`;
+
+// ── 몸 + 캡 ───────────────────────────────────────────────────
+const TOP=120, BOT=294, R=24;          // 몸
+const CAPT=120;                        // 캡 윗선 = 몸 윗선 (레퍼: 캡이 몸 실루엣 안에서 흘러내림)
+const VW={front:[60,180],q:[66,168],side:[95,110],back:[60,180]};   // 뷰별 몸 x0,폭 — 측면은 찌그러뜨리지 않고 좁은 몸
+function bodyPath(x0,w){
+  const n=5, bw=w/n, br=bw/2;
+  let d=`M${x0},${TOP+R} a${R},${R} 0 0 1 ${R},-${R} h${w-2*R} a${R},${R} 0 0 1 ${R},${R} V${BOT}`;
+  for(let i=0;i<n;i++) d+=` a${br},${20*(w/180)} 0 0 1 -${bw},0`;
+  return d+' Z';
+}
+// 캡 아랫선 — 레퍼 24 실측 프로파일. 오른쪽→왼쪽 [폭(180 기준), 종류, 깊이]. 몸에 클리핑해서 같은 실루엣 안에서 흐른다.
+//   ed 오른 모서리 흐름 · b 볼록 · d 방울 · step 두께가 137→154로 내려가는 단(왼쪽이 더 두꺼움) · rise 왼 모서리로 올라감
+const WAXD={base:[1,1,1,1],left:[.5,.5,.5,1.9],right:[1.6,1.7,.5,.5],center:[.5,.5,3,.5],full:[1.8,1.8,1.6,2.0]};
+const CAPB=137;
+function capPath(x0,w,wax='base'){
+  const k=w/180, m=WAXD[wax]||WAXD.base, x1=x0+w;
+  const segs=[[12,'ed',30*m[0]],[12,'b',4],[20,'d',50*m[1]],[39,'b',5],[11,'b',15*m[2]],[40,'step',17],[22,'d',22*m[3]],[24,'rise',17]];
+  let d=`M${x0},${TOP} H${x1} V${CAPB}`;
+  for(const [sw,t,dep] of segs){ const ww=sw*k, r=ww/2;
+    if(t==='ed'||t==='d') d+=` v${dep} a${r},${r} 0 0 1 -${ww},0 v-${dep}`;
+    else if(t==='b') d+=` a${r},${dep} 0 0 1 -${ww},0`;
+    else if(t==='step') d+=` q-${ww*.3},${dep} -${ww*.5},${dep} a${ww*.25},5 0 0 1 -${ww*.5},0`;
+    else if(t==='rise') d+=` c-${ww*.45},0 -${ww*.7},-${dep-3} -${ww},-${dep}`; }
+  return d+' Z';
+}
+const bodyEl=(view='front')=>{ const [x0,w]=VW[view]||VW.front; return `<g class="hw-body"><path class="hw-bodyfill" d="${bodyPath(x0,w)}" fill="${C.body}"/></g>`; };
+let uid=0;
+const capEl=(wax='base',view='front')=>{
+  const [x0,w]=VW[view]||VW.front, id='hwclip'+(uid++);
+  const puddle = wax==='full' ? `<ellipse class="hw-puddle" cx="150" cy="310" rx="${w*.62}" ry="12" fill="${C.wax}"/>` : '';
+  return `${puddle}<g class="hw-cap"><defs><clipPath id="${id}"><path d="${bodyPath(x0,w)}"/></clipPath></defs>
+    <g clip-path="url(#${id})"><path class="hw-drips" d="${capPath(x0,w,wax)}" fill="${C.wax}"/></g>
+    <ellipse class="hw-top" cx="150" cy="${CAPT+9}" rx="${w*.40}" ry="5" fill="${C.top}" opacity=".45"/></g>`;
+};
+
+// ── 얼굴 ──────────────────────────────────────────────────────
+let LIDS=true;
+function faceEl(mood,view){
+  if(view==='back'||view==='side') return '';        // 레퍼: 측면·후면은 얼굴이 안 보임
+  const q=view==='q';
+  const L=q?108:116, Rx=q?165:179, Y=203, MX=q?140:149, MY=229;
+  const xs=[L,Rx];
+  const st=`stroke="${C.ink}" stroke-width="4.5" fill="none" stroke-linecap="round"`;
+  const stB=`stroke="${C.ink}" stroke-width="4" fill="none" stroke-linecap="round"`;
+  const eye=(x,side,{dx=0,dy=0,r=6.5,lid=0}={})=>`<g class="hw-eye hw-eye-${side}">
+      <circle cx="${x}" cy="${Y}" r="15" fill="${C.white}"/>
+      <g class="hw-pupil"><circle cx="${x+dx}" cy="${Y+dy}" r="${r}" fill="${C.ink}"/></g>
+      ${lid?`<path d="M${x-16},${Y-16} h32 v${lid*30} a16,${lid*9} 0 0 1 -32,0 Z" fill="${C.body}"/>`:''}
+      ${LIDS?`<rect class="hw-lid" x="${x-16}" y="${Y-16}" width="32" height="32" rx="16" fill="${C.body}" transform="translate(${x-16},${Y-16}) scale(1,0) translate(${-(x-16)},${-(Y-16)})"/>`:''}
+    </g>`;
+  const eyes=(o)=>xs.map((x,i)=>eye(x,i?'r':'l',o)).join('');
+  const arcUp=(x)=>`<path d="M${x-11},${Y+3} q11,-15 22,0" stroke="${C.ink}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  const arcDn=(x)=>`<path d="M${x-11},${Y-2} q11,11 22,0" stroke="${C.ink}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  const cross=(x)=>`<path d="M${x-9},${Y-7} l9,7 l-9,7 M${x+9},${Y-7} l-9,7 l9,7" stroke="${C.ink}" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const xx=(x)=>`<path d="M${x-8},${Y-8} l16,16 M${x+8},${Y-8} l-16,16" stroke="${C.ink}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  const heart=(x)=>`<path d="M${x},${Y+9} C${x-15},${Y-2} ${x-11},${Y-15} ${x},${Y-7} C${x+11},${Y-15} ${x+15},${Y-2} ${x},${Y+9} Z" fill="${C.pink}"/>`;
+  const brow=(x,side,a=0,lift=0)=>{ const s=side==='l'?1:-1; return `<path class="hw-brow" d="M${x-11*s},${Y-27-lift} L${x+11*s},${Y-27-lift+a}" ${stB}/>`; };
+  const brows=(a,lift=0)=>xs.map((x,i)=>brow(x,i?'r':'l',a,lift)).join('');
+  const wrap=(k)=>`<g class="hw-eyes">${k}</g>`;
+  const mouth=(d,fill)=>`<path class="hw-mouth" d="${d}" ${fill?`fill="${C.ink}"`:st}/>`;
+  const smile=(w=9.5,h=8)=>mouth(`M${MX-w},${MY} q${w},${h} ${2*w},0`);
+  const frown=(w=11,h=8)=>mouth(`M${MX-w},${MY+6} q${w},-${h} ${2*w},0`);
+  const wavy=()=>mouth(`M${MX-11},${MY+2} q5.5,-7 11,0 q5.5,7 11,0`);
+  const oh=(rx=6,ry=8)=>mouth(`M${MX-rx},${MY+3} a${rx},${ry} 0 1 0 ${2*rx},0 a${rx},${ry} 0 1 0 -${2*rx},0 Z`,true);
+  const grin=()=>mouth(`M${MX-14},${MY-3} q14,19 28,0 z`,true)+`<path d="M${MX-8},${MY-1} q8,4 16,0" fill="${C.white}"/>`;
+  const cheeks=(op=1)=>`<g class="hw-cheek" opacity="${op}"><circle cx="${L-22}" cy="${Y+16}" r="7" fill="${C.cheek}"/><circle cx="${Rx+22}" cy="${Y+16}" r="7" fill="${C.cheek}"/></g>`;
+  const tear=(x)=>`<path class="hw-tear" d="M${x+18},${Y+10} q-6,14 0,20 q6,-6 0,-20 Z" fill="${C.tear}"/>`;
+  const zzz=`<g class="hw-zzz" fill="${C.ink}" font-family="Pretendard,sans-serif" font-weight="800"><text x="${Rx+20}" y="${Y-28}" font-size="17">z</text><text x="${Rx+32}" y="${Y-42}" font-size="13">z</text></g>`;
+  const sweat=`<path d="M${Rx+24},${Y-20} q-7,12 0,18 q7,-6 0,-18 Z" fill="${C.tear}"/>`;
+  switch(mood){
+    case 'happy':     return wrap(xs.map(arcUp).join(''))+smile(12,11);
+    case 'laugh':     return wrap(xs.map(arcUp).join(''))+cheeks(.9)+grin();
+    case 'wink':      return wrap(eye(L,'l',{dx:1})+arcUp(Rx))+cheeks(.6)+mouth(`M${MX-11},${MY} q13,11 24,-2`);
+    case 'sad':       return wrap(eyes({dy:4}))+brows(-6,2)+frown()+tear(L);
+    case 'cry':       return wrap(xs.map(arcDn).join(''))+frown(12,9)+tear(L)+tear(Rx-36)+`<path d="M${L-6},${Y+10} q-4,22 2,34 M${Rx+6},${Y+10} q4,22 -2,34" stroke="${C.tear}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    case 'worried':   return wrap(eyes({dx:-2,dy:2,r:6.5}))+brows(-7,4)+wavy()+sweat;
+    case 'angry':     return wrap(eyes({dy:-1,r:6.5,lid:.35}))+brows(8,-2)+frown(11,8);
+    case 'confused':  return wrap(eye(L,'l',{dx:4,dy:-2})+eye(Rx,'r',{dx:4,dy:-2,lid:.4}))+brow(L,'l',0,6)+wavy();
+    case 'surprised': return wrap(eyes({r:9.5}))+brows(0,9)+oh();
+    case 'sleepy':    return wrap(xs.map(arcDn).join(''))+mouth(`M${MX-7},${MY+2} q7,5 14,0`)+zzz;
+    case 'shy':       return cheeks(1)+wrap(eyes({dx:3,dy:5,r:6.5}))+brows(-4,2)+mouth(`M${MX-7},${MY+1} q7,6 14,0`);
+    case 'excited':   return wrap(xs.map(cross).join(''))+cheeks(.8)+grin();
+    case 'love':      return wrap(xs.map(heart).join(''))+cheeks(.9)+smile(9,9);
+    case 'thinking':  return wrap(eyes({dx:-5,dy:-5,r:6.5}))+brow(Rx,'r',0,7)+mouth(`M${MX-8},${MY+2} q8,-6 16,2`);
+    case 'curious':   return wrap(eyes({dx:5,dy:-1}))+brow(L,'l',0,8)+oh(4.5,5.5);
+    case 'proud':     return wrap(eyes({dy:2,r:6.5,lid:.5}))+mouth(`M${MX-13},${MY} q9,9 20,4 q5,-3 7,-8`);
+    case 'dizzy':     return wrap(xs.map(xx).join(''))+wavy();
+    default:          return wrap(eyes())+smile();
+  }
+}
+
+// ── 팔·발·소품·포즈 ─────────────────────────────────────────────
+// 팔: 어깨(몸 옆면 y238)에서 바깥으로 뻗는 둥근 막대. angle 은 '위로 드는 각도'(0=옆으로, 90=만세) — 좌우 같은 뜻으로 쓴다
+const armEl=(side,ang,view='front')=>{
+  const [x0,w]=VW[view]||VW.front, sy=238, sx= side==='l'?x0+6:x0+w-6, s= side==='l'?1:-1;
+  return `<g class="hw-arm hw-arm-${side}" style="transform-origin:${sx}px ${sy}px" transform="rotate(${s*ang} ${sx} ${sy})"><rect x="${side==='l'?sx-34:sx}" y="${sy-8}" width="34" height="16" rx="8" fill="${C.body}"/></g>`;
+};
+const footEl=(dxL=0,dxR=0)=>`<g class="hw-feet"><rect class="hw-foot" x="${104+dxL}" y="306" width="24" height="13" rx="6.5" fill="${C.body}"/><rect class="hw-foot" x="${172+dxR}" y="306" width="24" height="13" rx="6.5" fill="${C.body}"/></g>`;
+const PROPS={
+  flag:`<g class="hw-prop hw-prop-flag"><path d="M50,152 v66" stroke="${C.ink}" stroke-width="4" stroke-linecap="round"/><path d="M50,150 L96,166 L50,182 Z" fill="${C.purple}"/></g>`,
+  lines:`<g class="hw-prop" stroke="${C.wax}" stroke-width="5" stroke-linecap="round"><path d="M22,200 h22"/><path d="M14,224 h30"/><path d="M24,248 h18"/></g>`,
+  heart:`<g class="hw-prop"><path d="M256,176 C244,166 246,150 258,152 C264,146 276,152 274,164 C272,176 262,182 256,176 Z" fill="${C.pink}"/></g>`,
+  friend:`<g class="hw-prop hw-prop-friend"><path d="M232,318 v-40 a30,30 0 0 1 60,0 v40 a10,9 0 0 1 -20,0 a10,9 0 0 1 -20,0 a10,9 0 0 1 -20,0 Z" fill="${C.lilac}"/><circle cx="252" cy="288" r="3" fill="${C.ink}"/><circle cx="272" cy="288" r="3" fill="${C.ink}"/><path d="M256,298 q6,5 12,0" stroke="${C.ink}" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>`,
+  zzz:`<g class="hw-prop" fill="${C.ink}" font-family="Pretendard,sans-serif" font-weight="800"><text x="196" y="150" font-size="20">z</text><text x="212" y="130" font-size="15">z</text><text x="224" y="114" font-size="11">z</text></g>`,
+  party:`<g class="hw-prop hw-prop-hat"><path d="M96,124 L114,66 L138,120 Z" fill="${C.red}"/><circle cx="114" cy="64" r="6" fill="${C.pink}"/><path d="M104,100 h22" stroke="${C.white}" stroke-width="4" stroke-linecap="round"/></g>
+         <g class="hw-prop hw-prop-confetti"><circle cx="40" cy="130" r="4" fill="${C.purple}"/><rect x="250" y="110" width="8" height="8" rx="2" fill="${C.mint}" transform="rotate(20 254 114)"/><circle cx="270" cy="200" r="4" fill="${C.pink}"/><rect x="24" y="200" width="8" height="8" rx="2" fill="${C.red}" transform="rotate(-25 28 204)"/><circle cx="66" cy="70" r="3.5" fill="${C.mint}"/></g>`,
+};
+// pose: rot·dx·dy 는 .hw-posed 의 attribute(정적), 반복 모션은 .hw-figure 에 CSS(hw-pose-*)
+const POSE={
+  idle:      {},
+  cheer:     {arms:[52,-8],props:['flag'],mood:'happy'},
+  run:       {rot:-14,dx:10,arms:[38,-38],feet:[-10,10],props:['lines'],mood:'neutral'},
+  jump:      {dy:-28,arms:[120,120],feet:[4,-4],spark:true,shadow:.6,mood:'laugh'},
+  help:      {arms:[-6,64],props:['heart','friend'],mood:'happy'},
+  sleep:     {lie:true,props:['zzz'],mood:'sleepy',flame:'small'},
+  cry:       {arms:[78,78],mood:'cry',flame:'small'},
+  celebrate: {arms:[118,118],props:['party'],mood:'excited',level:4},
+  fall:      {rot:30,dx:-8,dy:4,arms:[104,6],feet:[12,-16],mood:'dizzy'},
+};
+const SPARKS=`<g class="hw-sparks" stroke="${C.body}" stroke-width="6" stroke-linecap="round" fill="none"><path d="M40,96 l14,10"/><path d="M34,130 l16,2"/><path d="M260,96 l-14,10"/><path d="M266,130 l-16,2"/></g>`;
+
+// ── 조립 ─────────────────────────────────────────────────────
+function char({level=3,mood='neutral',view='front',flame=null,wax='base',spark=false,vb='0 0 300 340',cls='',lids=true,pose='idle'}={}){
+  LIDS=lids;
+  const P=POSE[pose]||POSE.idle;
+  if(P.mood && mood==='neutral') mood=P.mood;
+  if(P.level!=null) level=P.level;
+  const f = flame || P.flame || LV[level];
+  if(level===0 && mood==='neutral') mood='sleepy';
+  const posedT = P.lie ? 'rotate(-80 150 215)' : `translate(${P.dx||0},${P.dy||0}) rotate(${P.rot||0} 150 316)`;
+  const arms = P.arms ? armEl('l',P.arms[0],view)+armEl('r',P.arms[1],view) : '';
+  const feet = P.feet ? footEl(P.feet[0],P.feet[1]) : '';
+  const props = (P.props||[]).map(k=>PROPS[k]||'').join('');
+  return `<svg class="hw hw-pose-${pose} ${cls}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" data-level="${level}" data-mood="${mood}" data-view="${view}" data-pose="${pose}">
+    <ellipse class="hw-shadow" cx="150" cy="324" rx="${92*(P.shadow||1)}" ry="9" fill="${C.ink}" opacity="${.10*(P.shadow||1)}"/>
+    ${f!=='off'?glowEl(level):''}
+    ${(spark||P.spark||level===4)?SPARKS:''}
+    <g class="hw-figure"><g class="hw-posed" transform="${posedT}">
+      ${feet}
+      ${bodyEl(view)}
+      ${capEl(wax,view)}
+      ${wickEl()}
+      ${flameEl(f)}
+      ${faceEl(mood,view)}
+      ${arms}
+    </g></g>
+    ${props}
+  </svg>`;
+}
+
+// 애니메이션 CSS — 앱에서도 이 블록을 그대로 쓴다
+const CSS=`
+.hw *{transform-box:view-box}
+.hw .hw-flame{transform-origin:150px 100px;animation:hwFlicker 1.7s ease-in-out infinite}
+.hw .hw-glow{transform-origin:150px 100px;animation:hwGlow 1.7s ease-in-out infinite}
+.hw .hw-smoke{animation:hwSmoke 2.4s ease-in-out infinite}
+.hw .hw-figure{transform-origin:150px 316px}
+.hw .hw-body,.hw .hw-cap,.hw .hw-wick,.hw .hw-eyes,.hw .hw-brow,.hw .hw-mouth,.hw .hw-cheek,.hw .hw-tear,.hw .hw-zzz{transform-origin:150px 316px}
+.hw.hw-live .hw-figure{animation:hwBreathe 3.4s ease-in-out infinite}
+.hw .hw-cap{transform-origin:150px 130px}
+.hw.hw-melt .hw-drips{animation:hwMelt 2.2s ease-in-out infinite alternate;transform-origin:150px 137px}
+.hw .hw-lid{transform-origin:center top;transform:scaleY(0);transition:transform .07s ease-in}
+.hw.hw-blink .hw-lid{transform:scaleY(1)}
+.hw .hw-pupil{transition:transform .12s ease-out}
+.hw.hw-bounce{animation:hwBounce .55s cubic-bezier(.3,1.6,.4,1) both;transform-origin:150px 316px}
+.hw.hw-sway .hw-wick{animation:hwSway 1.2s ease-in-out infinite;transform-origin:150px 120px}
+.hw.hw-sway .hw-flame{animation:hwSway 1.2s ease-in-out infinite,hwFlicker 1.7s ease-in-out infinite;transform-origin:150px 120px}
+.hw .hw-sparks{transform-origin:150px 120px;animation:hwSparks 1.4s ease-out infinite}
+.hw .hw-arm{transition:transform .25s ease-out}
+.hw.hw-wave .hw-arm-r{animation:hwWave .7s ease-in-out infinite}
+.hw.hw-pose-run .hw-figure{animation:hwRunBob .36s ease-in-out infinite}
+.hw.hw-pose-jump .hw-figure{animation:hwJump 1.1s ease-in-out infinite}
+.hw.hw-pose-cheer .hw-arm-l{animation:hwCheer .8s ease-in-out infinite}
+.hw.hw-pose-cheer .hw-prop-flag{transform-origin:50px 218px;animation:hwCheerFlag .8s ease-in-out infinite}
+.hw.hw-pose-celebrate .hw-figure{animation:hwBounceLoop 1s ease-in-out infinite}
+.hw.hw-pose-sleep .hw-flame{animation:hwFlicker 3s ease-in-out infinite}
+@keyframes hwFlicker{0%,100%{transform:scale(1,1) rotate(0)}30%{transform:scale(1.06,.94) rotate(-4deg)}60%{transform:scale(.95,1.06) rotate(3deg)}80%{transform:scale(1.03,.98) rotate(-1deg)}}
+@keyframes hwGlow{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.06);opacity:.24}}
+@keyframes hwSmoke{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-14px);opacity:0}}
+@keyframes hwBreathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.022)}}
+@keyframes hwMelt{0%{transform:scaleY(1)}100%{transform:scaleY(1.18)}}
+@keyframes hwBounce{0%{transform:scale(1,1)}25%{transform:scale(1.12,.86)}50%{transform:scale(.94,1.08)}75%{transform:scale(1.03,.97)}100%{transform:scale(1,1)}}
+@keyframes hwBounceLoop{0%,100%{transform:scale(1,1)}30%{transform:scale(1.06,.94)}60%{transform:scale(.97,1.04)}}
+@keyframes hwSway{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes hwSparks{0%{transform:scale(.7);opacity:0}30%{opacity:1}100%{transform:scale(1.15);opacity:0}}
+@keyframes hwWave{0%,100%{transform:rotate(-70deg)}50%{transform:rotate(-110deg)}}
+@keyframes hwRunBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes hwJump{0%,100%{transform:translateY(0) scale(1,1)}15%{transform:translateY(4px) scale(1.06,.94)}45%{transform:translateY(-30px) scale(.97,1.04)}75%{transform:translateY(0) scale(1.04,.96)}}
+@keyframes hwCheer{0%,100%{transform:rotate(52deg)}50%{transform:rotate(70deg)}}
+@keyframes hwCheerFlag{0%,100%{transform:rotate(0)}50%{transform:rotate(12deg)}}
+@media (prefers-reduced-motion:reduce){.hw *{animation:none!important}}
+`;
+const HWF={char,CSS,C,FL,LV,POSE,parts:{flameEl,bodyEl,capEl,wickEl,faceEl,armEl,footEl}};
+if(typeof module!=='undefined') module.exports=HWF; else root.HWF=HWF;
+})(typeof window!=='undefined'?window:globalThis);

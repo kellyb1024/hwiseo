@@ -1,0 +1,155 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>휘서 밤 톤 시안 0901 — 스플래시 · 홈</title>
+<style>
+  :root{
+    --n1:#4A3B7C;   /* 무대 · 먹보라 (채도 낮춤) */
+    --n2:#6A5AA3;   /* 뒤 구름 */
+    --n3:#8C7CC2;   /* 앞 구름 · 라벤더 */
+    --pk:#B08BC7;   /* 분홍 구름 */
+    --pn:#DCD3EF;   /* 패널 · 라일락 */
+    --pn2:#EAE4F6;  /* 카드 */
+    --ye:#F4E96B;   /* 레몬 */
+    --tx:#4A3B7C;   /* 패널 텍스트 */
+    --safe:34px;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:#2E2454;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:#fff;padding:40px 24px 80px}
+  h1{font-size:20px;font-weight:800;color:#DCD3EF}
+  .sub{font-size:13px;color:#A99BD1;margin:6px 0 30px;line-height:1.7}
+  .row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+  figure{width:390px}
+  figcaption{font-size:12px;color:#A99BD1;margin-top:12px;line-height:1.7}
+  figcaption b{color:#F4E96B}
+  .sw{display:flex;gap:8px;margin-top:26px;flex-wrap:wrap}
+  .sw div{width:92px;height:56px;border-radius:14px;font-size:10px;font-weight:700;padding:8px;display:flex;align-items:flex-end;font-family:ui-monospace,monospace}
+  /* 폰 */
+  .phone{width:390px;height:844px;border-radius:46px;overflow:hidden;background:var(--pn);position:relative;border:6px solid #1D1B22;display:flex;flex-direction:column}
+  .stage{background:var(--n1);position:relative;overflow:hidden;flex:0 0 auto}
+  .sb{height:54px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px;font-size:14px;font-weight:700;color:#fff;position:relative;z-index:5}
+  .hd{display:flex;justify-content:space-between;align-items:center;padding:8px 24px 0;position:relative;z-index:5;min-height:44px}
+  .mark{font-size:22px;font-weight:800;color:var(--ye);letter-spacing:-.02em}
+  .me{width:36px;height:36px;border-radius:50%;background:var(--ye);display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--n1)}
+  .cloud{position:absolute;z-index:1}
+  .cloud svg{display:block}
+  .star{position:absolute;border-radius:50%;background:#fff;z-index:2}
+  .ground{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;background:#3A2D66;z-index:1}
+  /* 캐릭터 슬롯 — 밤 톤: 선 없음, 눈·입은 보라 */
+  .slot{position:absolute;z-index:3}
+  .slot svg{width:100%;height:100%;display:block}
+  .slot.giant,.slot.full{left:50%;transform:translateX(-50%)}
+  .night .slot path[stroke]{stroke:none}
+  .night .slot rect[stroke]{stroke:none}
+  .night .slot path[stroke][fill="none"]{stroke:#3A2D66;stroke-width:2.5px;vector-effect:non-scaling-stroke}
+  .night .slot circle[fill="#3E294C"]{fill:#3A2D66}
+  .night .slot circle[fill="#F5B92E"]{fill:#F0A93A;opacity:.75}
+  .night .slot ellipse[fill="#3D2A7A"]{display:none}
+  .night .slot path[fill="#FFD54A"]{fill:var(--cy,#F8D23A)}
+  .night .slot path[fill="#FFE58A"]{fill:var(--cy2,#FBE47A)}
+  .night .slot path[fill="#FFF3CE"]{fill:var(--cy3,#FDF2B8)}
+  .night .slot path[fill="#EADFEE"]{fill:#EDE6F7}
+  .night .slot path[fill="#F8F5FF"]{fill:#FFFFFF}
+  .night .slot path[fill="#F1C256"]{fill:var(--cy,#F8D23A)}
+  /* 스플래시 텍스트 */
+  .hello{position:absolute;left:32px;top:120px;z-index:5;line-height:1.15}
+  .hello small{display:block;font-size:26px;font-weight:700;color:var(--ye)}
+  .hello b{display:block;font-size:44px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-top:4px}
+  /* 패널 · 원호 */
+  .panel{background:var(--pn);position:relative;z-index:4;flex:1;display:flex;flex-direction:column;padding:32px 24px 0;overflow:hidden;margin-top:-56px;border-radius:100% 100% 0 0 / 72px 72px 0 0}
+  .h2{font-size:26px;font-weight:800;line-height:1.25;letter-spacing:-.02em;color:var(--tx)}
+  .h2 em{font-style:normal;color:#7A5FB8}
+  .h2 small{display:block;font-size:14px;font-weight:600;color:#6F62A0;margin-top:8px;letter-spacing:0;line-height:1.5}
+  .cta{margin-top:18px;height:54px;border-radius:27px;background:#fff;color:var(--tx);font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;flex:0 0 auto}
+  .sec{margin-top:18px}
+  .sec .t{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;font-weight:800;color:var(--tx);margin-bottom:10px}
+  .sec .t span{font-weight:600;color:#7A6FA8}
+  .card{background:var(--pn2);border-radius:22px;padding:12px;display:flex;gap:12px;align-items:center}
+  .ph{border-radius:14px;flex:0 0 auto;position:relative;overflow:hidden}
+  .ph i{position:absolute;left:8px;bottom:6px;font-style:normal;font-size:10px;font-weight:800;color:#fff;opacity:.9}
+  .card .tx{font-size:12px;color:#6F62A0;line-height:1.5}
+  .card .tx b{display:block;font-size:14px;color:var(--tx);margin-bottom:3px}
+  .card .tag{margin-left:auto;background:var(--n1);color:#fff;font-size:11px;font-weight:800;padding:6px 10px;border-radius:12px;white-space:nowrap}
+  .grid{display:flex;gap:10px}
+  .grid .ph{flex:1;height:88px}
+  .tabs{margin-top:auto;height:84px;display:flex;padding:8px 12px var(--safe);flex:0 0 auto;background:var(--pn2)}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#A99BD1}
+  .tab.on{color:var(--n1)}
+  .tab svg{width:26px;height:26px}
+  .homebar{width:100px;height:5px;border-radius:3px;background:#1D1B22;position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:6}
+</style>
+
+<h1>밤 톤 — 스플래시 · 홈</h1>
+<p class="sub">레퍼 20 방향. 무대 보라 채도 ↓ (#7B5CD6 → #4A3B7C), 아웃라인 0, 눈·입은 배경 보라, 패널은 흰색 대신 라일락, 경계는 원호, 구름·별점 배경만 추가(그림자·글로우 ✗).<br>캐릭터는 hw-character.js 그대로 + 색 치환만 (구조 손 안 댐).</p>
+
+<div class="row night" id="row"></div>
+
+<h1 style="margin-top:36px">캐릭터 노랑 3단계 (같은 밤 무대)</h1>
+<div class="row night" id="ys" style="margin-top:14px"></div>
+
+<div class="sw">
+  <div style="background:#4A3B7C;color:#fff">무대 4A3B7C</div>
+  <div style="background:#6A5AA3;color:#fff">구름 6A5AA3</div>
+  <div style="background:#8C7CC2;color:#fff">구름 8C7CC2</div>
+  <div style="background:#B08BC7;color:#fff">분홍 B08BC7</div>
+  <div style="background:#DCD3EF;color:#4A3B7C">패널 DCD3EF</div>
+  <div style="background:#F4E96B;color:#4A3B7C">레몬 F4E96B</div>
+  <div style="background:#7B5CD6;color:#fff;outline:2px dashed #fff;outline-offset:-4px">기존 7B5CD6</div>
+</div>
+
+<script src="hw-character.js"></script>
+<script>
+const SB = `<div class="sb"><span>9:41</span><span>●●● ▲ ▮</span></div>`;
+const PH = (w,h,col,label)=>`<div class="ph" style="${w?`width:${w}px;height:${h}px;`:''}background:${col}"><i>${label||''}</i></div>`;
+// 구름: 원 몇 개 겹친 단색 덩어리
+const cloud = (x,y,w,col,flip)=>{
+  const h=w*0.5;
+  return `<div class="cloud" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${flip?'transform:scaleX(-1)':''}">
+  <svg viewBox="0 0 200 100" width="${w}" height="${h}"><g fill="${col}">
+    <ellipse cx="100" cy="72" rx="100" ry="28"/><circle cx="60" cy="52" r="34"/><circle cx="110" cy="40" r="42"/><circle cx="160" cy="58" r="30"/>
+  </g></svg></div>`;
+};
+const star = (x,y,r,o=.9)=>`<div class="star" style="left:${x}px;top:${y}px;width:${r}px;height:${r}px;opacity:${o}"></div>`;
+const giantAt = (mood, stageH, width=400, margin=64)=>{
+  const b=HW.giantBox, h=width*b.h/b.w, mouthPx=h*b.mouthY/b.h;
+  return `<div class="slot giant" style="top:${stageH-margin-mouthPx}px;width:${width}px;height:${h}px">${HW.giant(mood)}</div>`;
+};
+const fullAt = (mood, stageH, px=260, bh=139, bottomGap=70)=>{
+  const H=HW.meta.total(bh), w=px*HW.meta.unit/H;
+  return `<div class="slot full" style="top:${stageH-bottomGap-px}px;width:${w}px;height:${px}px">${HW.full({mood,bh})}</div>`;
+};
+const TABS = (on)=>`<div class="tabs">
+  <div class="tab ${on==='home'?'on':''}"><svg viewBox="${HW.markBox}"><path d="${HW.mark}" fill="currentColor"/></svg>홈</div>
+  <div class="tab"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="3" y="7" width="16" height="16" rx="4"/><path d="M8 3h13a2 2 0 0 1 2 2v13"/></svg>아카이브</div>
+  <div class="tab"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="13" cy="13" r="10"/><circle cx="13" cy="11" r="3.2"/><path d="M6.5 20c1.5-3 4-4.5 6.5-4.5s5 1.5 6.5 4.5"/></svg>나</div>
+</div>`;
+
+const splash = ()=>`<figure><div class="phone"><div class="stage" style="flex:1">${SB}
+  ${cloud(-60,60,260,'#5D4D96')}${cloud(200,20,240,'#5D4D96',true)}${cloud(230,250,220,'#7A66B5')}${cloud(-80,330,240,'#8F79BE',true)}
+  ${star(300,150,5)}${star(330,200,3,.7)}${star(70,300,4)}${star(120,260,3,.6)}${star(280,330,6)}${star(40,420,3,.7)}
+  <div class="hello"><small>다시 왔네요,</small><b>민지</b></div>
+  ${giantAt('sleep',844,440,120)}
+</div><div class="homebar"></div></div>
+<figcaption><b>스플래시 / 재방문 인사</b> — 구름 4겹(뒤 어둡게, 앞 밝게), 별점, 눈 감은 얼굴 아래 잘림. 텍스트 레몬 + 흰색.</figcaption></figure>`;
+
+const home = ()=>`<figure><div class="phone"><div class="stage" style="height:400px">${SB}
+  <div class="hd"><span class="mark">휘서</span><span class="me">민</span></div>
+  ${cloud(-40,90,220,'#5D4D96')}${cloud(220,70,230,'#5D4D96',true)}${cloud(250,230,200,'#7A66B5')}${cloud(-70,260,210,'#8F79BE',true)}
+  ${star(300,130,4)}${star(90,170,3,.7)}${star(340,300,5)}${star(60,340,3,.6)}
+  <div class="ground" style="bottom:36px;width:230px;height:48px"></div>
+  ${fullAt('friendly',400,250,139,46)}
+</div><div class="panel">
+  <div class="h2">민지님, <em>3일 만</em>이에요.<small>오늘은 어떤 사진이 있나요?</small></div>
+  <div class="cta">＋ 사진 고르고 시작</div>
+  <div class="sec"><div class="t">이어서 하기</div>
+    <div class="card">${PH(60,60,'#B7A58F','1998')}<div class="tx"><b>8월 21일 · 2턴 진행</b>"동아리 종강 날이었어요…"</div><span class="tag">이어서</span></div>
+  </div>
+  <div class="sec"><div class="t">최근 이야기 <span>전체 12편 →</span></div>
+    <div class="grid">${PH(0,0,'#A695B8','2004')}${PH(0,0,'#94A6B5','1996')}${PH(0,0,'#C4A697','2011')}</div>
+  </div>
+</div>${TABS('home')}<div class="homebar"></div></div>
+<figcaption><b>홈 (평소)</b> — 전신이 어두운 타원 위에 앉고, 패널은 라일락 원호. CTA는 흰 알약. 카드 테두리·그림자 없음.</figcaption></figure>`;
+
+document.getElementById('row').innerHTML = splash()+home();
+const Y=[['연 · 레몬','#F4E96B','#F8F1A0','#FBF7C8'],['중 · 노랑 ✓ 적용','#F8D23A','#FBE47A','#FDF2B8'],['진 · 금빛','#F2BF1E','#F8D95C','#FCEBA0']];
+document.getElementById('ys').innerHTML = Y.map(([l,a,b,c])=>`<figure style="width:200px"><div style="width:200px;height:230px;border-radius:24px;background:var(--n1);position:relative;overflow:hidden;--cy:${a};--cy2:${b};--cy3:${c}">${cloud(-30,20,140,'#5D4D96')}${cloud(110,120,130,'#7A66B5',true)}<div class="slot full" style="top:28px;width:150px;height:190px">${HW.full({mood:'friendly',bh:139})}</div></div><figcaption><b>${l}</b><br>${a}</figcaption></figure>`).join('');
+</script>

@@ -1,0 +1,207 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>휘서 시안 A — 노랑 캐릭터 · 보라 배경 (2026-08-31)</title>
+<style>
+  :root{
+    --main:#FFD54A; --main-deep:#F5B92E; --main-pale:#FFF3CE;
+    --sub:#7B5CD6; --sub-deep:#3D2A7A; --sub-pale:#EDE7FF; --sub-soft:#D9CCFF;
+    --ink:#1D1B22; --body:#5D5866; --muted:#94909E; --line:#F0EDE6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#F2EEE6;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:var(--ink);padding:32px}
+  h1{font-size:18px;margin-bottom:6px}
+  p.note{font-size:13px;color:var(--body);margin-bottom:24px;line-height:1.6}
+  .row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+  .frame{width:390px;height:844px;border-radius:36px;overflow:hidden;position:relative;flex:0 0 auto;box-shadow:0 1px 0 rgba(0,0,0,.05)}
+  .cap{font-size:12px;color:var(--body);margin-top:10px;font-family:ui-monospace,monospace}
+  .col{flex:0 0 auto}
+  .char{position:absolute;display:block}
+
+  /* 스플래시 */
+  .splash{background:var(--sub)}
+  .splash .brand{position:absolute;left:32px;top:96px;color:var(--main);font-size:60px;font-weight:800;letter-spacing:-.02em;line-height:1}
+  .splash .sub{position:absolute;left:34px;top:170px;color:var(--main-pale);font-size:13px;letter-spacing:.28em}
+  .splash .cta{position:absolute;left:24px;right:24px;bottom:44px;height:56px;border-radius:28px;background:#fff;color:var(--sub);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+  /* 불 켜기 */
+  .light{background:var(--sub-deep)}
+  .light .hint{position:absolute;left:0;right:0;top:600px;text-align:center;color:var(--sub-soft);font-size:16px}
+  .light .mark{position:absolute;left:32px;top:64px;color:var(--sub-soft);font-size:14px;opacity:.6}
+
+  /* 온보딩 */
+  .ob{background:#fff}
+  .ob .wave{position:absolute;left:0;top:0;right:0;height:400px;background:var(--sub)}
+  .ob .wave svg{position:absolute;left:0;bottom:-1px;width:100%;height:70px;display:block}
+  .ob h2{position:absolute;left:32px;top:112px;color:#fff;font-size:30px;line-height:1.3;font-weight:800;letter-spacing:-.01em}
+  .ob .lede{position:absolute;left:32px;top:212px;right:32px;color:var(--sub-soft);font-size:16px;line-height:1.6}
+  .ob .dots{position:absolute;left:0;right:0;bottom:124px;display:flex;justify-content:center;gap:6px}
+  .ob .dots i{width:6px;height:6px;border-radius:3px;background:var(--line)}
+  .ob .dots i.on{width:18px;background:var(--main)}
+  .ob .cta{position:absolute;left:24px;right:24px;bottom:44px;height:56px;border-radius:28px;background:var(--main);color:var(--ink);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+  /* 프로필 */
+  .prof{background:var(--sub)}
+  .prof .back{position:absolute;left:28px;top:60px;color:#fff;font-size:28px;line-height:1}
+  .prof .name{position:absolute;left:0;right:0;top:560px;text-align:center;color:#fff;font-size:32px;font-weight:800}
+  .prof .desc{position:absolute;left:32px;right:32px;top:612px;text-align:center;color:var(--sub-soft);font-size:15px;line-height:1.6}
+  .prof .stat{position:absolute;left:0;right:0;top:700px;text-align:center}
+  .prof .stat b{display:block;color:var(--main);font-size:52px;font-weight:800;line-height:1}
+  .prof .stat span{display:block;color:var(--sub-soft);font-size:13px;margin-top:8px}
+
+  /* 대화 (변경 없음 — 정합 확인용) */
+  .chat{background:#fff}
+  .chat .hd{position:absolute;left:0;right:0;top:0;height:104px;border-bottom:1px solid var(--line);display:flex;align-items:flex-end;padding:0 20px 12px;gap:12px}
+  .chat .hd .av{width:44px;height:44px;border-radius:22px;background:var(--sub);overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+  .chat .hd .av svg{width:40px;height:48px;margin-bottom:-6px}
+  .chat .hd b{font-size:16px}
+  .chat .hd small{display:block;font-size:12px;color:var(--muted)}
+  .chat .th{position:absolute;left:20px;right:20px;top:130px;display:flex;flex-direction:column;gap:12px}
+  .chat .b{max-width:78%;padding:12px 16px;border-radius:18px;font-size:15px;line-height:1.55}
+  .chat .h{background:var(--sub-pale);color:var(--ink);align-self:flex-start;border-bottom-left-radius:6px}
+  .chat .u{background:var(--main);color:var(--ink);align-self:flex-end;border-bottom-right-radius:6px}
+  .chat .in{position:absolute;left:16px;right:16px;bottom:24px;height:48px;border-radius:24px;background:#F6F4EE;display:flex;align-items:center;padding:0 18px;color:var(--muted);font-size:15px}
+
+  /* 시트 */
+  .sheet{background:var(--sub);border-radius:24px;padding:28px;color:#fff;width:100%}
+  .sheet h3{font-size:13px;letter-spacing:.1em;opacity:.7;margin:0 0 12px}
+  .sheet .g{display:flex;gap:24px;margin-bottom:28px;align-items:flex-end}
+  .sheet .g figure{text-align:center}
+  .sheet .g svg{width:120px;height:144px;display:block}
+  .sheet figcaption{font-size:12px;opacity:.8;margin-top:6px;font-family:ui-monospace,monospace}
+  .sheet .small svg{width:64px;height:77px}
+  .sheet .mark svg{width:28px;height:34px}
+</style>
+
+<h1>시안 A — 노랑 캐릭터 · 보라 배경</h1>
+<p class="note">레퍼 main-ui/04 Langvi · 05 po 접목. 노랑 = 빛(사람의 말 + 초), 보라 = 밤(휘서의 자리). 대화 화면 규칙은 그대로.<br>
+캐릭터: 아웃라인 없음. 몸통 <code>#FFD54A</code> · 촛농 <code>#F5B92E</code> · 불꽃 <code>#FFF3CE</code> · 눈·심지 <code>#1D1B22</code>. 불꽃 크기 = 이야기 단계, 눈 = 순간.</p>
+
+<div class="row">
+  <div class="col">
+    <div class="frame splash">
+      <div class="brand">輝敍</div>
+      <div class="sub">HWISEO</div>
+      <svg class="char" data-level="3" data-mood="friendly" style="width:640px;left:-125px;top:300px"></svg>
+      <div class="cta">시작하기</div>
+    </div>
+    <div class="cap">스플래시 — 캐릭터가 화면보다 크고 잘린다</div>
+  </div>
+
+  <div class="col">
+    <div class="frame light">
+      <div class="mark">輝敍</div>
+      <svg class="char" data-level="0" data-mood="sleep" style="width:300px;left:45px;top:250px"></svg>
+      <div class="hint">초를 눌러 불을 켜주세요</div>
+    </div>
+    <div class="cap">불 켜기 — 어두운 보라. 누르면 화면이 보라 #7B5CD6 로 밝아지며 불꽃 1단계</div>
+  </div>
+
+  <div class="col">
+    <div class="frame ob">
+      <div class="wave"><svg viewBox="0 0 390 70" preserveAspectRatio="none"><path d="M0,30 C90,70 200,0 390,40 L390,70 L0,70 Z" fill="#fff"/></svg></div>
+      <h2>안녕하세요,<br>저는 휘서예요.</h2>
+      <div class="lede">갤러리에 쌓인 사진들,<br>잘 안 열어보죠?</div>
+      <svg class="char" data-level="1" data-mood="friendly" style="width:220px;left:85px;top:420px"></svg>
+      <div class="dots"><i class="on"></i><i></i><i></i><i></i></div>
+      <div class="cta">다음</div>
+    </div>
+    <div class="cap">온보딩 — 상단 색 웨이브 + 굵은 헤드라인. 말풍선 밖으로</div>
+  </div>
+
+  <div class="col">
+    <div class="frame prof">
+      <div class="back">‹</div>
+      <svg class="char" data-level="3" data-mood="watching" style="width:340px;left:25px;top:130px"></svg>
+      <div class="name">휘서</div>
+      <div class="desc">기억을 다시 꺼내는 걸 돕는 초.<br>사진은 볼 수 있지만 그 순간을 겪지는 못했어요.</div>
+      <div class="stat"><b>3</b><span>함께 꺼낸 이야기</span></div>
+    </div>
+    <div class="cap">프로필 — 불꽃 크기가 단계. 진행 바·3/4 삭제</div>
+  </div>
+
+  <div class="col">
+    <div class="frame chat">
+      <div class="hd"><div class="av"><svg data-level="3" data-mood="watching"></svg></div><div><b>휘서</b><small>HWISEO</small></div></div>
+      <div class="th">
+        <div class="b h">실내에서 여럿이 모여 있는 사진이네요. 2019년쯤으로 보이는데 맞나요?</div>
+        <div class="b u">동아리 종강 모임이었어요. 다들 시험 끝나고 모인 거였어요.</div>
+        <div class="b h">그날 그 자리에, 사진에 안 찍힌 사람이 또 있었나요?</div>
+        <div class="b u">사진 찍어준 친구요. 이름이 기억이 안 나는데 얼굴은 선명해요.</div>
+      </div>
+      <div class="in">메시지</div>
+    </div>
+    <div class="cap">대화 — 변경 없음. 헤더 아바타만 새 캐릭터 (보라 원 안에 노랑)</div>
+  </div>
+</div>
+
+<div class="row" style="margin-top:36px">
+  <div class="sheet">
+    <h3>불꽃 5단계 (눈 = watching)</h3>
+    <div class="g" id="levels"></div>
+    <h3>눈 5종 (불꽃 = 3단계)</h3>
+    <div class="g" id="moods"></div>
+    <h3>크기 3단계 — 120px+ (촛농 있음) · 64px (촛농 없음) · 24px 마크 (눈 없음)</h3>
+    <div class="g" id="sizes"></div>
+  </div>
+</div>
+
+<script>
+const FLAME = {
+  0: '',
+  1: 'M150,122 C138,112 136,98 150,84 C164,98 162,112 150,122 Z',
+  2: 'M150,122 C132,108 128,84 150,54 C172,84 168,108 150,122 Z',
+  3: 'M150,122 C126,110 114,84 124,60 C130,74 138,82 142,76 C136,58 142,40 150,26 C170,50 176,90 150,122 Z',
+  4: 'M150,122 C122,110 106,80 118,52 C124,68 132,76 138,68 C134,50 140,32 150,10 C160,32 166,50 162,68 C168,76 176,68 182,52 C194,80 178,110 150,122 Z',
+};
+function eyes(mood){
+  const L=118,R=182,Y=215;
+  const open=(dx=0,dy=0)=>`<circle cx="${L}" cy="${Y}" r="17" fill="#fff"/><circle cx="${R}" cy="${Y}" r="17" fill="#fff"/>
+    <circle cx="${L+dx}" cy="${Y+dy}" r="8" fill="#1D1B22"/><circle cx="${R+dx}" cy="${Y+dy}" r="8" fill="#1D1B22"/>`;
+  switch(mood){
+    case 'watching': return open()+`<circle cx="150" cy="250" r="3.5" fill="#1D1B22"/>`;
+    case 'friendly': return open()+`<path d="M137,246 q13,12 26,0" stroke="#1D1B22" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+    case 'confusion': return `<g transform="rotate(-14 ${L} ${Y})"><ellipse cx="${L}" cy="${Y}" rx="17" ry="14" fill="#fff"/><circle cx="${L+3}" cy="${Y+1}" r="8" fill="#1D1B22"/></g>
+      <circle cx="${R}" cy="${Y}" r="17" fill="#fff"/><circle cx="${R+4}" cy="${Y-2}" r="8" fill="#1D1B22"/>
+      <path d="M140,252 l20,-5" stroke="#1D1B22" stroke-width="4.5" stroke-linecap="round"/>`;
+    case 'joy': return `<path d="M102,${Y+2} q16,-20 32,0 M166,${Y+2} q16,-20 32,0" stroke="#1D1B22" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="150" cy="250" rx="11" ry="9" fill="#1D1B22"/>`;
+    case 'sleep': return `<path d="M102,${Y-4} q16,18 32,0 M166,${Y-4} q16,18 32,0" stroke="#1D1B22" stroke-width="5.5" fill="none" stroke-linecap="round"/>`;
+  }
+}
+function char({level=3,mood='watching',drips=true,eyesOn=true}={}){
+  const body='M60,166 a36,36 0 0 1 36,-36 h108 a36,36 0 0 1 36,36 v140 a18,18 0 0 1 -36,0 a18,18 0 0 1 -36,0 a18,18 0 0 1 -36,0 a18,18 0 0 1 -36,0 a18,18 0 0 1 -36,0 Z';
+  const id='c'+Math.random().toString(36).slice(2,8);
+  const smoke = level===0 ? `<path d="M150,112 c8,-8 -8,-16 2,-26" stroke="#D9CCFF" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>` : '';
+  return `<svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
+    <defs><clipPath id="${id}"><path d="${body}"/></clipPath></defs>
+    ${FLAME[level] ? `<path d="${FLAME[level]}" fill="#FFF3CE"/>` : ''}
+    ${smoke}
+    <rect x="145" y="112" width="10" height="22" rx="4" fill="#1D1B22"/>
+    <path d="${body}" fill="#FFD54A"/>
+    ${drips ? `<g clip-path="url(#${id})" fill="#F5B92E">
+      <rect x="40" y="120" width="220" height="34"/>
+      <rect x="86" y="140" width="22" height="52" rx="11"/>
+      <rect x="142" y="140" width="18" height="30" rx="9"/>
+      <rect x="196" y="140" width="24" height="66" rx="12"/>
+    </g>` : ''}
+    ${eyesOn ? eyes(mood) : ''}
+  </svg>`;
+}
+// 화면 안 캐릭터
+document.querySelectorAll('svg.char, .av svg').forEach(el=>{
+  const tmp=document.createElement('div');
+  tmp.innerHTML=char({level:+el.dataset.level, mood:el.dataset.mood, drips: el.classList.contains('char')});
+  const s=tmp.firstElementChild;
+  s.setAttribute('class', el.getAttribute('class')||''); s.setAttribute('style', el.getAttribute('style')||'');
+  el.replaceWith(s);
+});
+// 시트
+const lv=document.getElementById('levels');
+[0,1,2,3,4].forEach(l=>lv.insertAdjacentHTML('beforeend',`<figure>${char({level:l,mood:l===0?'sleep':'watching'})}<figcaption>level ${l}</figcaption></figure>`));
+const md=document.getElementById('moods');
+['watching','friendly','confusion','joy','sleep'].forEach(m=>md.insertAdjacentHTML('beforeend',`<figure>${char({level:3,mood:m})}<figcaption>${m}</figcaption></figure>`));
+const sz=document.getElementById('sizes');
+sz.insertAdjacentHTML('beforeend',`<figure>${char({level:3})}<figcaption>120px+</figcaption></figure>
+  <figure class="small">${char({level:3,drips:false})}<figcaption>64px</figcaption></figure>
+  <figure class="mark">${char({level:3,drips:false,eyesOn:false})}<figcaption>24px 마크</figcaption></figure>`);
+</script>

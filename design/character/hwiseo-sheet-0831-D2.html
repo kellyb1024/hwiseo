@@ -1,0 +1,130 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HWISEO D-1 꼬리 · D-2 헤어 · D-3 겹 불꽃 (2026-08-31)</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#fff;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:#1D1B22}
+  .page{width:1000px;margin:0 auto;background:#F0F0F0}
+  .hero{height:420px;background:#7B5CD6;position:relative;overflow:hidden;border-bottom:18px solid #3D2A7A;display:flex}
+  .hero .half{flex:1;position:relative}
+  .hero .half+.half{border-left:2px dashed rgba(255,255,255,.3)}
+  .hero .half svg{position:absolute;left:50%;top:40px;width:330px;margin-left:-165px}
+  .hero .half b{position:absolute;left:32px;top:28px;color:#fff;font-size:22px;font-weight:900}
+  .hero .half small{position:absolute;left:32px;top:58px;color:#D9CCFF;font-size:12px}
+  .sec{padding:36px 60px 0}
+  .sec h2{font-size:17px;font-weight:900;color:#3D2A7A;margin-bottom:6px}
+  .sec p{font-size:12px;color:#5D5866;margin-bottom:14px}
+  .row{display:flex;justify-content:space-around;align-items:flex-end;padding:0 20px 20px}
+  .row figure{text-align:center}
+  .row svg{width:120px;height:150px;display:block}
+  .row figcaption{font-size:11px;color:#5D5866;margin-top:4px;font-family:ui-monospace,monospace}
+  .cw{display:flex;gap:20px;padding:10px 60px 50px}
+  .cw div{flex:1;border-radius:18px;padding:18px;text-align:center;font-size:12px;font-weight:700;display:flex;gap:8px;justify-content:center;align-items:flex-end}
+  .cw svg{width:130px;height:160px;display:block}
+  .foot{padding:0 60px 50px;font-size:12px;color:#5D5866;line-height:1.8}
+</style>
+
+<div class="page">
+  <section class="hero">
+    <div class="half"><b>D-1 · 꼬리 불꽃</b><small>AGGI처럼 꼭지가 옆으로 휨 + 떨어진 불티</small><svg data-v="tail" data-level="3" data-mood="friendly"></svg></div>
+    <div class="half"><b>D-2 · 헤어 불꽃</b><small>둥근 얼굴 위에 불꽃을 앞머리처럼 올림</small><svg data-v="hair" data-level="3" data-mood="friendly"></svg></div>
+    <div class="half"><b>D-3 · 겹 불꽃</b><small>3겹 불꽃 머리 + 떠 있는 불티 (레퍼 8·9)</small><svg data-v="layer" data-level="3" data-mood="friendly"></svg></div>
+  </section>
+
+  <section class="sec"><h2>D-1 · 꼬리 불꽃 — 단계 = 꼬리가 길어지고 불티가 늘어남</h2><p>1: 꼭지만 살짝 · 2: 꼬리 · 3: 꼬리 + 불티 1 · 4: 긴 꼬리 + 불티 2</p></section>
+  <div class="row" id="tailLv"></div>
+  <div class="row" id="tailMood"></div>
+
+  <section class="sec"><h2>D-2 · 헤어 불꽃 — 단계 = 머리숱이 는다</h2><p>1: 한 가닥 · 2: 두 가닥 · 3: 세 가닥 · 4: 다섯 가닥 왕관. 머리칼은 진한 노랑 #F5B92E</p></section>
+  <div class="row" id="hairLv"></div>
+  <div class="row" id="hairMood"></div>
+
+  <section class="sec"><h2>D-3 · 겹 불꽃 — 바깥 #F5B92E · 가운데 #FFD54A · 속 #FFF3CE. 단계 = 머리가 조금씩 커지고 불티가 는다</h2><p>1: 불티 0 · 2: 1 · 3: 2 · 4: 4. 얼굴은 가운데 겹에</p></section>
+  <div class="row" id="layerLv"></div>
+  <div class="row" id="layerMood"></div>
+
+  <section class="sec"><h2>ON DARK / ON LIGHT</h2></section>
+  <div class="cw">
+    <div style="background:#7B5CD6;color:#fff"><svg data-v="tail" data-level="3" data-mood="watching"></svg><svg data-v="hair" data-level="3" data-mood="watching"></svg><svg data-v="layer" data-level="3" data-mood="watching"></svg></div>
+    <div style="background:#fff;color:#3D2A7A"><svg data-v="tail" data-level="3" data-mood="watching"></svg><svg data-v="hair" data-level="3" data-mood="watching"></svg><svg data-v="layer" data-level="3" data-mood="watching"></svg></div>
+  </div>
+  <div class="foot">두 안 모두 심지 6×18, 몸통·촛농·볼·눈은 D안과 동일. 꺼짐(level 0)은 연기 머리로 동일 처리.</div>
+</div>
+
+<script>
+const INK='#1D1B22', FL='#FFD54A', FLD='#F5B92E', FLIN='#FFF3CE', WAX='#E6DEFB', DRIP='#B9A3F2', SMOKE='#D9CCFF', CHEEK='#F5B92E';
+// D-1 머리: 밑 넓은 산 + 오른쪽으로 휘는 꼬리
+const MOUNT='M76,196 C56,162 56,120 82,92 C104,68 128,58 148,40 C166,58 194,68 216,92 C242,118 244,162 224,196 Z';
+const CURL='M0,0 C-8,-12 -4,-30 10,-40 C26,-50 44,-40 38,-24 C34,-14 26,-10 20,-14 C24,-6 18,2 8,4 Z';
+const curl=(sc)=>`<path d="${CURL}" transform="translate(146,44) scale(${sc})" fill="${FL}"/>`;
+const spark=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${FL}"/>`;
+const TAIL={
+  1:curl(0.7),
+  2:curl(1.0),
+  3:curl(1.15)+spark(204,22,6),
+  4:curl(1.4)+spark(208,14,7)+spark(226,-6,5),
+};
+// D-2 머리: 둥근 돔 얼굴 + 불꽃 머리칼
+const DOME='M76,196 C58,170 60,112 88,82 C108,62 192,62 212,82 C240,112 242,170 224,196 Z';
+const TONGUE='M0,0 C-14,-4 -18,-24 -8,-38 C-4,-44 0,-50 2,-60 C6,-46 14,-38 16,-28 C20,-14 12,-2 0,0 Z';
+const tg=(x,y,sc,rot,col=FLD)=>`<path d="${TONGUE}" transform="translate(${x},${y}) rotate(${rot}) scale(${sc})" fill="${col}"/>`;
+const HAIR={
+  1:tg(156,78,0.9,18),
+  2:tg(134,80,0.9,-18)+tg(162,74,1.0,16),
+  3:tg(122,86,0.9,-34)+tg(150,68,1.1,0)+tg(178,86,0.9,34),
+  4:tg(104,98,0.8,-56)+tg(124,84,1.0,-32)+tg(150,62,1.25,0)+tg(176,84,1.0,32)+tg(196,98,0.8,56),
+};
+// D-3 머리: 여러 갈래 불꽃 실루엣을 3겹으로
+const BLAZE='M76,196 C58,172 56,134 72,108 C62,98 58,84 66,68 C78,80 88,84 92,76 C86,58 94,38 110,26 C112,42 120,50 126,44 C122,28 134,10 150,2 C156,22 166,30 174,26 C184,8 202,14 206,30 C210,46 200,54 196,60 C214,68 226,86 220,104 C240,128 242,172 224,196 Z';
+const layerAt=(sc,col)=>`<path d="${BLAZE}" transform="translate(150,196) scale(${sc}) translate(-150,-196)" fill="${col}"/>`;
+const sparkT=(x,y,sc,rot)=>`<path d="${TONGUE}" transform="translate(${x},${y}) rotate(${rot}) scale(${sc})" fill="${FLD}"/>`;
+const LAYER={
+  1:{sc:0.9,sp:''},
+  2:{sc:0.95,sp:sparkT(234,60,0.35,20)},
+  3:{sc:1.0,sp:sparkT(236,56,0.38,20)+sparkT(64,96,0.3,-25)},
+  4:{sc:1.06,sp:sparkT(240,50,0.4,20)+sparkT(60,92,0.32,-25)+sparkT(216,-6,0.3,10)+sparkT(84,20,0.28,-15)},
+};
+const VIEW={front:{ox:0,gap:56,eyes:2}};
+function face(mood,v){
+  const cx=150, EY=126, xs=[cx-28,cx+28];
+  const open=(r=6)=>xs.map(x=>`<circle cx="${x}" cy="${EY}" r="13" fill="#fff"/><circle cx="${x}" cy="${EY}" r="${r}" fill="${INK}"/>`).join('');
+  const st=`stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
+  const cheek=`<circle cx="${cx-64}" cy="146" r="14" fill="${CHEEK}"/><circle cx="${cx+64}" cy="146" r="14" fill="${CHEEK}"/>`;
+  let f='';
+  switch(mood){
+    case 'watching': f=open()+`<circle cx="150" cy="154" r="3" fill="${INK}"/>`; break;
+    case 'friendly': f=open()+`<path d="M140,152 q10,9 20,0" ${st}/>`; break;
+    case 'joy': f=xs.map(x=>`<path d="M${x-12},${EY+3} q12,-16 24,0" ${st}/>`).join('')+`<ellipse cx="150" cy="156" rx="9" ry="7" fill="${INK}"/>`; break;
+    case 'sleep': f=xs.map(x=>`<path d="M${x-12},${EY-2} q12,12 24,0" ${st}/>`).join(''); break;
+  }
+  return cheek+f;
+}
+function char({v='tail',level=3,mood='watching',vb='-10 -40 320 360'}={}){
+  const body='M96,222 a16,16 0 0 1 16,-16 h76 a16,16 0 0 1 16,16 v74 a13.5,13.5 0 0 1 -27,0 a13.5,13.5 0 0 1 -27,0 a13.5,13.5 0 0 1 -27,0 a13.5,13.5 0 0 1 -27,0 Z';
+  const id='e'+Math.random().toString(36).slice(2,8);
+  let head;
+  if(level===0) head=`<path d="M108,150 c-16,0 -22,-24 -4,-30 c-4,-20 24,-28 34,-12 c10,-18 40,-12 40,8 c18,-2 24,24 6,30 c2,18 -22,26 -34,12 c-12,14 -40,8 -42,-8 Z" fill="${SMOKE}"/><path d="M150,190 c6,-6 -6,-12 0,-20" stroke="${SMOKE}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  else if(v==='tail') head=`${TAIL[level]}<path d="${MOUNT}" fill="${FL}"/>`;
+  else if(v==='hair') head=`${HAIR[level]}<path d="${DOME}" fill="${FL}"/>`;
+  else { const L=LAYER[level]; head=`${L.sp}${layerAt(L.sc,FLD)}${layerAt(L.sc*0.8,FL)}${layerAt(L.sc*0.52,FLIN)}`; }
+  const arm=(x)=>`<rect x="${x-11}" y="230" width="22" height="40" rx="11" fill="${WAX}"/>`;
+  return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">
+    <defs><clipPath id="${id}"><path d="${body}"/></clipPath></defs>
+    <rect x="147" y="190" width="6" height="18" rx="3" fill="${INK}"/>
+    <path d="${body}" fill="${WAX}"/>
+    <g clip-path="url(#${id})" fill="${DRIP}"><rect x="60" y="200" width="180" height="18"/><rect x="110" y="210" width="16" height="34" rx="8"/><rect x="150" y="210" width="12" height="20" rx="6"/><rect x="178" y="210" width="18" height="44" rx="9"/></g>
+    ${arm(98)}${arm(202)}
+    ${head}
+    ${level===0?`<path d="M124,124 q10,10 20,0 M156,124 q10,10 20,0" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>`:face(mood)}
+  </svg>`;
+}
+const mount=(el,o)=>{const t=document.createElement('div');t.innerHTML=char(o);const s=t.firstElementChild;s.setAttribute('style',el.getAttribute('style')||'');el.replaceWith(s);};
+document.querySelectorAll('svg[data-v]').forEach(el=>mount(el,{v:el.dataset.v,level:+el.dataset.level,mood:el.dataset.mood}));
+const put=(id,items)=>{const el=document.getElementById(id);items.forEach(([o,l])=>el.insertAdjacentHTML('beforeend',`<figure>${char(o)}<figcaption>${l}</figcaption></figure>`));};
+put('tailLv',[0,1,2,3,4].map(l=>[{v:'tail',level:l,mood:'watching'},`level ${l}`]));
+put('tailMood',['watching','friendly','joy','sleep'].map(m=>[{v:'tail',level:3,mood:m},m]));
+put('hairLv',[0,1,2,3,4].map(l=>[{v:'hair',level:l,mood:'watching'},`level ${l}`]));
+put('hairMood',['watching','friendly','joy','sleep'].map(m=>[{v:'hair',level:3,mood:m},m]));
+put('layerLv',[0,1,2,3,4].map(l=>[{v:'layer',level:l,mood:'watching'},`level ${l}`]));
+put('layerMood',['watching','friendly','joy','sleep'].map(m=>[{v:'layer',level:3,mood:m},m]));
+</script>

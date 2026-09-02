@@ -1,0 +1,168 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HWISEO F — 네모 양초 · 애니메이션 부품 (2026-09-01)</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#FAF6EE;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:#2E2418}
+  .page{width:1100px;margin:0 auto;padding-bottom:60px}
+  .hero{display:flex;gap:30px;align-items:center;padding:50px 60px 30px}
+  .hero .t{width:330px}
+  .hero .t h1{font-size:64px;font-weight:900;letter-spacing:-.03em;line-height:1}
+  .hero .t h1 small{display:block;font-size:22px;font-weight:600;color:#6F6A78;margin-top:6px;letter-spacing:.02em}
+  .hero .t p{margin-top:22px;font-size:15px;line-height:1.75;color:#4A4450}
+  .hero .t .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .hero .t .chips span{background:#FFF0B8;color:#5A4A10;font-size:13px;font-weight:700;padding:6px 12px;border-radius:14px}
+  .hero .main{width:340px;aspect-ratio:300/340}
+  .hero .pal{margin-left:auto;width:300px;font-size:13px;color:#4A4450}
+  .pal h3,.sec h2{font-size:16px;font-weight:900;color:#2E2418;border-bottom:1.5px solid #E5DCC8;padding-bottom:8px;margin-bottom:14px}
+  .pal .sw{display:flex;gap:10px;margin-bottom:22px}
+  .pal .sw i{width:36px;height:36px;border-radius:50%;display:block;border:1.5px solid rgba(0,0,0,.06)}
+  .pal .kf{display:flex;gap:12px}
+  .pal .kf div{flex:1;text-align:center}
+  .pal .kf svg{width:54px;height:54px;display:block;margin:0 auto 6px}
+  .pal .kf b{display:block;font-size:13px;margin-bottom:2px}
+  .pal .kf small{font-size:11px;color:#6F6A78;line-height:1.4}
+  .sec{padding:26px 60px 0}
+  .sec p{font-size:12px;color:#6F6A78;margin:-6px 0 12px}
+  .row{display:flex;justify-content:flex-start;gap:12px;padding:0 48px 10px;flex-wrap:wrap}
+  .row figure{text-align:center;width:104px}
+  .row.big figure{width:150px}
+  .row svg{width:100%;aspect-ratio:300/340;display:block}
+  .row figcaption{font-size:12px;font-weight:700;margin-top:2px}
+  .row figcaption small{display:block;font-weight:500;color:#6F6A78;font-size:11px}
+  .cw{display:flex;gap:16px;padding:8px 60px 0}
+  .cw div{flex:1;border-radius:22px;padding:18px;display:flex;justify-content:center}
+  .cw svg{width:150px;aspect-ratio:300/340;display:block}
+  .demo{display:flex;gap:24px;padding:8px 60px 0;align-items:stretch}
+  .demo .stage{width:420px;height:440px;border-radius:28px;background:#7B5CD6;display:grid;place-items:center;cursor:pointer;transition:background .3s;user-select:none}
+  .demo .stage svg{width:340px;aspect-ratio:300/340}
+  .demo .ctl{flex:1;display:flex;flex-direction:column;gap:14px;font-size:13px}
+  .demo .g b{display:block;font-size:12px;color:#6F6A78;margin-bottom:6px}
+  .demo button{border:1.5px solid #E5DCC8;background:#fff;border-radius:14px;padding:6px 10px;font-size:12px;font-weight:700;margin:0 6px 6px 0;cursor:pointer;font-family:inherit;color:#2E2418}
+  .demo button.on{background:#FFD54A;border-color:#FFD54A}
+  .spec{margin:0 60px;border-collapse:collapse;font-size:12px;width:calc(100% - 120px)}
+  .spec th,.spec td{text-align:left;padding:8px 10px;border-bottom:1px solid #E5DCC8;vertical-align:top;line-height:1.5}
+  .spec th{font-size:11px;color:#6F6A78;font-weight:700}
+  .foot{padding:30px 60px 0;font-size:12px;color:#6F6A78;line-height:1.9}
+  code{background:#fff;padding:1px 6px;border-radius:5px;border:1px solid #E5DCC8}
+</style>
+<div class="page">
+  <section class="hero">
+    <div class="t">
+      <h1>휘서<small>Hwiseo</small></h1>
+      <p>작지만 꺼지지 않는 마음을 가진 양초.<br>휘서는 사진을 볼 수는 있지만 그 순간을 겪지는 못했어요. 그래서 묻고, 답을 들을수록 불이 자라요.</p>
+      <div class="chips"><span>Warm</span><span>Caring</span><span>Curious</span><span>Clumsy</span><span>Brave</span><span>Optimistic</span></div>
+    </div>
+    <svg class="main" data-c='{"level":3,"mood":"neutral","spark":true}'></svg>
+    <div class="pal">
+      <h3>Color Palette</h3>
+      <div class="sw"><i style="background:#FFD54A" title="바디 엘로우"></i><i style="background:#F2B233" title="왁스 엘로우"></i><i style="background:#FFE9A0" title="연한 엘로우"></i><i style="background:#2E2418" title="심지 브라운"></i><i style="background:#FFFBF3" title="눈/하이라이트 화이트"></i></div>
+      <h3>Key Features</h3>
+      <div class="kf">
+        <div><svg viewBox="100 0 100 110" id="kfFlame"></svg><b>Flame</b><small>감정에 따라<br>달라지는 불꽃</small></div>
+        <div><svg viewBox="50 110 200 110" id="kfWax"></svg><b>Wax</b><small>감정이 드러나는<br>녹는 왁스</small></div>
+        <div><svg viewBox="120 80 60 60" id="kfWick"></svg><b>Wick</b><small>움직이는 심지로<br>표현되는 바디랭귀지</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec"><h2>Expression</h2></section>
+  <div class="row" id="moods"></div>
+  <section class="sec"><h2>View</h2></section>
+  <div class="row big" id="views"></div>
+  <section class="sec"><h2>Action</h2><p>레퍼 시트의 8동작. 팔·발·소품은 부품이고 포즈는 <code>.hw-posed</code> 의 회전·이동 하나라서 앱에서 전환 가능.</p></section>
+  <div class="row big" id="actions"></div>
+  <section class="sec"><h2>Canvas — 잘리지 않는 기준</h2><p>viewBox <code>-60 -50 420 420</code> 정사각. 회색 = 캔버스, <b style="color:#7B5CD6">보라</b> = 모션 영역(포즈·소품·레벨4·점프까지, 이 밖으로 나가는 부품은 만들지 않는다), <b style="color:#F2A93B">주황</b> = 정지 안전영역(아이콘·칩은 여기만 잘라 써도 됨). 바닥선 y=316 · 중심 x=150 고정. 앱에서도 같은 viewBox를 써서 캐릭터 크기 = 캔버스의 43%.</p></section>
+  <div class="row big" id="canvas"></div>
+  <section class="sec"><h2>Level System</h2><p>답할수록 불이 자란다. 불을 켜는 것은 휘서가 아니라 사람의 기억.</p></section>
+  <div class="row big" id="levels"></div>
+  <section class="sec"><h2>Flame Variation</h2></section>
+  <div class="row" id="flames"></div>
+  <section class="sec"><h2>Wax Variation</h2></section>
+  <div class="row" id="waxes"></div>
+  <section class="sec"><h2>On Dark / On Light</h2></section>
+  <div class="cw">
+    <div style="background:#7B5CD6"><svg data-c='{"level":3,"mood":"neutral"}'></svg></div>
+    <div style="background:#3D2A7A"><svg data-c='{"level":1,"mood":"sleepy"}'></svg></div>
+    <div style="background:#fff"><svg data-c='{"level":3,"mood":"happy"}'></svg></div>
+    <div style="background:#FFF0B8"><svg data-c='{"level":4,"mood":"excited","spark":true}'></svg></div>
+  </div>
+
+  <section class="sec"><h2>Interactive — 앱에서 움직이는 방식</h2><p>가만히 두면 숨쉬기·불꽃 흔들림·깜빡임. 마우스를 움직이면 눈이 따라오고, 누르면 튕기며 좋아하고, 레벨 업 버튼으로 불이 자라는 걸 볼 수 있어요.</p></section>
+  <div class="demo">
+    <div class="stage" id="stage"><svg id="live"></svg></div>
+    <div class="ctl">
+      <div class="g"><b>Level</b><div id="lvBtns"></div></div>
+      <div class="g"><b>Mood</b><div id="mdBtns"></div></div>
+      <div class="g"><b>Trigger</b><div><button onclick="trig('bounce')">탭 (튕기기)</button><button onclick="trig('blink')">깜빡</button><button onclick="trig('levelup')">레벨 업</button><button onclick="trig('sway')">흔들림 토글</button></div></div>
+      <div class="g"><b>배경</b><div><button onclick="bg('#7B5CD6')">보라</button><button onclick="bg('#3D2A7A')">짙은 보라</button><button onclick="bg('#fff')">흰색</button><button onclick="bg('#FAF6EE')">크림</button></div></div>
+    </div>
+  </div>
+
+  <section class="sec"><h2>Animation Spec — 부품과 움직임</h2></section>
+  <table class="spec">
+    <tr><th>부품 (class)</th><th>움직임</th><th>트리거</th><th>값</th></tr>
+    <tr><td><code>hw-flame</code> + <code>hw-glow</code></td><td>흔들림(scale·rotate) · 후광 맥동</td><td>항상 (불이 켜져 있을 때)</td><td>1.7s 반복, ±4°, scale .95~1.06 · origin 심지 끝(150,100)</td></tr>
+    <tr><td><code>hw-body</code> 외 상반신 부품</td><td>숨쉬기 scaleY 1→1.022</td><td>항상 (idle)</td><td>3.4s, origin 바닥(150,316)</td></tr>
+    <tr><td><code>hw-lid</code></td><td>눈꺼풀 내려옴 scaleY 0→1</td><td>2~5초 랜덤 · 탭 직후 · 표정 교체 사이</td><td>70ms 닫고 120ms 뜸</td></tr>
+    <tr><td><code>hw-pupil</code></td><td>동공 이동 translate</td><td>터치·마우스 위치 · 사진이 올라오면 사진 쪽</td><td>최대 ±5 (viewBox 단위), .12s</td></tr>
+    <tr><td><code>svg.hw</code> 전체</td><td>튕김 squash & stretch</td><td>탭 · 답장 도착</td><td>.55s: (1.12,.86)→(.94,1.08)→1, 동시에 mood excited 0.9s</td></tr>
+    <tr><td><code>hw-wick</code>+<code>hw-flame</code></td><td>좌우 흔들림 rotate ±8°</td><td>스크롤 · 기기 기울임 · 불꽃 터치</td><td>1.2s, origin 심지 뿌리(150,124)</td></tr>
+    <tr><td><code>hw-flame</code> 경로 교체</td><td>불이 자람 small→base→big→bright</td><td>답할 때마다 (Level 1~4)</td><td>교체 + 튕김 + <code>hw-sparks</code> 1회</td></tr>
+    <tr><td><code>hw-smoke</code></td><td>연기 위로 사라짐</td><td>Level 0 · 불 끄기</td><td>2.4s 반복, translateY -14</td></tr>
+    <tr><td><code>hw-drips</code></td><td>촛농 변주 base/left/right/center/full</td><td>대화가 길어질수록 · 감정</td><td>정적 교체</td></tr>
+    <tr><td><code>hw-mouth</code> · <code>hw-eyes</code> · <code>hw-brow</code></td><td>표정 교체 17종</td><td>대화 맥락</td><td>교체 사이에 깜빡임 한 번</td></tr>
+    <tr><td><code>hw-cap</code> › <code>hw-drips</code></td><td>촛농 녹아내림 scaleY 1→1.18</td><td>대화가 길어질 때 · 감정 고조</td><td><code>hw-melt</code> 2.2s 왕복, origin 캡 아랫선(150,148). 캡이 몸과 분리돼 있어 방울만 늘어남</td></tr>
+    <tr><td><code>hw-arm-l/r</code></td><td>팔 회전 (어깨 origin inline)</td><td>인사·응원·탭 반응</td><td><code>hw-wave</code> .7s · 포즈별 각도는 attribute</td></tr>
+    <tr><td><code>hw-figure</code> › <code>hw-posed</code></td><td>포즈 전환 8종 (회전·이동) + 반복 모션</td><td>이벤트(응원·축하·넘어짐…)</td><td>정적 포즈는 <code>hw-posed</code> attribute, 반복(달리기 bob·점프 arc·축하 bounce)은 <code>hw-figure</code> CSS — 둘이 겹쳐도 안 싸움</td></tr>
+  </table>
+
+  <div class="foot">
+    바디 <code>#FFD54A</code> · 왁스 캡/촛농 <code>#F2B233</code> · 윗면 <code>#FFE9A0</code> · 불꽃 바깥 <code>#FFC12E</code> 중 <code>#FFD54A</code> 속 <code>#FFF6D6</code> · 후광 <code>#FFE9A0</code> · 심지·눈동자·입 <code>#2E2418</code> · 눈 흰자 <code>#FFFBF3</code> · 볼 <code>#F7A59B</code>.<br>
+    아웃라인 없음. viewBox <code>0 0 300 340</code>: 캡 x54~246 · y112~148(+방울) 이 몸(x60~240 · y124~300, 물결 밑단 ~318) '위에' 얹힘 · 눈 y206 r15 · 입 y238 · 심지 y98~120 · 불꽃 밑 y100. 비율은 레퍼 23 실측(몸 ≈ 정사각, 캡 두께 17%, 캡이 몸보다 3% 넓음, 눈 높이 46%). 디테일: 오른쪽 음영 · 왼쪽 하이라이트 · 밑단 음영 · 촛농 하이라이트 · 윗면 웅덩이 · 3겹 불꽃 · 후광 · 눈 하이라이트 · 볼.<br>
+    코드 <code>hwiseo-F.js</code> — <code>HWF.char({level, mood, view, flame, wax, spark, lids, pose})</code> · CSS는 <code>HWF.CSS</code>. 일러스트 작업용 기본 정면: <code>hwiseo-F-base.svg</code> / <code>.png</code> (레이어 = class 이름).
+  </div>
+</div>
+<script src="hwiseo-F.js"></script>
+<script>
+const {char,CSS,parts:{flameEl,bodyEl,wickEl}} = HWF;
+document.head.insertAdjacentHTML('beforeend','<style>'+CSS+'</style>');
+document.querySelectorAll('svg[data-c]').forEach(el=>{const o=JSON.parse(el.dataset.c);const t=document.createElement('div');t.innerHTML=char(o);const s=t.firstElementChild;s.setAttribute('class','hw '+(el.getAttribute('class')||''));el.replaceWith(s);});
+document.getElementById('kfFlame').innerHTML=flameEl('big');
+document.getElementById('kfWax').innerHTML=bodyEl('base');
+document.getElementById('kfWick').innerHTML=wickEl();
+const put=(id,items)=>{document.getElementById(id).innerHTML=items.map(([o,l,s])=>`<figure>${char(o)}<figcaption>${l}<small>${s||''}</small></figcaption></figure>`).join('');};
+put('moods',[['neutral','기본','Neutral'],['happy','행복','Happy'],['laugh','웃음','Laugh'],['wink','윙크','Wink'],['sad','슬픔','Sad'],['worried','걱정','Worried'],['angry','화남','Angry'],['confused','당황','Confused'],['surprised','놀람','Surprised'],['sleepy','졸림','Sleepy'],['shy','부끄러움','Shy'],['excited','신남','Excited'],['love','사랑','Love'],['thinking','생각 중','Thinking'],['curious','궁금','Curious'],['proud','뿌듯','Proud'],['dizzy','어질','Dizzy']].map(([m,l,s])=>[{mood:m,level:m==='excited'?4:3,flame:m==='angry'?'spiky':m==='love'?'heart':(m==='sad'||m==='sleepy'||m==='worried')?'small':m==='excited'?'big':null,spark:m==='excited'},l,s]));
+put('views',[['front','Front','정면'],['side','Side','측면 · 얼굴 없음'],['back','Back','후면'],['q','3/4','사선']].map(([v,l,s])=>[{view:v,level:3},l,s]));
+put('actions',[['cheer','응원하기','Cheer'],['run','달리기','Run'],['jump','점프하기','Jump'],['help','친구 돕기','Help'],['sleep','잠자기','Sleep'],['cry','울기','Cry'],['celebrate','축하하기','Celebrate'],['fall','넘어지기','Fall']].map(([p,l,s])=>[{pose:p},l,s]));
+put('canvas',[[{guide:true},'정지','Idle'],[{guide:true,pose:'jump',level:4},'점프 + 레벨4','가장 위'],[{guide:true,pose:'fall'},'넘어지기','가장 오른쪽·아래'],[{guide:true,pose:'help'},'친구 돕기','소품 오른쪽'],[{guide:true,pose:'run'},'달리기','소품 왼쪽']].map(([o,l,s])=>[o,l,s]));
+put('levels',[[0,'Level 0','Unlit · 아직은 서툰 시작'],[1,'Level 1','Spark · 작은 호기심'],[2,'Level 2','Glow · 조금씩 자신감'],[3,'Level 3','Shine · 다른 사람에게도 빛을'],[4,'Level 4','Bright · 세상을 밝히는 빛']].map(([l,a,b])=>[{level:l,mood:l===0?'unlit':l===4?'happy':'neutral'},a,b]));
+put('flames',[['base','기본'],['big','커짐'],['sway','흔들림'],['spiky','뾰족함(화남)'],['heart','하트(사랑)'],['small','작아짐(졸림)'],['off','꺼짐']].map(([f,l])=>[{flame:f,mood:f==='spiky'?'angry':f==='heart'?'love':f==='small'?'sleepy':f==='off'?'unlit':'neutral',cls:f==='sway'?'hw-sway':''},l]));
+put('waxes',[['base','기본'],['left','왼쪽 녹음'],['right','오른쪽 녹음'],['center','가운데 녹음'],['full','완전 녹음']].map(([w,l])=>[{wax:w},l]));
+
+// ── 인터랙티브 데모 ──
+let st={level:3,mood:'neutral',sway:false};
+function draw(extra=''){const t=document.createElement('div');t.innerHTML=char({...st});const s=t.firstElementChild;s.id='live';s.classList.add('hw-live');if(st.sway)s.classList.add('hw-sway');if(extra)s.classList.add(extra);document.getElementById('live').replaceWith(s);return s;}
+function setLv(l){st.level=l;draw();mark();}
+function setMd(m){st.mood=m;draw('hw-blink');setTimeout(()=>document.getElementById('live').classList.remove('hw-blink'),110);mark();}
+function mark(){document.querySelectorAll('#lvBtns button').forEach(b=>b.classList.toggle('on',+b.dataset.v===st.level));document.querySelectorAll('#mdBtns button').forEach(b=>b.classList.toggle('on',b.dataset.v===st.mood));}
+document.getElementById('lvBtns').innerHTML=[0,1,2,3,4].map(l=>`<button data-v="${l}" onclick="setLv(${l})">Lv ${l}</button>`).join('');
+document.getElementById('mdBtns').innerHTML=['neutral','happy','sad','angry','confused','surprised','sleepy','shy','excited'].map(m=>`<button data-v="${m}" onclick="setMd('${m}')">${m}</button>`).join('');
+const SPK=`<g class="hw-sparks" stroke="#FFD54A" stroke-width="6" stroke-linecap="round" fill="none"><path d="M40,96 l14,10"/><path d="M34,130 l16,2"/><path d="M260,96 l-14,10"/><path d="M266,130 l-16,2"/></g>`;
+function trig(k){
+  const el=document.getElementById('live');
+  if(k==='blink'){el.classList.add('hw-blink');setTimeout(()=>el.classList.remove('hw-blink'),120);}
+  if(k==='bounce'){const prev=st.mood;st.mood='excited';const s=draw('hw-bounce');s.insertAdjacentHTML('beforeend',SPK);setTimeout(()=>{st.mood=prev;draw();},900);}
+  if(k==='levelup'){st.level=Math.min(4,st.level+1);const s=draw('hw-bounce');s.insertAdjacentHTML('beforeend',SPK);mark();}
+  if(k==='sway'){st.sway=!st.sway;draw();}
+}
+function bg(c){document.getElementById('stage').style.background=c;}
+(function loop(){setTimeout(()=>{trig('blink');loop();},2000+Math.random()*3000);})();
+document.getElementById('stage').addEventListener('mousemove',e=>{
+  const r=e.currentTarget.getBoundingClientRect();const dx=((e.clientX-r.left)/r.width-.5)*10, dy=((e.clientY-r.top)/r.height-.5)*8;
+  document.querySelectorAll('#live .hw-pupil').forEach(p=>p.style.transform=`translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px)`);
+});
+document.getElementById('stage').addEventListener('mouseleave',()=>document.querySelectorAll('#live .hw-pupil').forEach(p=>p.style.transform=''));
+document.getElementById('stage').addEventListener('click',()=>trig('bounce'));
+draw();mark();
+</script>

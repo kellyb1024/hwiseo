@@ -1,0 +1,159 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HWISEO 캐릭터 시트 B — POKI풍 (2026-08-31)</title>
+<style>
+  :root{--main:#FFD54A;--main-deep:#F5B92E;--main-pale:#FFF3CE;--sub:#7B5CD6;--sub-soft:#D9CCFF;--ink:#1D1B22;--body:#5D5866;--blush:#FFB3A3}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#fff;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:var(--ink)}
+  .page{width:1200px;margin:0 auto;background:#F0F0F0}
+  .hero{height:680px;background:var(--sub);position:relative;overflow:hidden}
+  .hero svg.big{position:absolute;left:100px;top:90px;width:640px}
+  .hero .t{position:absolute;right:64px;top:88px;text-align:right;color:#fff;width:520px}
+  .hero .t small{display:block;font-size:20px;font-weight:800;letter-spacing:.06em;margin-bottom:6px}
+  .hero .t h1{font-size:112px;font-weight:900;line-height:1;letter-spacing:-.02em}
+  .hero .t h1 span{display:block;font-size:44px;font-weight:700;margin-top:6px;color:var(--main);letter-spacing:.1em}
+  .hero .t p{margin-top:28px;font-size:16px;line-height:1.7}
+  .hero .lines{position:absolute;left:40px;top:340px}
+  .hero .lines i{display:block;height:8px;border-radius:4px;background:rgba(255,255,255,.35);margin-bottom:14px}
+  .sec{padding:44px 44px 0}
+  .sec h2{font-size:18px;font-weight:800;color:var(--body);margin-bottom:28px}
+  .grid{background:#F6F6F6;border:1px solid #DDD;height:400px;display:flex;align-items:center;justify-content:space-around;padding:0 40px;
+    background-image:linear-gradient(#DDD 1px,transparent 1px),linear-gradient(90deg,#DDD 1px,transparent 1px);background-size:20px 20px}
+  .grid figure{text-align:center}
+  .grid svg{width:130px;height:150px;display:block}
+  .grid figcaption{font-size:11px;color:var(--body);margin-top:8px;font-family:ui-monospace,monospace}
+  .chips{margin:36px 0 0}
+  .chips small{display:block;font-size:11px;color:var(--body);margin-bottom:8px}
+  .chips .c{display:inline-block;width:76px;height:28px;font:12px/28px ui-monospace,monospace;text-align:center;margin-right:8px;border-radius:2px}
+  .poses{display:grid;grid-template-columns:repeat(3,1fr);gap:40px 24px;padding:56px 100px 80px}
+  .poses figure{text-align:center}
+  .poses svg{width:100%;height:220px;display:block}
+  .poses figcaption{font-size:12px;color:var(--body);margin-top:6px}
+  .row{display:flex;justify-content:space-around;padding:24px 60px 0}
+  .row figure{text-align:center}
+  .row svg{width:110px;height:126px;display:block}
+  .row figcaption{font-size:11px;color:var(--body);margin-top:6px;font-family:ui-monospace,monospace}
+  .foot{padding:40px 44px 60px;font-size:12px;color:var(--body);line-height:1.8}
+</style>
+
+<div class="page">
+  <section class="hero">
+    <div class="lines"><i style="width:150px"></i><i style="width:100px;margin-left:30px"></i><i style="width:130px"></i></div>
+    <svg class="big" data-level="3" data-mood="friendly"></svg>
+    <div class="t">
+      <small>AI FRIEND</small>
+      <h1>HWISEO<span>輝敍 · 휘서</span></h1>
+      <p>휘서는 사진 한 장을 보고 질문을 던져, 그 안의 기억을 다시 꺼내는 걸 돕는 초입니다.
+      사진은 볼 수 있지만 그 순간을 겪지는 못했기에, 늘 묻는 쪽에 섭니다.
+      함께 꺼낸 이야기가 늘어날수록 불꽃이 자랍니다. 휘서는 차분하고, 서두르지 않습니다.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>BASIC (HWISEO) — B · POKI풍</h2>
+    <div class="grid" id="turn"></div>
+    <div class="chips">
+      <small>RGB Color</small>
+      <span class="c" style="background:#FFF3CE;color:#7A6A2E">FFF3CE</span><span class="c" style="background:#FFD54A;color:#1D1B22">FFD54A</span><span class="c" style="background:#F5B92E;color:#1D1B22">F5B92E</span><span class="c" style="background:#FFB3A3;color:#1D1B22">FFB3A3</span><span class="c" style="background:#7B5CD6;color:#fff">7B5CD6</span><span class="c" style="background:#1D1B22;color:#fff">1D1B22</span>
+    </div>
+  </section>
+
+  <section class="poses" id="poses"></section>
+
+  <section class="sec"><h2>EXPRESSION · 점 눈 + 입</h2></section>
+  <div class="row" id="moods"></div>
+  <section class="sec"><h2>FLAME LEVEL · 함께 꺼낸 이야기 수</h2></section>
+  <div class="row" id="levels"></div>
+
+  <div class="foot">
+    A안과의 차이 — 몸통이 더 넓고 낮음(통통) · 눈은 흰자 없는 잉크 점 · 얼굴에 크림색 패치(POKI의 얼굴·배 패치) · 볼터치 <code>#FFB3A3</code> · 팔은 선이 아니라 몸통색 덩어리<br>
+    유지 — 목·허리 없음 · 다리 없음 · 촛농 3갈래 분리 · 아웃라인 없음 · 불꽃 크기 = 단계
+  </div>
+</div>
+
+<script>
+const INK='#1D1B22', Y='#FFD54A', YD='#F5B92E', CR='#FFF3CE', BL='#FFB3A3';
+const FLAME={
+  0:'',
+  1:'M150,118 C138,108 136,94 150,80 C164,94 162,108 150,118 Z',
+  2:'M150,118 C132,104 128,80 150,50 C172,80 168,104 150,118 Z',
+  3:'M150,118 C126,106 114,80 124,56 C130,70 138,78 142,72 C136,54 142,36 150,22 C170,46 176,86 150,118 Z',
+  4:'M150,118 C122,106 106,76 118,48 C124,64 132,72 138,64 C134,46 140,28 150,6 C160,28 166,46 162,64 C168,72 176,64 182,48 C194,76 178,106 150,118 Z',
+};
+const VIEW={front:{ox:0,gap:36,eyes:2,rx:64}, q_left:{ox:-22,gap:28,eyes:2,rx:56}, left:{ox:-58,gap:0,eyes:1,rx:30},
+  back:{eyes:0}, q_right:{ox:22,gap:28,eyes:2,rx:56}, right:{ox:58,gap:0,eyes:1,rx:30}};
+function face(mood,v){
+  if(v.eyes===0) return '';
+  const cx=150+(v.ox||0), EY=224;
+  const xs=v.eyes===2?[cx-v.gap/2,cx+v.gap/2]:[cx];
+  const patch=`<ellipse cx="${cx}" cy="232" rx="${v.rx}" ry="48" fill="${CR}"/>`;
+  const blush = v.eyes===2 ? `<ellipse cx="${cx-46}" cy="240" rx="10" ry="6" fill="${BL}"/><ellipse cx="${cx+46}" cy="240" rx="10" ry="6" fill="${BL}"/>`
+                           : `<ellipse cx="${cx+(v.ox<0?-8:8)}" cy="242" rx="10" ry="6" fill="${BL}"/>`;
+  const dots=(r=6)=>xs.map(x=>`<circle cx="${x}" cy="${EY}" r="${r}" fill="${INK}"/>`).join('');
+  const m=(s)=>`<g transform="translate(${cx-150},0)">${s}</g>`;
+  let f='';
+  switch(mood){
+    case 'watching': f=dots()+m(`<path d="M146,240 q4,4 8,0" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>`); break;
+    case 'friendly': f=dots()+m(`<path d="M140,240 q10,10 20,0" stroke="${INK}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`); break;
+    case 'surprise': f=dots(7)+m(`<ellipse cx="150" cy="244" rx="5" ry="6.5" fill="${INK}"/>`); break;
+    case 'confusion': f=`<circle cx="${xs[0]}" cy="${EY}" r="6" fill="${INK}"/>`+(xs[1]!==undefined?`<path d="M${xs[1]-7},${EY-2} q7,-8 14,0" stroke="${INK}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`:'')
+      +m(`<path d="M143,244 l14,-4" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>`); break;
+    case 'joy': f=xs.map(x=>`<path d="M${x-8},${EY+2} l8,-9 l8,9" stroke="${INK}" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`).join('')
+      +m(`<path d="M140,238 q10,14 20,0 z" fill="${INK}"/>`); break;
+    case 'sleep': f=xs.map(x=>`<path d="M${x-8},${EY-2} q8,8 16,0" stroke="${INK}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`).join(''); break;
+  }
+  return patch+blush+f;
+}
+// 팔 — 몸통색 덩어리. {x,y,rot,len}
+const arm=(x,y,rot,len=34)=>`<ellipse cx="${x}" cy="${y}" rx="15" ry="${len}" fill="${Y}" transform="rotate(${rot} ${x} ${y})"/>`;
+function char({level=3,mood='watching',view='front',drips=true,face:showFace=true,arms='',armsBack='',extra='',vb='0 0 300 340'}={}){
+  const v=VIEW[view];
+  const body='M44,190 a56,56 0 0 1 56,-56 h100 a56,56 0 0 1 56,56 v100 a20,20 0 0 1 -40,0 a20,20 0 0 1 -40,0 a20,20 0 0 1 -32,0 a20,20 0 0 1 -40,0 a20,20 0 0 1 -40,0 Z';
+  const id='b'+Math.random().toString(36).slice(2,8);
+  const smoke=level===0?`<path d="M150,108 c8,-8 -8,-16 2,-26" stroke="${'#D9CCFF'}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>`:'';
+  const dx=view==='back'?0:(v.ox||0)*0.5;
+  return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">
+    <defs><clipPath id="${id}"><path d="${body}"/></clipPath></defs>
+    ${armsBack}
+    ${FLAME[level]?`<path d="${FLAME[level]}" fill="${CR}"/>`:''}
+    ${smoke}
+    <rect x="145" y="110" width="10" height="22" rx="4" fill="${INK}"/>
+    <path d="${body}" fill="${Y}"/>
+    ${drips?`<g clip-path="url(#${id})" fill="${YD}" transform="translate(${dx},0)">
+      <rect x="10" y="120" width="280" height="30"/>
+      <rect x="80" y="136" width="24" height="46" rx="12"/>
+      <rect x="140" y="136" width="20" height="28" rx="10"/>
+      <rect x="196" y="136" width="26" height="60" rx="13"/>
+    </g>`:''}
+    ${showFace?face(mood,v):''}
+    ${arms}
+    ${extra}
+  </svg>`;
+}
+document.querySelectorAll('svg.big').forEach(el=>{
+  const t=document.createElement('div'); t.innerHTML=char({level:+el.dataset.level,mood:el.dataset.mood,arms:arm(246,236,-22,24)+arm(54,236,22,24)});
+  const s=t.firstElementChild; s.setAttribute('class','big'); el.replaceWith(s);
+});
+const turn=document.getElementById('turn');
+[['front','정면'],['q_left','좌 3/4'],['left','좌측면'],['back','뒷면'],['q_right','우 3/4'],['right','우측면']]
+  .forEach(([v,l])=>turn.insertAdjacentHTML('beforeend',`<figure>${char({view:v,arms:arm(246,236,-18,22)+arm(54,236,18,22)})}<figcaption>${l}</figcaption></figure>`));
+const P=[
+  {l:'인사 — 처음 만났을 때', o:{level:1,mood:'friendly',arms:arm(250,196,40,36)+arm(54,238,16,22)}},
+  {l:'사진 보기 — 질문 전', o:{level:2,mood:'watching',arms:arm(84,280,-50,32)+arm(216,280,50,32),
+    extra:`<g transform="translate(100,270)"><rect width="100" height="72" rx="4" fill="#fff"/><rect x="8" y="8" width="84" height="48" fill="#D9CCFF"/><circle cx="32" cy="32" r="11" fill="${YD}"/><rect x="8" y="42" width="84" height="14" fill="#B9A3F2"/></g>`}},
+  {l:'생각 중 — 다음 질문 고르기', o:{level:2,mood:'confusion',arms:arm(228,246,70,30)+arm(54,238,16,22),
+    extra:`<circle cx="240" cy="112" r="5" fill="#D9CCFF"/><circle cx="258" cy="90" r="8" fill="#D9CCFF"/>`}},
+  {l:'이야기 완성 — 불이 자랐다', o:{level:4,mood:'joy',arms:arm(246,206,-40,38)+arm(54,206,40,38),
+    extra:`<path d="M272,66 l0,18 M263,75 l18,0" stroke="${CR}" stroke-width="5" stroke-linecap="round"/><path d="M32,110 l0,12 M26,116 l12,0" stroke="${CR}" stroke-width="4" stroke-linecap="round"/>`}},
+  {l:'꺼짐 — 오래 열어보지 않았을 때', o:{level:0,mood:'sleep',arms:arm(56,246,-6,22)+arm(244,246,6,22),
+    extra:`<text x="232" y="60" font-size="34" font-weight="800" fill="#D9CCFF" font-family="Pretendard,sans-serif">z</text><text x="256" y="36" font-size="24" font-weight="800" fill="#D9CCFF" font-family="Pretendard,sans-serif">z</text>`}},
+  {l:'푸시 알림 — "사진 한 장 볼까요?"', o:{level:1,mood:'surprise',arms:arm(252,210,60,34)+arm(54,238,16,22),
+    extra:`<path d="M262,150 a24,24 0 1 1 0,-48 a24,24 0 0 1 24,24 l0,36 z" fill="#fff" transform="rotate(8 262 126)"/><circle cx="252" cy="126" r="3.5" fill="${INK}"/><circle cx="264" cy="126" r="3.5" fill="${INK}"/><circle cx="276" cy="126" r="3.5" fill="${INK}"/>`}},
+];
+const poses=document.getElementById('poses');
+P.forEach(p=>poses.insertAdjacentHTML('beforeend',`<figure>${char({...p.o,vb:'0 -20 300 360'})}<figcaption>${p.l}</figcaption></figure>`));
+const md=document.getElementById('moods');
+['watching','friendly','surprise','confusion','joy','sleep'].forEach(m=>md.insertAdjacentHTML('beforeend',`<figure>${char({level:3,mood:m,arms:arm(246,236,-18,22)+arm(54,236,18,22)})}<figcaption>${m}</figcaption></figure>`));
+const lv=document.getElementById('levels');
+[0,1,2,3,4].forEach(l=>lv.insertAdjacentHTML('beforeend',`<figure>${char({level:l,mood:l===0?'sleep':'watching',arms:arm(246,236,-18,22)+arm(54,236,18,22)})}<figcaption>level ${l}${l===0?' · 꺼짐':''}</figcaption></figure>`));
+</script>

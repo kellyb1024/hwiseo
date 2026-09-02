@@ -1,0 +1,375 @@
+import React from 'react';
+import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig, interpolate, interpolateColors, spring, Easing} from 'remotion';
+import {Subtitle} from '../components/Stage';
+import {rand} from '../components/Draw';
+import {CUTS, cutStart, partDur} from '../cuts';
+import {theme} from '../theme';
+import {P3Shape as Shape} from './P3Flat';
+import {Figure, useDecoded, cloudD} from './P4Flat';
+import {HwiseoChar, CHAR_FLAME_BASE} from '../components/HwiseoChar';
+
+/**
+ * P5 플랫 — C21~C24. 2026-08-27 밤 '가슴 안에서 피어남' 버전 (사용자 레퍼런스 TED-Ed 'Think Like A Musician' #5·#6·#7).
+ * P4 끝(빛 속에 떠 있는 실루엣 + '!' 풍선)을 그대로 이어받는다.
+ * C21 카메라가 실루엣의 가슴으로 푸시인 → 남색 가슴 속 → 불씨 한 점(마중물)이 켜지고 색 조각들이 하나씩 피어남
+ * C22 불씨 둘레에 동심원 고리(흰 실선 + 노란 점선)가 그려지고 점선 고리가 천천히 돌기 시작 (멈춰진 시간이 흐름)
+ * C23 고리 중심이 원형 창으로 열리며 그 안에 '자신' — 기억(생일 장면) 속에 서 있는 실루엣 → 창이 커짐 (주도권은 당신에게)
+ * C24 창이 화면을 채우고 기억이 아이보리로 가라앉으며 輝 → 敍 금박 도장.
+ * C25 "당신의 갤러리에 문을 두드려"에 캐릭터(휘서_캐릭터 최종.svg → HwiseoChar, 불꽃 일렁임) 등장 → 둘째 호흡 'AI 친구 휘서' 워드마크 → VO 끝나면 글자·캐릭터 전부 사라지고 빈 화면 가운데 앱 아이콘(`img/logo/hwiseo-icon-1024.png`, 쭈글 wob)만 딱 → 끝 (사용자 22:50).
+ * 재료: P4와 동일 (연필 윤곽 + 어긋난 채움, wob, 종이 알갱이). 조각은 색이 선 밖으로 번진 듯 두 겹.
+ */
+const P5CUTS = CUTS.filter((c) => c.part === 'P5');
+const G0 = cutStart('C21');
+const END = partDur('P5');
+const P4END = partDur('P4');
+
+const C = {
+  ivory: '#FFF9F0', cream: '#F3EEE4', warm: '#FBF2E4', ink: '#4A3D52', pencil: '#6B6068', navy: '#2E3054', navyDeep: '#252747', cloud: '#221D28',
+  amber: '#E9A24A', gold: '#F2C069', goldDeep: '#C98A2E', core: '#FFF1C9', ember: '#F3A13F',
+  pink: '#F2A6B8', sky: '#8FB3D9', green: '#B8D68A', orange: '#F08A4B', mint: '#8EDCD0', white: '#FFFDF7',
+};
+const soft = theme.ease.soft, inOut = theme.ease.inOut;
+const clamp = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
+const F = (f: number, a: number, b: number, v0: number, v1: number, e = soft) => interpolate(f, [a, b], [v0, v1], {...clamp, easing: e});
+const circle = (cx: number, cy: number, r: number) => `M${cx - r},${cy} a${r},${r} 0 1,0 ${2 * r},0 a${r},${r} 0 1,0 -${2 * r},0`;
+
+/* 가슴 속 색 조각 6개 (레퍼런스 #6: 노랑 고리·민트 붓·분홍 지그재그·흰 점·파랑 물결·주황 교차) — 중심이 원점 */
+const PIECES: {d: string; col: string; sw: number; dots?: boolean}[] = [
+  {d: 'M-30,10 C-40,-30 20,-40 10,-5 C0,25 -20,20 -10,-10 C0,-40 40,-20 30,20', col: C.gold, sw: 7},
+  {d: 'M-42,-6 Q0,-24 48,4', col: C.mint, sw: 17},
+  {d: 'M-34,-14 L-8,8 L4,-16 L30,10', col: C.pink, sw: 7},
+  {d: '', col: C.white, sw: 0, dots: true},
+  {d: 'M-40,0 Q-20,-22 0,0 T40,0', col: C.sky, sw: 7},
+  {d: 'M-18,-18 L18,18 M-18,18 L18,-18', col: C.orange, sw: 8},
+];
+
+export const P5Flat: React.FC = () => {
+  const f = useCurrentFrame();
+  const {fps, width, height} = useVideoConfig();
+  const fp = P4END + f;                                   // P4에서 이어지는 위상 (둥둥·유영이 끊기지 않게)
+  const seed = Math.floor(f / theme.boilEvery) * 7;
+  const T = {c21: 0, c22: cutStart('C22') - G0, c23: cutStart('C23') - G0, c24: cutStart('C24') - G0, c25: cutStart('C25') - G0};
+  const c25 = P5CUTS.find((c) => c.id === 'C25')!;
+  const hold25 = Math.min(c25.duration - 6, c25.voFrames + 18);
+  const B = {c25: T.c25 + Math.round(hold25 * (16 / 43))};   // C25 두 번째 호흡 "사진 너머의 이야기를 끌어내는 AI 친구 휘서."
+  const ink = C.ink;
+  const birthday = staticFile('img/pack/photo-01-birthday.png');
+  useDecoded(birthday);
+  const logo = staticFile('img/logo/hwiseo-icon-1024.png');
+  useDecoded(logo);
+
+  /* ── P4 끝 상태 (떠 있는 실루엣) ── */
+  const S = 0.85, TILT = -38, th = (TILT * Math.PI) / 180;
+  const personY = 430 + Math.sin(fp / 22) * 7;
+  const personRot = Math.sin(fp / 17) * 2;
+  const hip: [number, number] = [640, personY - 95 * S];
+  const chest: [number, number] = [hip[0] + 42.5 * Math.sin(th), hip[1] - 42.5 * Math.cos(th)];   // 몸통 가운데 (기울기 반영)
+  const headTop: [number, number] = [640 + 160 * S * Math.sin(th), personY - 95 * S - 160 * S * Math.cos(th)];
+  const ux = Math.cos(th), uy = Math.sin(th);
+  const at = (rx: number, ry: number): [number, number] => [headTop[0] + rx * ux - ry * uy, headTop[1] + rx * uy + ry * ux];
+
+  /* ── C21 ①: 푸시인 ×3.4 — 몸이 화면을 꽉 채우는 크기(레퍼런스 #10)에서 멈춤 → 몸 위에 색 조각이 피어나는 동안 천천히 더 다가감 → C22 직전 가슴 속으로 파고듦 ── */
+  const SWITCH = T.c22 - 3;
+  const dive1 = F(f, 0, 44, 0, 1, Easing.bezier(0.4, 0, 0.2, 1));
+  const drift = F(f, 44, SWITCH - 30, 0, 1, Easing.linear);
+  const dive2 = F(f, SWITCH - 30, SWITCH, 0, 1, Easing.bezier(0.5, 0, 0.85, 0.6));   // 30f 가속 (16f는 컷처럼 보임 → 사용자)
+  const z = 1 + dive1 * 3.2 + drift * 1.8 + dive2 * 16;   // ×4.2에서 피어나기 시작 → 피어나는 동안 ×6까지 계속 확대 → 가슴 속
+  const bubO = 1 - F(f, 0, 26, 0, 1);
+  const outerO = 1 - F(f, SWITCH - 6, SWITCH, 0, 1);   // 줌이 남색으로 이어지는 마지막 6f에만 페이드
+  // 몸 위 조각 (figure-local 좌표, 엉덩이 원점 → 기울기·스케일 반영해 월드로)
+  const rot = (lx: number, ly: number): [number, number] => [hip[0] + S * (lx * Math.cos(th) - ly * Math.sin(th)), hip[1] + S * (lx * Math.sin(th) + ly * Math.cos(th))];
+  const BODY: [number, number, number][] = [[-2, -62, -20], [12, -34, 25], [-6, -8, 0], [-40, -76, 0], [40, 12, -50], [2, 60, 0]];   // [lx, ly, 회전]
+  const bodyAt = (i: number) => 48 + i * 12;
+  const bodyP = (i: number) => F(f, bodyAt(i), bodyAt(i) + 16, 0, 1, theme.ease.draw);
+  const bodyPop = (i: number) => spring({frame: f - bodyAt(i), fps, config: {damping: 9, stiffness: 180, mass: 0.7}});
+
+  /* ── C21 ②: 가슴 속 — 불씨(마중물) → 조각들이 피어남 ── */
+  const CC: [number, number] = [640, 380];
+  const inside = f >= SWITCH - 10;
+  const insideK = F(f, SWITCH - 10, SWITCH - 2, 0, 1);      // 종이색 아이보리 → 남색 (한 프레임 전환 ✗)
+  const emberS = spring({frame: f - (SWITCH - 2), fps, config: {damping: 7, stiffness: 220, mass: 0.6}});
+  const emberO = (f >= SWITCH - 2 ? 1 : 0) * (1 - F(f, T.c23, T.c23 + 30, 0, 1));            // C23 창이 열리며 불씨는 창이 됨
+  const pulse = (k: number) => { const t = ((f - (SWITCH + 10) - k * 20) % 60) / 60; return f >= SWITCH + 10 + k * 20 && f < T.c23 ? t : -1; };
+  const pieceAt = (i: number) => SWITCH + 2 + i * 3;   // 가슴 속에선 이미 피어 있던 조각들이 둘레에 빠르게 자리 잡음
+  const pieceP = (i: number) => F(f, pieceAt(i), pieceAt(i) + 14, 0, 1, theme.ease.draw);
+  const piecePop = (i: number) => spring({frame: f - pieceAt(i), fps, config: {damping: 9, stiffness: 180, mass: 0.7}});
+  const spread = F(f, T.c22, T.c22 + 60, 0, 1, inOut);                                            // C22: 조각들이 고리 바깥으로 물러남
+  const piecePos = (i: number): [number, number, number] => {
+    const a = (i / PIECES.length) * Math.PI * 2 + 0.3 + rand(i, 11) * 0.3;
+    const r = 250 + rand(i, 12) * 50 + spread * 95;
+    const drift = Math.sin(f / (26 + i * 3) + i * 1.9) * 5;
+    return [CC[0] + Math.cos(a) * r + drift, CC[1] + Math.sin(a) * r * 0.82 + Math.cos(f / 31 + i) * 4, (rand(i, 13) - 0.5) * 50];
+  };
+  const piecesO = 1 - F(f, T.c24 + 10, T.c24 + 60, 0, 1);
+
+  /* ── C22: 동심원 고리 — 흰 실선(r120) + 노란 점선(r185) 그려짐 → 점선이 천천히 돌기 시작 ── */
+  const ring1P = F(f, T.c22 + 4, T.c22 + 50, 0, 1, theme.ease.draw);
+  const ring2P = F(f, T.c22 + 18, T.c22 + 74, 0, 1, theme.ease.draw);
+  const ringRot = F(f, T.c22 + 60, END, 0, 130, Easing.linear);                                   // 멈춰진 시간이 흐름
+  const R1 = 150, R2 = 232;
+
+  /* ── C23: 창이 열림 — 불씨 자리에서 둥근 창, 그 안에 기억 속 '자신' → C24 화면을 채움 ── */
+  const wr = f < T.c24
+    ? F(f, T.c23 + 2, T.c23 + 44, 0, 130, Easing.bezier(0.2, 0.8, 0.3, 1)) + F(f, T.c23 + 60, T.c24, 0, 80, inOut)   /* 2차 확장은 C24 진입 시점에 정확히 210 도달 (C23 길이가 바뀌어도 점프 없음) */
+    : 210 + F(f, T.c24, T.c24 + 50, 0, 900, Easing.bezier(0.5, 0, 0.8, 0.6));
+  const winOpen = wr > 0;
+  const ring1O = 1 - F(wr, 130, 160, 0, 1);                                                       // 창이 지나가면 흰 고리는 사라짐
+  const ring2O = 1 - F(wr, 215, 250, 0, 1);
+  const overlayO = 1 - F(wr, 760, 960, 0, 1);
+  const innerZoom = 0.9 + F(wr, 0, 1000, 0, 0.25, soft);                                            // 창이 커질수록 안쪽도 조금씩 다가옴
+
+  /* ── C24: 기억이 아이보리로 가라앉고 輝 → 敍 도장, 두 번째 호흡에 "AI 친구 휘서" ── */
+  const memFade = F(f, T.c24 + 14, T.c24 + 56, 0, 1, soft);                                       // 사진 → 종이
+  const hwiS = spring({frame: f - (T.c24 + 40), fps, config: {damping: 12, stiffness: 140}});
+  const seoS = spring({frame: f - (T.c24 + 84), fps, config: {damping: 12, stiffness: 140}});
+  /* ── C25: 輝敍가 위로 물러나고 앱 아이콘 팝 → '휘서' 워드마크 ── */
+  const up = F(f, T.c25, T.c25 + 24, 0, 1, inOut);                                                // 도장이 위로·작게 (캐릭터에 자리 내줌)
+  const charS = spring({frame: f - (T.c25 + 8), fps, config: {damping: 9, stiffness: 140, mass: 0.9}});   // 캐릭터 등장
+  const nameS = spring({frame: f - (B.c25 + 4), fps, config: {damping: 11, stiffness: 150}});
+  const nameP = F(f, B.c25 + 4, B.c25 + 38, 0, 1, theme.ease.draw);
+  const VO_END = T.c25 + c25.voFrames;
+  const clearAll = F(f, VO_END + 6, VO_END + 34, 0, 1, soft);                                       // 글자·캐릭터 전부 사라짐 → 빈 화면
+  const logoS = spring({frame: f - (VO_END + 44), fps, config: {damping: 10, stiffness: 150, mass: 0.8}});   // 아이콘만 딱
+  const flick = 1 + Math.sin(f / 2.3) * 0.06 + Math.sin(f / 5.1) * 0.05;                            // 불꽃 일렁임 (세로 늘었다 줄었다)
+  const flickR = Math.sin(f / 3.7) * 6 + Math.sin(f / 9) * 4;                                        // 좌우 흔들흔들 (도)
+  const flickSk = Math.sin(f / 4.3 + 1) * 7;                                                         // 기울어짐 (skewX 도)
+  const breath = 1 + Math.sin(f / 24) * 0.012;
+  const shimmer = 0.92 + 0.08 * Math.sin(f / 9);
+  const twinkle = (i: number) => 0.6 + 0.4 * Math.sin(f / (5 + (i % 3)) + i * 2.1);
+  const endFade = 1;                                                                                 // 끝은 아이콘이 남은 채로 (사용자)
+  const selfO = 1 - F(f, T.c24 + 44, T.c24 + 90, 0, 1);                                            // 작은 '자신'은 사진과 함께 물러남
+
+  const paper = interpolateColors(insideK, [0, 1], [C.ivory, C.navy]);
+  const winPaper = interpolateColors(memFade, [0, 1], [C.cream, C.warm]);
+
+  /* 창 안 장면 (좌표: 창 중심 = CC). 생일 사진 + 그 앞에 서 있는 실루엣(자신) */
+  const Inner = (
+    <g transform={`translate(${CC[0]} ${CC[1]}) scale(${innerZoom}) translate(${-CC[0]} ${-CC[1]})`}>
+      <rect x={-400} y={-400} width={width + 800} height={height + 800} fill={winPaper} />
+      <g opacity={(1 - memFade) * 0.92}>
+        <image href={birthday} x={CC[0] - 480} y={CC[1] - 320} width={960} height={640} preserveAspectRatio="none" />
+      </g>
+      {/* 자신: 얼굴 없는 실루엣, 기억 속에 서서 바라봄 */}
+      <g opacity={selfO}>
+        <ellipse cx={CC[0]} cy={CC[1] + 172} rx={52} ry={8} fill={C.cloud} opacity={0.22} />
+        <g transform={`translate(${CC[0]} ${CC[1] + 170}) scale(0.75) translate(${-CC[0]} ${-(CC[1] + 170)})`}>
+          <Figure x={CC[0]} y={CC[1] + 170} calm={0} ink={ink} t={f} step={0} />
+        </g>
+      </g>
+    </g>
+  );
+
+  return (
+    <AbsoluteFill style={{backgroundColor: paper}}>
+      {P5CUTS.map((c) => (
+        <Sequence key={c.id} from={c.start - G0} durationInFrames={c.duration} name={c.id}>
+          <Audio src={staticFile(`vo/${c.vo}`)} />
+        </Sequence>
+      ))}
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{display: 'block'}}>
+        <defs>
+          <filter id="wob" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={2} seed={seed} result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale={4} xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="wob2" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves={2} seed={seed + 3} result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale={7} xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="wobChar" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves={2} seed={seed + 21} result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale={16} xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="wobFlame" x="-30%" y="-30%" width="160%" height="160%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves={2} seed={Math.floor(f / 2) * 3 + 50} result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale={26} xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves={2} seed={seed + 5} result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale={9} xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="chalk" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={2} seed={seed + 40} result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale={1.6} />
+          </filter>
+          <filter id="grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={3} seed={seed + 90} />
+            <feColorMatrix type="matrix" values="0 0 0 0 .3  0 0 0 0 .25  0 0 0 0 .2  0 0 0 .12 0" />
+          </filter>
+          <filter id="brush" x="0" y="0" width="1" height="1">
+            <feTurbulence type="fractalNoise" baseFrequency="0.004 0.03" numOctaves={3} seed={11} />
+            <feColorMatrix type="matrix" values="0 0 0 0 .5  0 0 0 0 .35  0 0 0 0 .2  0 0 0 .10 0" />
+          </filter>
+          <clipPath id="win"><circle cx={CC[0]} cy={CC[1]} r={Math.max(0, wr)} /></clipPath>
+        </defs>
+        <rect width={width} height={height} filter="url(#brush)" />
+
+        {/* ── A. P4 끝 장면 → 가슴으로 푸시인 ── */}
+        {outerO > 0 && (
+          <g opacity={outerO} transform={`translate(${chest[0]} ${chest[1]}) scale(${z}) translate(${-chest[0]} ${-chest[1]})`}>
+            {/* 빛 무리 + 반짝이 (P4 C20과 동일 파라미터) */}
+            {Array.from({length: 9}).map((_, i) => (
+              <circle key={'gl' + i} cx={640} cy={personY - 90} r={500 - i * 42 + Math.sin(fp / 19 + i) * 4} fill={C.gold} opacity={0.032} filter="url(#chalk)" />
+            ))}
+            {Array.from({length: 16}).map((_, i) => {
+              const a = rand(i, 151) * Math.PI * 2, rr0 = 90 + rand(i, 152) * 300;
+              const tw = 0.4 + 0.6 * Math.abs(Math.sin(fp / (7 + (i % 4)) + i * 1.3));
+              return <circle key={'sp' + i} cx={640 + Math.cos(a) * rr0} cy={personY - 90 + Math.sin(a) * rr0 * 0.8 + Math.sin(fp / 30 + i) * 6} r={3 + rand(i, 153) * 3} fill="#FFFFFF" stroke={C.gold} strokeWidth={1.2} opacity={tw} />;
+            })}
+            <path d={cloudD(1500, 200, 33)} transform="translate(640 790)" fill="#221D28" opacity={0.55} filter="url(#wob)" />   {/* P4 C20 마지막 프레임의 둔덕과 동일 (모양·위치·색) */}
+            <g transform={`translate(640 ${personY}) rotate(${personRot}) scale(${S}) translate(-640 ${-personY})`}>
+              <Figure x={640} y={personY} calm={1} ink={ink} t={fp} />
+              {bubO > 0 && ([[54, -58, 4.5], [76, -90, 8], [106, -134, 34]] as const)   /* P4 C20과 동일 좌표 — 얼굴에 안 닿게 */.map(([dx, dy, r], i) => {
+                const [px, py] = at(dx, dy);
+                return (
+                  <g key={'bub' + i} transform={`translate(${px} ${py})`} opacity={bubO}>
+                    <path d={circle(0, 0, r)} fill={C.core} stroke={ink} strokeWidth={i === 2 ? 3 : 2.2} filter="url(#wob)" />
+                    {i === 2 && <g><path d="M-3,-17 h6 l-1.5,20 h-3 z" fill={ink} filter="url(#wob)" /><circle cx={0} cy={12} r={3.6} fill={ink} /></g>}
+                  </g>
+                );
+              })}
+            </g>
+            {/* 몸 위에 피어나는 색 조각들 (레퍼런스 #10) */}
+            {BODY.map(([lx, ly, rr], i) => {
+              const pr = bodyP(i);
+              if (pr <= 0) return null;
+              const [x, y] = rot(lx, ly);
+              const p = PIECES[i];
+              const pop = (0.85 + 0.15 * Math.min(1.2, bodyPop(i))) * 0.22;   // 몸 비율 기준으로 작게 (확대는 카메라가) — 사용자
+              return (
+                <g key={'bd' + i} transform={`translate(${x} ${y}) rotate(${rr + TILT}) scale(${pop})`}>
+                  {p.dots ? (
+                    ([[0, 0, 9], [-22, 14, 5], [18, -16, 4]] as const).map(([dx, dy, r], k) => (
+                      <circle key={k} cx={dx} cy={dy} r={r} fill={p.col} opacity={F(pr, k * 0.3, k * 0.3 + 0.4, 0, 1)} filter="url(#wob)" />
+                    ))
+                  ) : (
+                    <g>
+                      <path d={p.d} fill="none" stroke={p.col} strokeWidth={p.sw + 2} strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pr} opacity={0.45} transform="translate(2 -1.5)" filter="url(#wob2)" />
+                      <path d={p.d} fill="none" stroke={p.col} strokeWidth={p.sw} strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pr} filter="url(#wob)" />
+                    </g>
+                  )}
+                </g>
+              );
+            })}
+          </g>
+        )}
+
+        {/* ── B. 가슴 속 ── */}
+        {inside && (
+          <g>
+            {/* 창 안 장면 (C23~): 원형 클립 */}
+            {winOpen && <g clipPath="url(#win)">{Inner}</g>}
+
+            {/* 남색 덮개 — 창 자리만 뚫림, 가장자리는 거칠게 */}
+            {overlayO > 0 && (
+              <path d={`M-40,-40 H${width + 40} V${height + 40} H-40 Z ${winOpen ? circle(CC[0], CC[1], wr) : ''}`} fillRule="evenodd" fill={C.navy} opacity={overlayO * insideK} filter="url(#rough)" />   // 줌 마지막 8f 동안 서서히 덮음 (한 번에 덮으면 컷처럼 보임 — 사용자)
+            )}
+
+            {/* 불씨(마중물): 톡 켜지고 파문이 세 번 ── */}
+            {emberO > 0 && (
+              <g opacity={emberO}>
+                {[0, 1, 2].map((k) => { const t = pulse(k); return t >= 0 && <circle key={'pl' + k} cx={CC[0]} cy={CC[1]} r={14 + 110 * t} fill="none" stroke={C.amber} strokeWidth={3} opacity={0.55 * (1 - t)} filter="url(#wob)" />; })}
+                <g transform={`translate(${CC[0]} ${CC[1]}) scale(${Math.min(1.3, emberS) * 1.6})`}>
+                  <circle r={16} fill={C.amber} opacity={0.18} filter="url(#chalk)" />
+                  <path d={circle(0, 0, 7)} fill={C.ember} stroke={C.core} strokeWidth={1.5} filter="url(#wob)" />
+                  <circle r={2.5} fill={C.core} />
+                </g>
+              </g>
+            )}
+
+            {/* 색 조각: 하나씩 draw-on + 살짝 팝, 색이 선 밖으로 번진 두 겹 */}
+            {piecesO > 0 && PIECES.map((p, i) => {
+              const pr = pieceP(i);
+              if (pr <= 0) return null;
+              const [x, y, rot] = piecePos(i);
+              const pop = (0.8 + 0.2 * Math.min(1.2, piecePop(i))) * 2.1;   // 레퍼런스처럼 큼직하게
+              return (
+                <g key={'pc' + i} transform={`translate(${x} ${y}) rotate(${rot}) scale(${pop})`} opacity={piecesO}>
+                  {p.dots ? (
+                    ([[0, 0, 9], [-22, 14, 5], [18, -16, 4]] as const).map(([dx, dy, r], k) => (
+                      <g key={k} opacity={F(pr, k * 0.3, k * 0.3 + 0.4, 0, 1)}>
+                        <circle cx={dx + 2} cy={dy - 2} r={r} fill={p.col} opacity={0.5} filter="url(#wob2)" />
+                        <circle cx={dx} cy={dy} r={r} fill={p.col} filter="url(#wob)" />
+                      </g>
+                    ))
+                  ) : (
+                    <g>
+                      <path d={p.d} fill="none" stroke={p.col} strokeWidth={p.sw + 2} strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pr} opacity={0.45} transform="translate(3 -2)" filter="url(#wob2)" />
+                      <path d={p.d} fill="none" stroke={p.col} strokeWidth={p.sw} strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pr} filter="url(#wob)" />
+                    </g>
+                  )}
+                </g>
+              );
+            })}
+
+            {/* 동심원 고리: 흰 실선 → 노란 점선(회전) */}
+            {ring1P > 0 && ring1O > 0 && (
+              <path d={circle(CC[0], CC[1], R1)} fill="none" stroke={C.white} strokeWidth={6} pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ring1P} opacity={0.95 * ring1O} filter="url(#wob)" />
+            )}
+            {ring2P > 0 && ring2O > 0 && (
+              <g transform={`rotate(${ringRot} ${CC[0]} ${CC[1]})`}>
+                <path d={circle(CC[0], CC[1], R2)} fill="none" stroke={C.gold} strokeWidth={6} strokeLinecap="round" pathLength={1}
+                  strokeDasharray={ring2P >= 1 ? '0.028 0.022' : `${ring2P * 1} 1`} opacity={0.95 * ring2O} filter="url(#wob)" />
+                {ring2P < 1 && <path d={circle(CC[0], CC[1], R2)} fill="none" stroke={C.navy} strokeWidth={8} pathLength={1} strokeDasharray="0.022 0.028" strokeDashoffset={-0.028} opacity={1} />}
+              </g>
+            )}
+
+            {/* C24: 輝 → 敍 금박 도장 → C25: 위로 물러남 + 캐릭터 등장 + 'AI 친구 휘서' → 전부 사라짐 → 아이콘만 */}
+            {f >= T.c24 && (
+              <g opacity={endFade}>
+                <g opacity={1 - clearAll} transform={`translate(640 ${296 - up * 136}) scale(${1 - up * 0.4}) translate(-640 -296)`}>
+                  {([[540, hwiS, '輝', 0], [740, seoS, '敍', 4]] as const).map(([x, sp, ch, ti]) => sp > 0 && (
+                    <g key={ch} opacity={Math.min(1, sp * 1.4) * shimmer} transform={`translate(${x} 296) scale(${(1.35 - 0.35 * Math.min(1, sp)) * breath}) translate(${-x} -296)`} filter="url(#wob)">
+                      <circle cx={x} cy={296} r={96} fill={C.gold} opacity={0.07} filter="url(#chalk)" />
+                      <text x={x} y={296} textAnchor="middle" dominantBaseline="central" fontFamily={theme.font.sans} fontSize={140} fontWeight={500} fill={C.gold} stroke={C.goldDeep} strokeWidth={3} strokeLinejoin="round">{ch}</text>
+                      {[0, 1, 2, 3].map((i) => <circle key={i} cx={x - 60 + rand(i + ti, 81) * 120} cy={236 + rand(i + ti, 82) * 120} r={2.5} fill={C.core} opacity={twinkle(i + ti)} />)}
+                    </g>
+                  ))}
+                </g>
+                {/* 캐릭터: 아래에서 톡 올라옴, 불꽃 일렁임 + 은은한 빛 */}
+                {f >= T.c25 + 8 && charS > 0 && clearAll < 1 && (() => {
+                  const CH = 330, sc = CH / 1000, cxp = 640, cyp = 250 + (1 - Math.min(1, charS)) * 60;   // viewBox 1000 → 330px
+                  const [fbx, fby] = CHAR_FLAME_BASE;
+                  return (
+                    <g opacity={Math.min(1, charS * 1.3) * (1 - clearAll)} transform={`translate(${cxp} ${cyp}) scale(${sc * (0.9 + 0.1 * Math.min(1.15, charS)) * breath}) translate(-500 -60)`}>
+                      <circle cx={fbx} cy={fby - 60} r={150 + Math.sin(f / 4) * 8} fill={C.gold} opacity={0.14} filter="url(#chalk)" />
+                      <HwiseoChar flameTransform={`translate(${fbx} ${fby}) rotate(${flickR}) skewX(${flickSk}) scale(${1 + (flick - 1) * 0.6} ${flick}) translate(${-fbx} ${-fby})`} flameFilter="url(#wobFlame)" bodyFilter="url(#wobChar)" />
+                    </g>
+                  );
+                })()}
+                {/* 워드마크: 'AI friend Hwiseo' 연필 글씨 (두 번째 호흡, 영어 — 자막은 'AI 친구 휘서', 쉼표 없음) */}
+                {nameS > 0 && clearAll < 1 && (
+                  <g transform={`translate(640 596) scale(${Math.min(1.15, nameS)}) translate(-640 -596)`} opacity={Math.min(1, nameS * 1.4) * (1 - clearAll)}>
+                    <text x={640} y={596} textAnchor="middle" dominantBaseline="central" fontFamily={theme.font.sans} fontSize={44} fontWeight={600} fill="none" stroke={ink} strokeWidth={1.6} strokeLinejoin="round"
+                      pathLength={1} strokeDasharray={1} strokeDashoffset={1 - nameP} filter="url(#wob)">AI friend Hwiseo</text>
+                    <text x={640} y={596} textAnchor="middle" dominantBaseline="central" fontFamily={theme.font.sans} fontSize={44} fontWeight={600} fill={ink} opacity={F(nameP, 0.75, 1, 0, 1)} transform="translate(2 -1)" filter="url(#wob2)">AI friend Hwiseo</text>
+                  </g>
+                )}
+                {/* 빈 화면 → 앱 아이콘만 가운데에 딱 (쭈글: 이미지·테두리 wob) */}
+                {f >= VO_END + 44 && logoS > 0 && (() => {
+                  const LS = 200, lx = 640 - LS / 2, ly = 360 - LS / 2, rr = LS * 0.22;
+                  const d = `M${lx + rr},${ly} h${LS - 2 * rr} q${rr},0 ${rr},${rr} v${LS - 2 * rr} q0,${rr} -${rr},${rr} h-${LS - 2 * rr} q-${rr},0 -${rr},-${rr} v-${LS - 2 * rr} q0,-${rr} ${rr},-${rr} z`;
+                  return (
+                    <g transform={`translate(640 360) scale(${Math.min(1.2, logoS)}) translate(-640 -360)`}>
+                      <clipPath id="logoClip"><path d={d} filter="url(#wob)" /></clipPath>
+                      <path d={d} fill={C.gold} opacity={0.14} transform="translate(7 -5)" filter="url(#wob2)" />
+                      <g filter="url(#wob2)"><image href={logo} x={lx} y={ly} width={LS} height={LS} clipPath="url(#logoClip)" /></g>
+                      <path d={d} fill="none" stroke={ink} strokeWidth={3} strokeLinejoin="round" filter="url(#wob2)" />
+                    </g>
+                  );
+                })()}
+              </g>
+            )}
+          </g>
+        )}
+
+        <rect width={width} height={height} filter="url(#grain)" />
+      </svg>
+      {P5CUTS.map((c) => (
+        <Sequence key={'s' + c.id} from={c.start - G0} durationInFrames={c.duration} name={'sub ' + c.id}>
+          <Subtitle cut={c} />
+        </Sequence>
+      ))}
+    </AbsoluteFill>
+  );
+};

@@ -1,0 +1,1491 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>휘서 輝敍 — 전시 기획</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=IBM+Plex+Sans+KR:wght@300;400;600;700&display=swap">
+
+<style>
+/* ══════════════════════════════════════════════════
+   Apple-design-analysis (alpha)  ·  메인 컬러만 교체
+   primary        #0066cc → #6E00D8   (바이올렛)
+   primary-focus  #0071e3 → #7B0FEB
+   primary-on-dark #2997ff → #B07CFF
+   표면 · 타이포 · 컴포넌트 문법은 원문 그대로 (흑백)
+   ══════════════════════════════════════════════════ */
+:root{
+  /* colors — accent */
+  --primary:#6E00D8;
+  --primary-focus:#7B0FEB;
+  --primary-on-dark:#B07CFF;
+  --on-primary:#ffffff;
+
+  /* colors — ink */
+  --ink:#1d1d1f;
+  --body:#1d1d1f;
+  --body-on-dark:#ffffff;
+  --body-muted:#cccccc;
+  --ink-muted-80:#333333;
+  --ink-muted-48:#7a7a7a;
+
+  /* colors — surface */
+  --canvas:#ffffff;
+  --canvas-parchment:#f5f5f7;
+  --surface-pearl:#fafafc;
+  --surface-tile-1:#272729;
+  --surface-tile-2:#2a2a2c;
+  --surface-tile-3:#252527;
+  --surface-black:#000000;
+  --surface-chip-translucent:#d2d2d7;
+
+  /* colors — lines */
+  --divider-soft:#f0f0f0;
+  --hairline:#e0e0e0;
+  --hairline-on-dark:rgba(255,255,255,.14);
+
+  /* type — SF Pro on Apple platforms, Inter elsewhere (doc §Font Substitutes) */
+  --f-display:-apple-system, "SF Pro Display", BlinkMacSystemFont, "Apple SD Gothic Neo", "Inter", "IBM Plex Sans KR", system-ui, sans-serif;
+  --f-text:-apple-system, "SF Pro Text", BlinkMacSystemFont, "Apple SD Gothic Neo", "Inter", "IBM Plex Sans KR", system-ui, sans-serif;
+
+  /* type scale — spec px at 1440w, scaled by viewport */
+  --t-hero:clamp(34px, 3.90vw, 78px);      /* hero-display 56 */
+  --t-dlg:clamp(26px, 2.85vw, 57px);       /* display-lg   40 */
+  --t-dmd:clamp(22px, 2.36vw, 47px);       /* display-md   34 */
+  --t-lead:clamp(17px, 1.95vw, 39px);      /* lead         28 */
+  --t-airy:clamp(15px, 1.67vw, 33px);      /* lead-airy    24 */
+  --t-tag:clamp(14px, 1.46vw, 29px);       /* tagline      21 */
+  --t-body:clamp(12.5px, 1.18vw, 23px);    /* body         17 */
+  --t-cap:clamp(11px, .97vw, 19px);        /* caption      14 */
+  --t-fine:clamp(9.5px, .83vw, 16px);      /* fine-print   12 */
+  --t-nav:clamp(9.5px, .83vw, 16px);       /* nav-link     12 */
+
+  /* rounded */
+  --r-sm:8px; --r-md:11px; --r-lg:18px; --r-pill:9999px;
+
+  /* spacing */
+  --s-xxs:4px; --s-xs:8px; --s-sm:12px; --s-md:17px;
+  --s-lg:24px; --s-xl:32px; --s-xxl:48px;
+  --s-section:clamp(30px, 5.55vw, 110px);   /* section 80 */
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;}
+body{
+  background:var(--canvas);
+  color:var(--ink);
+  font-family:var(--f-text);
+  font-size:var(--t-body);
+  font-weight:400;
+  line-height:1.47;
+  letter-spacing:-.374px;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+
+/* ── 타일 = 슬라이드 ───────────────────────────────
+   full-bleed, rounded.none, 색 전환 자체가 구분선   */
+.deck{position:relative;width:100vw;height:100vh;}
+
+.tile{
+  position:absolute; inset:0;
+  display:none;
+  flex-direction:column;
+  padding:0 var(--s-section) var(--s-section);
+  background:var(--canvas);
+  color:var(--ink);
+  --fg:var(--ink);
+  --fg-muted:var(--ink-muted-80);
+  --fg-fine:var(--ink-muted-48);
+  --line:var(--hairline);
+  --accent:var(--primary);
+  --card-bg:var(--canvas);
+}
+.tile.on{display:flex;}
+
+.tile.parchment{background:var(--canvas-parchment);--card-bg:var(--canvas);}
+.tile.dark{
+  background:var(--surface-tile-1);
+  color:var(--body-on-dark);
+  --fg:var(--body-on-dark);
+  --fg-muted:var(--body-muted);
+  --fg-fine:#8e8e93;
+  --line:var(--hairline-on-dark);
+  --accent:var(--primary-on-dark);
+  --card-bg:var(--surface-tile-2);
+}
+.tile.dark-2{background:var(--surface-tile-2);--card-bg:var(--surface-tile-1);}
+.tile.dark-3{background:var(--surface-tile-3);--card-bg:var(--surface-tile-1);}
+.tile.black{background:var(--surface-black);--card-bg:var(--surface-tile-3);}
+
+/* ── sub-nav-frosted (문서 §Top Navigation) ───────── */
+.subnav{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:var(--s-lg);
+  height:clamp(44px, 3.6vw, 72px);
+  margin:0 calc(var(--s-section) * -1) var(--s-xxl);
+  padding:0 var(--s-section);
+  border-bottom:1px solid var(--line);
+}
+.subnav .cat{
+  font-family:var(--f-display);
+  font-size:var(--t-tag);font-weight:600;line-height:1.19;letter-spacing:.231px;
+  color:var(--fg);
+}
+.subnav .links{
+  margin-left:auto;display:flex;align-items:center;gap:var(--s-lg);
+  font-size:var(--t-cap);font-weight:400;line-height:1.29;letter-spacing:-.224px;
+  color:var(--fg-fine);
+}
+.subnav .links b{color:var(--accent);font-weight:400;}
+
+/* ── 본문 스택 ─────────────────────────────────── */
+.stack{
+  flex:1 1 auto;min-height:0;
+  display:flex;flex-direction:column;justify-content:center;
+  gap:var(--s-xl);
+}
+.stack.top{justify-content:flex-start;}
+.stack{overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
+.stack::-webkit-scrollbar{display:none;}
+.stack.wide{max-width:none;}
+.measure{max-width:min(980px, 74ch);}   /* 문서 §Grid: 텍스트 섹션 980px */
+
+h1,h2,h3,p{margin:0;}
+
+.hero-display{
+  font-family:var(--f-display);
+  font-size:var(--t-hero);font-weight:600;line-height:1.07;letter-spacing:-.28px;
+  color:var(--fg);text-wrap:balance;
+}
+.display-lg{
+  font-family:var(--f-display);
+  font-size:var(--t-dlg);font-weight:600;line-height:1.10;letter-spacing:0;
+  color:var(--fg);text-wrap:balance;
+}
+.display-md{
+  font-size:var(--t-dmd);font-weight:600;line-height:1.2;letter-spacing:-.374px;
+  color:var(--fg);text-wrap:balance;
+}
+.lead{
+  font-family:var(--f-display);
+  font-size:var(--t-lead);font-weight:400;line-height:1.14;letter-spacing:.196px;
+  color:var(--fg-muted);text-wrap:balance;
+}
+.airy{
+  font-size:var(--t-airy);font-weight:300;line-height:1.5;letter-spacing:0;
+  color:var(--fg-muted);
+}
+.tagline{
+  font-family:var(--f-display);
+  font-size:var(--t-tag);font-weight:600;line-height:1.19;letter-spacing:.231px;
+  color:var(--fg);
+}
+.caption{
+  font-size:var(--t-cap);font-weight:400;line-height:1.43;letter-spacing:-.224px;
+  color:var(--fg-muted);
+}
+.fine{
+  font-size:var(--t-fine);font-weight:400;line-height:1.5;letter-spacing:-.12px;
+  color:var(--fg-fine);
+}
+.fine b{color:var(--fg-muted);font-weight:600;}
+.ac{color:var(--accent);}
+.strong{font-weight:600;color:var(--fg);}
+
+/* ── store-utility-card (rounded.lg 18 · 1px hairline · pad 24) ── */
+.grid{display:grid;gap:clamp(10px, 1.4vw, 24px);}
+.g2{grid-template-columns:repeat(2,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g5{grid-template-columns:repeat(5,1fr);}
+
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  padding:clamp(14px, 1.55vw, 30px);
+  display:flex;flex-direction:column;gap:clamp(8px,.85vw,16px);
+  min-width:0;
+}
+.card .k{
+  font-size:var(--t-fine);font-weight:600;line-height:1.3;letter-spacing:-.08px;
+  color:var(--accent);
+}
+.card .h{
+  font-family:var(--f-display);
+  font-size:clamp(15px,1.5vw,30px);font-weight:600;line-height:1.15;letter-spacing:-.374px;
+  color:var(--fg);
+}
+.card .h.ac,
+.node .t.ac{color:var(--accent);}
+.card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:clamp(5px,.5vw,10px);}
+.card li{
+  font-size:var(--t-cap);line-height:1.43;letter-spacing:-.224px;color:var(--fg-muted);
+}
+.card li.key{color:var(--fg);font-weight:600;}
+.card li.key::before{content:"— ";color:var(--accent);}
+
+.stat{
+  font-family:var(--f-display);
+  font-size:clamp(28px,3.15vw,63px);font-weight:600;line-height:1;letter-spacing:-.374px;
+  color:var(--accent);font-variant-numeric:tabular-nums;
+}
+.stat span{font-size:.4em;letter-spacing:0;margin-left:.12em;}
+
+/* ── pill / chip (문서 §Buttons — rounded.pill = 액션 신호) ── */
+.pill{
+  display:inline-flex;align-items:center;
+  background:var(--primary);color:var(--on-primary);
+  border-radius:var(--r-pill);
+  padding:clamp(6px,.62vw,12px) clamp(13px,1.25vw,25px);
+  font-size:var(--t-cap);font-weight:400;letter-spacing:-.224px;line-height:1;
+}
+.tile.dark .pill{background:var(--primary-on-dark);color:#1d1d1f;font-weight:600;}
+.pill.ghost{
+  background:transparent;color:var(--accent);
+  border:1px solid var(--accent);
+}
+.tile.dark .pill.ghost{background:transparent;color:var(--accent);font-weight:400;}
+.pills{display:flex;flex-wrap:wrap;gap:var(--s-sm);}
+
+.chip{
+  display:inline-flex;align-items:center;
+  border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:clamp(4px,.42vw,8px) clamp(10px,.9vw,18px);
+  font-size:var(--t-fine);color:var(--fg-muted);line-height:1.3;letter-spacing:-.08px;
+}
+.chip.sel{border:2px solid var(--primary-focus);color:var(--accent);font-weight:600;}
+.tile.dark .chip.sel{border-color:var(--primary-on-dark);}
+
+/* ── 대구 패널 ─────────────────────────────────── */
+.versus{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(12px,1.6vw,30px);align-items:stretch;}
+.versus .mid{
+  align-self:center;font-family:var(--f-display);
+  font-size:var(--t-tag);font-weight:600;color:var(--fg-fine);letter-spacing:.231px;
+}
+.panel{
+  border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(16px,1.8vw,34px);
+  display:flex;flex-direction:column;gap:clamp(9px,1vw,18px);
+  background:var(--card-bg);
+}
+.panel.accent{border-color:var(--accent);}
+.panel .t{
+  font-family:var(--f-display);
+  font-size:clamp(19px,1.95vw,39px);font-weight:600;line-height:1.1;letter-spacing:-.374px;
+  color:var(--fg);
+}
+.panel.accent .t{color:var(--accent);}
+.panel ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:clamp(5px,.55vw,11px);}
+.panel li{font-size:var(--t-cap);line-height:1.43;letter-spacing:-.224px;color:var(--fg-muted);}
+.panel.accent li{color:var(--fg);}
+
+/* ── 좌표계 ────────────────────────────────────── */
+.plot{
+  position:relative;flex:1 1 auto;min-height:0;
+  border-left:1px solid var(--line);border-bottom:1px solid var(--line);
+  margin:var(--s-xl) clamp(70px,8vw,150px) clamp(34px,3vw,56px) clamp(80px,9vw,170px);
+}
+.plot .ax{
+  position:absolute;white-space:nowrap;
+  font-size:var(--t-fine);letter-spacing:-.12px;color:var(--fg-fine);
+}
+.ax.ytop{left:-12px;top:-24px;}
+.ax.ybot{left:-12px;bottom:-24px;}
+.ax.xl{left:-2px;bottom:-30px;}
+.ax.xr{right:0;bottom:-30px;}
+.dot{position:absolute;transform:translate(-50%,50%);display:flex;align-items:center;gap:10px;white-space:nowrap;}
+.dot::before{content:"";width:9px;height:9px;border-radius:var(--r-pill);background:var(--fg-fine);flex:0 0 auto;}
+.dot span{font-size:var(--t-cap);color:var(--fg-muted);letter-spacing:-.224px;}
+.dot.us::before{width:16px;height:16px;background:var(--accent);}
+.dot.us span{
+  font-family:var(--f-display);font-size:var(--t-tag);font-weight:600;
+  color:var(--accent);letter-spacing:.231px;
+}
+
+/* ── 타임라인 표 ───────────────────────────────── */
+.tl{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;justify-content:center;}
+.row{
+  display:grid;
+  grid-template-columns:clamp(74px,7.2vw,140px) clamp(44px,4.2vw,84px) 1fr 1fr;
+  gap:clamp(10px,1.4vw,26px);
+  align-items:center;
+  padding:clamp(6px,.86vh,15px) 0;
+  border-bottom:1px solid var(--line);
+}
+.row:first-child{border-top:1px solid var(--line);}
+.row.head{border-bottom:1px solid var(--fg-fine);}
+.row.head > *{
+  font-size:var(--t-fine);font-weight:600;letter-spacing:-.08px;color:var(--fg-fine);
+}
+.row .d{
+  font-size:var(--t-cap);font-weight:600;letter-spacing:-.224px;
+  color:var(--fg);font-variant-numeric:tabular-nums;
+}
+.row .w{font-size:var(--t-fine);color:var(--fg-fine);letter-spacing:-.08px;font-variant-numeric:tabular-nums;}
+.row .c{font-size:var(--t-cap);line-height:1.43;letter-spacing:-.224px;color:var(--fg-muted);}
+.row .c.hi{color:var(--fg);font-weight:600;}
+.row.off > *{color:var(--fg-fine) !important;font-weight:400 !important;}
+.row.gate{border-bottom:1px solid var(--accent);}
+.row.gate .d{color:var(--accent);}
+
+/* ── 표지 ──────────────────────────────────────── */
+.cover{justify-content:center;gap:0;}
+.cover .han{
+  font-family:var(--f-display);
+  font-size:clamp(64px,9.8vw,196px);font-weight:600;line-height:1;letter-spacing:-.02em;
+  color:var(--fg);
+}
+.cover .han i{font-style:normal;color:var(--accent);}
+.cover .sub{margin-top:clamp(16px,2.2vw,44px);}
+.cover .pills{margin-top:clamp(22px,3.1vw,62px);}
+
+/* ── 발표 멘트 (lead-airy 24/300) ── */
+.quote{display:flex;flex-direction:column;gap:clamp(14px,1.6vw,30px);}
+.quote blockquote{
+  margin:0;border-left:2px solid var(--accent);
+  padding-left:clamp(12px,1.25vw,26px);
+  font-size:var(--t-airy);font-weight:300;line-height:1.5;letter-spacing:0;
+  color:var(--fg);text-wrap:pretty;
+}
+.quote blockquote em{font-style:normal;color:var(--accent);}
+
+/* ── 구성도 (헤어라인 · rounded.lg · 그림자 없음) ── */
+.flow{display:flex;align-items:stretch;gap:0;}
+.node{
+  flex:1 1 0;min-width:0;
+  border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--card-bg);
+  padding:clamp(12px,1.3vw,26px);
+  display:flex;flex-direction:column;gap:clamp(5px,.5vw,10px);
+}
+.node.ac{border-color:var(--accent);}
+.node .n{
+  font-size:var(--t-fine);font-weight:600;letter-spacing:-.08px;color:var(--accent);
+}
+.node .t{
+  font-family:var(--f-display);
+  font-size:clamp(13px,1.28vw,26px);font-weight:600;line-height:1.15;letter-spacing:-.374px;color:var(--fg);
+}
+.node ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px;}
+.node li{font-size:var(--t-fine);line-height:1.45;letter-spacing:-.08px;color:var(--fg-muted);}
+.link{
+  flex:0 0 auto;align-self:center;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:0 clamp(6px,.75vw,16px);
+}
+.link .g{font-size:clamp(13px,1.25vw,25px);color:var(--accent);line-height:1;}
+.link .l{font-size:var(--t-fine);color:var(--fg-fine);letter-spacing:-.08px;white-space:nowrap;}
+
+/* ── 시퀀스 ────────────────────────────────────── */
+.seq{display:flex;flex-direction:column;}
+.step{
+  display:grid;
+  grid-template-columns:clamp(24px,2.2vw,44px) clamp(74px,7vw,140px) 1fr clamp(120px,12vw,240px);
+  gap:clamp(8px,1.1vw,22px);align-items:baseline;
+  padding:clamp(5px,.72vh,13px) 0;
+  border-bottom:1px solid var(--line);
+}
+.step:first-child{border-top:1px solid var(--line);}
+.step .i{
+  font-size:var(--t-cap);font-weight:600;color:var(--accent);
+  font-variant-numeric:tabular-nums;letter-spacing:-.224px;
+}
+.step .a{font-size:var(--t-fine);color:var(--fg-fine);letter-spacing:-.08px;}
+.step .x{font-size:var(--t-cap);color:var(--fg-muted);line-height:1.43;letter-spacing:-.224px;}
+.step .s{
+  font-size:var(--t-fine);color:var(--fg);font-weight:600;letter-spacing:-.08px;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── 엔드포인트 표 ─────────────────────────────── */
+.api{display:flex;flex-direction:column;}
+.ep{
+  display:grid;
+  grid-template-columns:clamp(48px,4.6vw,92px) clamp(120px,12vw,240px) 1fr 1fr;
+  gap:clamp(8px,1.1vw,22px);align-items:baseline;
+  padding:clamp(5px,.72vh,13px) 0;
+  border-bottom:1px solid var(--line);
+}
+.ep:first-child{border-top:1px solid var(--line);}
+.ep.head > *{font-size:var(--t-fine);font-weight:600;color:var(--fg-fine);letter-spacing:-.08px;}
+.ep .m{font-size:var(--t-fine);font-weight:600;color:var(--accent);letter-spacing:.02em;}
+.ep .p{
+  font-family:ui-monospace, "SF Mono", Menlo, monospace;
+  font-size:var(--t-cap);color:var(--fg);letter-spacing:-.02em;
+}
+.ep .r{font-size:var(--t-cap);color:var(--fg-muted);letter-spacing:-.224px;line-height:1.43;}
+.ep .r.hi{color:var(--fg);font-weight:600;}
+
+code{
+  font-family:ui-monospace, "SF Mono", Menlo, monospace;
+  font-size:.92em;letter-spacing:-.02em;color:var(--fg);
+}
+
+/* ── 진행 / 조작 ───────────────────────────────── */
+.track{position:fixed;left:0;right:0;bottom:0;height:2px;background:var(--track-bg,#e0e0e0);z-index:9;}
+.track .fill{height:100%;width:0;background:var(--track-ac,#6E00D8);transition:width .3s ease;}
+body[data-surface="dark"]{--track-bg:rgba(255,255,255,.14);--track-ac:#B07CFF;}
+
+.hud{
+  position:fixed;right:var(--s-section);bottom:calc(var(--s-section) * .42);
+  display:flex;align-items:center;gap:var(--s-sm);z-index:9;
+}
+.hud .n{
+  font-size:var(--t-fine);letter-spacing:-.12px;color:#7a7a7a;
+  font-variant-numeric:tabular-nums;margin-right:var(--s-xs);
+}
+body[data-surface="dark"] .hud .n{color:#8e8e93;}
+.hud button{
+  font-family:var(--f-text);
+  background:var(--ink);color:#fff;
+  border:0;border-radius:var(--r-sm);
+  padding:8px 15px;
+  font-size:var(--t-cap);font-weight:400;line-height:1.29;letter-spacing:-.224px;
+  cursor:pointer;
+}
+body[data-surface="dark"] .hud button{background:#fff;color:var(--ink);}
+.hud button:active{transform:scale(.95);}
+.hud button:focus-visible{outline:2px solid var(--primary-focus);outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){
+  .hud button:active{transform:none;}
+  .track .fill{transition:none;}
+}
+
+@media (max-width: 833px){
+  .g5,.g4{grid-template-columns:repeat(2,1fr);}
+  .g3{grid-template-columns:1fr;}
+  .versus{grid-template-columns:1fr;}
+  .versus .mid{display:none;}
+  .row{grid-template-columns:1fr 1fr;}
+  .row .w{display:none;}
+  .subnav .links{display:none;}
+}
+</style>
+</head>
+<body data-surface="light">
+
+<div class="deck">
+
+<!-- 01 ─ hero · canvas -->
+<section data-part="main" class="tile">
+  <div class="subnav"><div class="cat">휘서 輝敍</div><div class="links"><span>2026 IID 졸업전시</span><b>프로젝트 소개</b></div></div>
+  <div class="stack cover measure">
+    <div class="han">輝<i>敍</i></div>
+    <p class="lead sub">사진 한 장의 가치를 더하는<br>AI chatbot <span class="ac">휘서</span></p>
+  </div>
+</section>
+
+<!-- 02 ─ 한 문장 정의 · dark -->
+<section data-part="main" class="tile dark">
+  <div class="subnav"><div class="cat">한 문장으로</div><div class="links"><span>In one sentence</span></div></div>
+  <div class="stack">
+    <h2 class="display-lg" style="max-width:min(1280px,100%);word-break:keep-all;text-wrap:pretty;line-height:1.30;">프로젝트 휘서는 사용자의 갤러리에 <span class="ac">잊힌 사진 한 장</span>을 골라, 작은 촛불 캐릭터 <span class="ac">‘AI 친구 휘서’</span>가 그 사진에 대해 <span class="ac">천천히 묻고</span> 그 답을 <span class="ac">짧은 1인칭 이야기</span>로 엮어주는 졸업전시 앱이자, 그 과정을 담은 <span class="ac" style="white-space:nowrap;">영상 · 다큐</span> 프로젝트입니다</h2>
+  </div>
+</section>
+
+<!-- 02 ─ 목차 · parchment -->
+<section data-part="main" class="tile parchment">
+  <div class="subnav"><div class="cat">논의 순서</div><div class="links"><span>Contents</span></div></div>
+  <div class="stack">
+    <h2 class="display-lg measure">기억을 꺼내는<br><span class="ac">AI chatbot 휘서</span></h2>
+    <div class="grid g4">
+      <div class="card"><div class="k">01 – 02</div><div class="h">논지와 문제</div>
+        <ul><li>AI와 사람 — 재현과 체험</li><li>기록의 과잉</li><li>두 개의 잠긴 저장고</li><li>알아봄과 꺼냄</li></ul></div>
+      <div class="card" style="border-color:var(--accent);"><div class="k">03</div><div class="h ac">왜 지금인가</div>
+        <ul><li>사회적 관점</li><li>UI · UX 관점</li><li>HCI 관점</li></ul></div>
+      <div class="card"><div class="k">04</div><div class="h">해결</div>
+        <ul><li>輝敍 구조</li><li>저자성 방어</li><li>두 개의 빌드</li><li>전시 구현</li></ul></div>
+      <div class="card"><div class="k">05 – 07</div><div class="h">가치와 계획</div>
+        <ul><li>우리가 만드는 것</li><li>산출물 4종</li><li>일정</li></ul></div>
+    </div>
+    <p class="fine"><b>부록</b> — 동료심사 근거 4편 · 검증된 회상 프로토콜 · 유사 서비스 지형 · 기술 상세 8장 · 단기 스프린트. <b>물어보시면 그때 펼친다.</b></p>
+  </div>
+</section>
+
+<!-- 03 ─ 문제 선언 · dark -->
+<section data-part="main" class="tile dark">
+  <div class="subnav"><div class="cat">01 논지</div><div class="links"><span>Problem</span></div></div>
+  <div class="stack measure">
+    <h2 class="hero-display">재현의 무한,<br>체험의 유한.</h2>
+    <p class="lead">사진의 과잉이 아니라, 여는 도구의 부재.</p>
+    <div class="pills">
+      <span class="pill">인프라 불균형</span>
+      <span class="chip">생산 1,000배 증가</span>
+      <span class="chip">도구 퇴화 — 앨범 → 무한 스크롤</span>
+    </div>
+  </div>
+</section>
+
+<!-- 본편 04 ─ AI와 사람 -->
+<section data-part="main" class="tile parchment">
+  <div class="subnav"><div class="cat">01 논지 · AI와 사람</div><div class="links"><span>Stance</span></div></div>
+  <div class="stack">
+    <div class="versus">
+      <div class="panel">
+        <div class="k caption">AI</div>
+        <div class="t">재현<br>represent</div>
+        <ul>
+          <li>언어를 통한 세계의 재현</li>
+          <li>무한한 생산 · 무한한 속도</li>
+          <li>지치지 않음 · 판단하지 않음</li>
+          <li>자기 기억의 부재 → 끼어들지 않음</li>
+          <li class="strong">겪음의 부재 — 체험 없음</li>
+        </ul>
+      </div>
+      <div class="mid">↔</div>
+      <div class="panel accent">
+        <div class="k caption ac">사람</div>
+        <div class="t">체험<br>experience</div>
+        <ul>
+          <li>몸을 통한 세계의 경험</li>
+          <li>유한한 시간 · 유한한 기억</li>
+          <li>망각 · 그러나 온기와 떨림의 소유</li>
+          <li>의미 부여의 주체 · 저자</li>
+          <li class="strong">겪은 것에 대한 유일한 소유권</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid g3">
+      <div class="card">
+        <div class="k">우리의 입장 ①</div><div class="h">대체가 아닌 <span class="ac">빈자리</span></div>
+        <ul>
+          <li>AI의 자리 — 인간의 차선책 아님</li>
+          <li>인화가 만들던 대화의 자리, 이미 비어 있음</li>
+          <li class="key">비어 있어서 서는 것</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">우리의 입장 ②</div><div class="h">비관이 아닌 <span class="ac">방향 전환</span></div>
+        <ul>
+          <li>기술 비판 아님 · AI의 가장 정직한 쓰임</li>
+          <li>재현을 가장 잘 다루는 존재의 체험 쪽 선회</li>
+          <li class="key">무엇을 더 만들까가 아니라 무엇을 되찾을까</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">우리의 입장 ③</div><div class="h">대행이 아닌 <span class="ac">자리 만들기</span></div>
+        <ul>
+          <li>AI의 몫 — 질문과 재구성</li>
+          <li>인간의 몫 — 경험의 언어화</li>
+          <li class="key">문을 여는 것은 기억의 주인만</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine"><b>결정이 갈릴 때의 기준</b> — ① 가치를 지키는가, 기술을 자랑하는가 ② 이야기를 만드는가, 데이터를 쌓는가 ③ 체험의 자리를 인간에게 남기는가, AI가 대신하는가</p>
+  </div>
+</section>
+
+<!-- 04 ─ 수치 · canvas -->
+<section data-part="main" class="tile">
+  <div class="subnav"><div class="cat">02 문제 · 기록의 과잉</div><div class="links"><span>Scale</span></div></div>
+  <div class="stack">
+    <div class="grid g3">
+      <div class="card"><div class="stat">2,800<span>장</span></div><p class="caption">평균 카메라롤 보유량<br>상당수 7,500장 이상</p></div>
+      <div class="card"><div class="stat">27.8<span>%</span></div><p class="caption">의미 있는 재열람 비율<br>약 70% 미재열람</p></div>
+      <div class="card"><div class="stat">16<span>%</span></div><p class="caption">지난 1년, 자기 사진의<br>1/4 이상을 재열람한 사람</p></div>
+      <div class="card"><div class="stat">50<span>%</span></div><p class="caption">카메라롤 스트레스 응답<br>젊은 층일수록 강함</p></div>
+      <div class="card"><div class="stat">47<span>%</span></div><p class="caption">특정 시기 사진의 의도적 회피<br>설계 반영 항목</p></div>
+      <div class="card"><div class="k">해석</div><div class="h">저장고의 포화,<br>출구의 부재.</div></div>
+    </div>
+    <p class="fine"><b>출처 성격 주의</b> — 위 수치는 업계 조사이며 동료심사 연구가 아님. 패널 게재 시 조사 주체 · 표본 · 연도 병기 필요.</p>
+  </div>
+</section>
+
+<!-- 05 ─ 두 저장고 · parchment -->
+<section data-part="main" class="tile parchment">
+  <div class="subnav"><div class="cat">02 문제 · 두 개의 잠긴 저장고</div><div class="links"><span>Two Vaults</span></div></div>
+  <div class="stack">
+    <div class="versus">
+      <div class="panel">
+        <div class="k caption ac">저장고 ①</div>
+        <div class="t">클라우드의 사진</div>
+        <ul><li>존재 · 확인 가능</li><li>무한 스크롤</li><li>미재열람 70%</li><li class="strong">잠금 사유 — 끌어내리지 않음</li></ul>
+      </div>
+      <div class="mid">그리고</div>
+      <div class="panel">
+        <div class="k caption ac">저장고 ②</div>
+        <div class="t">머릿속의 이야기</div>
+        <ul><li>온도 · 냄새 · 직전의 말</li><li>사진에 없는 사감</li><li>본인만 소유</li><li class="strong">잠금 사유 — 물어봐 주지 않음</li></ul>
+      </div>
+    </div>
+    <p class="airy measure">사진은 세계의 압축 파일. 그 압축을 푸는 키는 이미지가 아니라 찍은 사람의 머릿속에 있다.</p>
+  </div>
+</section>
+
+<!-- 06 ─ 알아봄 / 꺼냄 · dark-2 -->
+<section data-part="main" class="tile dark">
+  <div class="subnav"><div class="cat">02 문제 · 알아봄과 꺼냄</div><div class="links"><span>Recognition / Recall</span></div></div>
+  <div class="stack">
+    <div class="versus">
+      <div class="panel">
+        <div class="k caption">스크롤</div>
+        <div class="t">알아봄<br>recognition</div>
+        <ul><li>재노출</li><li>“아, 그때”에서 정지</li><li>기억 강화 거의 없음</li><li>기억하고 있다는 착각</li></ul>
+      </div>
+      <div class="mid">↔</div>
+      <div class="panel accent">
+        <div class="k caption ac">질문</div>
+        <div class="t">꺼냄<br>recall</div>
+        <ul><li>인출 · 언어화</li><li>답을 구성하는 과정</li><li>기억 응고 · 장기 잔존</li><li>실재하는 심리학적 구분</li></ul>
+      </div>
+    </div>
+    <p class="fine"><b>전제</b> — 사람은 자기 자신에게 질문하지 않는다. 질문자의 자리가 비어 있다.</p>
+  </div>
+</section>
+
+<!-- 20 ─ WHY ① 사회적 가치 · canvas -->
+<section data-part="main" class="tile">
+  <div class="subnav"><div class="cat">03 왜 지금인가 · 사회적 관점</div><div class="links"><span>Social Value</span></div></div>
+  <div class="stack">
+    <h2 class="hero-display measure">디지털 호딩 시대의<br><span class="ac">자아 구출</span></h2>
+    <div class="grid g3">
+      <div class="card">
+        <div class="k">현상</div><div class="h">데이터의 과잉,<br>의미의 빈곤</div>
+        <ul>
+          <li>클라우드 속 수만 장의 축적</li>
+          <li>들여다보지 않는 사진첩</li>
+          <li class="key">디지털 저장 강박 — Digital Hoarding</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--primary);">
+        <div class="k">핵심 개념</div><div class="h ac">맥락의 부여,<br>정체성의 복원</div>
+        <ul>
+          <li>파편화된 데이터에 대한 맥락의 부여</li>
+          <li class="key">잃어버린 자아와 정체성의 복원</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">아닌 것</div><div class="h">사진 정리 서비스</div>
+        <ul>
+          <li>분류 · 정돈 · 용량 확보 아님</li>
+          <li class="key">나라는 사람의 맥락에 대한 구출</li>
+        </ul>
+      </div>
+    </div>
+    <div class="quote">
+      <blockquote>우리는 조부모님이 평생 찍은 것보다 많은 사진을 일 년 만에 찍지만, 그 사진들의 가치는 예전 같지 않습니다. <em>사진첩이 무거워질수록 역설적으로 우리의 기억은 빈곤해지고 있습니다.</em></blockquote>
+      <blockquote>챗봇 휘서는 단순한 ‘사진 정리’ 서비스가 아닙니다. <em>범람하는 데이터의 바다 속에서 휩쓸려 가는 ‘나라는 사람의 맥락’을 구출하여 흔들리지 않는 정체성으로 세우는 작업입니다.</em></blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- 21 ─ WHY ② UI/UX · dark -->
+<section data-part="main" class="tile dark">
+  <div class="subnav"><div class="cat">03 왜 지금인가 · UI · UX 관점</div><div class="links"><span>Meaningful Friction</span></div></div>
+  <div class="stack">
+    <h2 class="hero-display measure"><span class="ac">의미 있는 마찰</span><br>Meaningful Friction</h2>
+    <div class="grid g3">
+      <div class="card">
+        <div class="k">업계의 흐름</div><div class="h">마찰 없는 경험</div>
+        <ul>
+          <li>Frictionless</li>
+          <li>무조작 · 자동화 · 효율</li>
+          <li class="key">1초 만의 대행</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--primary-on-dark);">
+        <div class="k">휘서의 선택</div><div class="h ac">정면 역행</div>
+        <ul>
+          <li>효율과 속도가 아닌 회상과 성찰의 유도</li>
+          <li class="key">의도적 지연과 질문</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">UX 목표</div><div class="h">시간의 가치 발굴</div>
+        <ul>
+          <li>시간 단축 아님</li>
+          <li>멈춤 · 생각 · 대답</li>
+          <li class="key">잊혔던 감각의 각성</li>
+        </ul>
+      </div>
+    </div>
+    <div class="quote">
+      <blockquote>모든 IT 서비스가 ‘당신은 아무것도 하지 마세요, AI가 1초 만에 다 해줍니다’라고 말할 때, <em>휘서는 반대로 유저를 멈춰 세우고 ‘이 사진 밖의 이야기를 들려주세요’라고 질문합니다.</em></blockquote>
+      <blockquote>휘서의 UX 목표는 ‘시간 단축’이 아니라 ‘시간의 가치 발굴’에 있습니다. <em>사용자가 멈춰 서서 생각하고 대답하게 만드는 이 ‘의미 있는 마찰’이야말로 잊혔던 감각을 깨우는 가장 강력한 인터랙션입니다.</em></blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- 22 ─ WHY ③ HCI · parchment -->
+<section data-part="main" class="tile parchment">
+  <div class="subnav"><div class="cat">03 왜 지금인가 · HCI 관점</div><div class="links"><span>Human-Computer Interaction</span></div></div>
+  <div class="stack">
+    <h2 class="hero-display measure"><span class="ac">주체성의 역전</span></h2>
+    <div class="grid g3">
+      <div class="card">
+        <div class="k">생성형 AI 시대</div><div class="h">인간은 조수,<br>AI는 창작자</div>
+        <ul>
+          <li>인간의 역할 — 프롬프트 입력</li>
+          <li class="key">AI의 역할 — 결과물의 주도적 생성</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--primary);">
+        <div class="k">핵심 개념</div><div class="h ac">역할의 전환</div>
+        <ul>
+          <li>정답을 제시하는 AI → 질문을 던지는 AI</li>
+          <li class="key">결과물 생성기 → 대화의 촉매제이자 매개자</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">휘서의 구조</div><div class="h">인간은 저자,<br>AI는 마중물</div>
+        <ul>
+          <li>기술 — 잠든 기억을 깨우는 마중물, 촛불</li>
+          <li class="key">서사의 주도권 — 경험을 가진 인간</li>
+        </ul>
+      </div>
+    </div>
+    <div class="quote">
+      <blockquote>휘서는 스스로 서사를 완성하지 않습니다. <em>사진 속 객체를 인식할 뿐 그 세상을 살아보지 못했기 때문입니다.</em></blockquote>
+      <blockquote>기술은 단지 잠든 기억을 깨우는 마중물(촛불)일 뿐, 멈춰진 사진을 다시 흐르게 하는 서사의 주도권은 온전히 ‘경험을 가진 인간’에게 넘겨줍니다. <em>인간이 다시 서사의 주인이 되는 시스템입니다.</em></blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- 10 ─ 해결 구조 · dark -->
+<section data-part="main" class="tile dark">
+  <div class="subnav"><div class="cat">04 해결 · 서비스 구조</div><div class="links"><b>輝 敍</b><span>Structure</span></div></div>
+  <div class="stack">
+    <div class="grid g3">
+      <div class="card">
+        <div class="k">輝 · 소환</div><div class="h">고르지 않는 선택</div>
+        <ul>
+          <li>AI의 시기 지목 — 사용자의 선택권 없음</li>
+          <li>그 달의 첫 사진 · 가장 잊힌 사진</li>
+          <li class="key">진입 비용 5초, 산출은 세션 전체</li>
+          <li>안전장치 — 사전 고지 · 건너뛰기 · 중단</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">輝 · 질문</div><div class="h">언어로 가는 문</div>
+        <ul>
+          <li>사진 판독 → 확인 문장 (단정 금지)</li>
+          <li>맥락 재구성 → 전부 말하기 → 순서 · 시점</li>
+          <li class="key">3층 — 사실 · 감각 · 의미</li>
+          <li>꼬리물기 · 2연속 실패 시 축 전환</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--primary);">
+        <div class="k">敍 · 재구성</div><div class="h ac">펼침</div>
+        <ul>
+          <li>발화된 것만 재구성 — 창작 금지</li>
+          <li>한 줄 정리 + 이야기 · 명조 조판</li>
+          <li class="key">전시 산출물 — 영수증 인쇄</li>
+          <li>사용자 수정 가능 — 저자성의 증거</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine"><b>이름</b> — 휘서(輝敍)는 서비스명이자 <b>챗봇 자신의 이름</b>이다. 輝는 빛을 비추는 일(소환·질문), 敍는 펼치는 일(재구성). <b>역할 분담</b> — 휘서가 질문을 만들고, 인간이 경험을 언어로 꺼내고, 휘서가 재구성한다. 문을 여는 것은 기억의 주인만 가능하다.</p>
+  </div>
+</section>
+
+<!-- 12 ─ 저자성 · parchment -->
+<section data-part="main" class="tile">
+  <div class="subnav"><div class="cat">04 해결 · 저자성 방어</div><div class="links"><span>Authorship</span></div></div>
+  <div class="stack">
+    <div class="grid g2">
+      <div class="card">
+        <div class="k">기준의 전환</div><div class="h">왜곡의 양이 아니라 저자성</div>
+        <ul>
+          <li>자전적 기억의 본성 = 재구성적</li>
+          <li>인화 시절의 가족 대화도 동일한 변형</li>
+          <li class="key">사용자가 떠올려 변형된 것 — 그 사람의 기억</li>
+          <li class="key">AI가 제안해 생긴 것 — AI의 기억 · 경계선</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--primary);">
+        <div class="k">실무 기준</div><div class="h ac">채널만 열고<br>내용은 제안하지 않는다</div>
+        <ul>
+          <li class="key">“그날 냄새 기억나세요?” — 채널 열기</li>
+          <li>✕ “혹시 비 냄새 아니었어요?” — 내용 제안</li>
+          <li class="key">“…로 보이는데, 맞나요?” — 오독 확인</li>
+          <li>✕ “분홍 담요를 덮고 계시네요” — 오독 단정</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid g3">
+      <div class="card"><div class="k">4컷 3중 방어</div>
+        <ul><li>손그림 일러스트체 — 사진체 금지</li><li>원본 사진 병치</li><li>발화 문장 캡션 — 근거 추적</li></ul></div>
+      <div class="card"><div class="k">태도 규칙</div>
+        <ul><li>무조건 동조 금지 · 감정 규정 금지</li><li>“기억 안 남”을 AI가 채우지 않음</li><li>외모 평가 금지 · 옷 · 소지품 허용</li></ul></div>
+      <div class="card"><div class="k">윤리 장치</div>
+        <ul><li>회피 시기 47% 대응 — 건너뛰기</li><li>이유를 묻지 않는 즉시 전환</li><li>AI 얼굴 없음 · AI임을 명시</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 본편 13 ─ 두 개의 빌드 -->
+<section data-part="main" class="tile dark">
+  <div class="subnav"><div class="cat">04 해결 · 두 개의 빌드</div><div class="links"><span>Two Builds</span></div></div>
+  <div class="stack">
+    <div class="versus">
+      <div class="panel accent">
+        <div class="k caption ac">주 산출물</div>
+        <div class="t">앱 프로토타입</div>
+        <ul>
+          <li>폰 화면 · 개인 모드</li>
+          <li>풀 세션 — 질문 5 ~ 7턴</li>
+          <li>본인 기기에서 직접 사진 선택</li>
+          <li>다큐 모드 — 턴 무제한</li>
+          <li class="strong">역할 — 서비스 설계의 증명</li>
+        </ul>
+      </div>
+      <div class="mid">→ 따온다</div>
+      <div class="panel">
+        <div class="k caption">파생</div>
+        <div class="t">전시 빌드</div>
+        <ul>
+          <li>맥북 16:10 · 부스 설치</li>
+          <li>3턴 → 영수증형 결과지</li>
+          <li>QR 페어링 · 폰은 업로드 창구</li>
+          <li>사진 미저장 · 자동 리셋</li>
+          <li class="strong">역할 — 관람객의 직접 체험</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="k">공통 코어</div><div class="h">한 코드베이스, 모드 분기</div>
+        <ul>
+          <li>같은 회상 프로토콜 · 같은 프롬프트</li>
+          <li>같은 저자성 규칙 — 발화된 것만 재구성</li>
+          <li class="key">차이는 턴 수 · 화면 · 입력 경로뿐</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--accent);">
+        <div class="k">왜 출시하지 않는가</div><div class="h ac">목적이 출시가 아니다</div>
+        <ul>
+          <li>증명할 것 — 서비스의 운영이 아니라 설계</li>
+          <li>공개 배포 = 모델 호출 비용의 무제한 노출</li>
+          <li class="key">폐쇄형 접근은 타협이 아니라 기획 의도의 결과</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 본편 12 ─ 기술 요약 -->
+<section data-part="main" class="tile parchment">
+  <div class="subnav"><div class="cat">04 해결 · 전시 구현</div><div class="links"><span>Booth</span></div></div>
+  <div class="stack">
+    <div class="grid g4">
+      <div class="card">
+        <div class="k">부스 구성</div><div class="h">맥북 + 관람객 폰</div>
+        <ul><li>맥북 — 세션 본체이자 대화 화면</li><li>폰 — QR 업로드 창구</li><li class="key">Cloudflare 터널 — 전시장 Wi-Fi 의존 0</li></ul>
+      </div>
+      <div class="card">
+        <div class="k">세션</div><div class="h">3턴, 그리고 영수증</div>
+        <ul><li>질문 · 답변 3턴</li><li>결과지 출력 — 관람객이 가져간다</li><li class="key">3분 무입력 시 자동 리셋</li></ul>
+      </div>
+      <div class="card" style="border-color:var(--accent);">
+        <div class="k">개인정보</div><div class="h ac">사진 미저장</div>
+        <ul><li>메모리 보관 · 세션 종료 시 폐기</li><li>디스크 · DB 기록 없음</li><li class="key">남기는 것은 대화 텍스트뿐</li></ul>
+      </div>
+      <div class="card">
+        <div class="k">운영</div><div class="h">실패 금지 설계</div>
+        <ul><li>8초 무응답 시 샘플 세션 자동 전환</li><li>데모 모드 — 단축키 전환</li><li class="key">API 키 서버 전용 · 세션 상한</li></ul>
+      </div>
+    </div>
+    <p class="fine"><b>상세</b> — 스택 결정 · 시스템 구성도 · 세션 시퀀스 · 엔드포인트 · 이미지 파이프라인 · 프롬프트 운영은 <b>부록 A04–A11</b>.</p>
+  </div>
+</section>
+
+<!-- 23 ─ 가치 · dark -->
+<section data-part="main" class="tile dark">
+  <div class="subnav"><div class="cat">05 가치</div><div class="links"><b>敍</b><span>Value</span></div></div>
+  <div class="stack">
+    <h2 class="display-lg measure">AI로 무엇을 더 만들까가 아니라,<br><span class="ac">AI로 무엇을 되찾을까.</span></h2>
+    <div class="grid g3">
+      <div class="card">
+        <div class="k">가치 ①</div><div class="h">경험의 자리</div>
+        <ul><li>체험은 사람의 몫 · 대행 불가</li><li>재현을 가장 잘 다루는 존재가 체험 쪽으로 방향 전환</li><li class="key">기술 비관이 아니라 방향 전환</li></ul>
+      </div>
+      <div class="card">
+        <div class="k">가치 ②</div><div class="h">저자의 자리</div>
+        <ul><li>번역의 주체는 AI가 아니라 본인</li><li>어떤 말로 옮길지 고르는 행위 자체가 기억의 일부</li><li class="key">사진 앞에서 쓰는 시간 = 지속 시간의 회복</li></ul>
+      </div>
+      <div class="card">
+        <div class="k">가치 ③</div><div class="h">재고의 자리</div>
+        <ul><li>사람이 만든 결과물의 가치를 다시 매김</li><li>무한 생산의 시대, 겪은 것에 묶인 것의 희소성</li><li class="key">목표는 보존이 아니라 동행</li></ul>
+      </div>
+    </div>
+    <p class="fine"><b>판단 기준 3</b> — ① 가치를 지키는가 vs 기술을 자랑하는가 ② 이야기를 만드는가 vs 데이터를 쌓는가 ③ 체험의 자리를 인간에게 남기는가 vs AI가 대신하는가</p>
+  </div>
+</section>
+
+<!-- 22 ─ 산출물 · parchment -->
+<section data-part="main" class="tile parchment">
+  <div class="subnav"><div class="cat">06 산출물 4종</div><div class="links"><span>Deliverables</span></div></div>
+  <div class="stack">
+    <div class="grid g4">
+      <div class="card"><div class="k">실물</div><div class="h">챗봇 휘서</div>
+        <ul><li>앱 프로토타입 — 폰 · 개인 모드 · 풀 세션</li><li>전시 빌드 — 맥북 · 3턴 · 영수증</li><li class="key">역할 — 설계의 증명</li></ul></div>
+      <div class="card"><div class="k">주장</div><div class="h">컨셉 영상</div>
+        <ul><li>2분 24초 · 24컷</li><li>크림 종이 연필선 + 파스텔</li><li class="key">역할 — 왜 이 프로젝트인가</li></ul></div>
+      <div class="card"><div class="k">증거</div><div class="h">다큐 5인</div>
+        <ul><li>사용 전 · 사용 · 사용 후</li><li>세대 혼합 캐스팅</li><li class="key">역할 — 실제로 일어난다</li></ul></div>
+      <div class="card" style="border-color:var(--primary);"><div class="k">참여</div><div class="h ac">부스 전시</div>
+        <ul><li>어둠에서 등불로 상승하는 조도</li><li>3턴 세션 + 영수증형 결과지</li><li class="key">역할 — 관람객 본인의 체험</li></ul></div>
+    </div>
+    <p class="airy measure">전시 동선이 곧 논증 구조 — <span class="strong">주장 → 증거 → 참여</span>.</p>
+  </div>
+</section>
+
+<!-- 24 ─ 로드맵 · parchment -->
+<section data-part="main" class="tile">
+  <div class="subnav"><div class="cat">07 일정</div><div class="links"><span>→ 10 / 16 Installation</span></div></div>
+  <div class="stack">
+    <div class="tl">
+      <div class="row head"><div>주차</div><div>마감</div><div>핵심 작업</div><div>목요일 제출물</div></div>
+      <div class="row gate"><div class="d">W2</div><div class="w">09 / 03</div><div class="c">영상 완성 · 화면 디자인 확정 · 프롬프트 v0</div><div class="c hi">영상 완성본 + 디자인 전량 — 현재 목표</div></div>
+      <div class="row"><div class="d">W3</div><div class="w">09 / 10</div><div class="c">API 연동 · 세션 완주 구현 · QR 페어링 · UT 1라운드</div><div class="c">동작하는 프로토타입 + UT 결과</div></div>
+      <div class="row"><div class="d">W4</div><div class="w">09 / 17</div><div class="c">UT 5–6세션 · 프롬프트 확정 · DP 1차 시안 · 5인 사진 수집</div><div class="c hi">제품 완성 + 촬영 시나리오 — 게이트</div></div>
+      <div class="row"><div class="d">W5</div><div class="w">09 / 24</div><div class="c">다큐 촬영 — 1인당 사용 전 · 사용 · 사용 후 풀세트</div><div class="c hi">촬영 완료 — 하드 데이트</div></div>
+      <div class="row"><div class="d">W6</div><div class="w">10 / 01</div><div class="c">다큐 편집 · DP 최종 확정 · 발주</div><div class="c hi">편집 완료 + 발주 — 슬랙 0</div></div>
+      <div class="row"><div class="d">W7</div><div class="w">10 / 08</div><div class="c">인쇄 · 제작물 수령 · 시공 · 부스 리허설</div><div class="c hi">전체 검수 — 실질 최종</div></div>
+      <div class="row"><div class="d">W8</div><div class="w">10 / 16</div><div class="c">버퍼 · 부스 조도 리허설</div><div class="c">설치</div></div>
+    </div>
+    <p class="fine"><b>병목의 위치</b> — 개발이 아니라 촬영과 DP 발주. 9/17 프롬프트 확정 전 촬영 금지, 10/1 발주 마감의 슬랙 0. 이 두 지점이 10월 전체를 좌우한다.</p>
+  </div>
+</section>
+
+<!-- 25 ─ 클로징 · dark-3 -->
+<section data-part="main" class="tile dark dark-3">
+  <div class="subnav"><div class="cat">휘서 輝敍</div><div class="links"><span>Hwiseo</span></div></div>
+  <div class="stack measure">
+    <h2 class="hero-display">사라진 것은 인화가 아니라,<br>인화가 만들던 <span class="ac">대화의 자리</span>.</h2>
+    <p class="lead">AI는 사람을 대체하지 않는다. 이미 비어 있는 자리에 선다.</p>
+    <div class="pills"><span class="pill">輝敍</span><span class="chip">2026 IID 졸업전시</span></div>
+  </div>
+</section>
+
+<!-- 부록 표지 -->
+<section data-part="appx" data-nonum="1" class="tile dark dark-3">
+  <div class="subnav"><div class="cat">부록</div><div class="links"><span>Appendix</span></div></div>
+  <div class="stack measure">
+    <h2 class="hero-display">Appendix</h2>
+    <p class="lead">질문이 나올 때 펼치는 근거와 기술 상세.</p>
+    <div class="grid g3" style="margin-top:clamp(18px,2.4vw,44px);">
+      <div class="card"><div class="k">A01 – A03</div><div class="h">근거와 지형</div>
+        <ul><li>동료심사 논문 4편</li><li>검증된 회상 프로토콜</li><li>유사 서비스와 대립각</li></ul></div>
+      <div class="card"><div class="k">A04 – A11</div><div class="h">기술 상세</div>
+        <ul><li>스택 · 구성도 · 시퀀스</li><li>엔드포인트 · 이미지 파이프라인</li><li>실패 금지 · 프롬프트 · 개발 순서</li></ul></div>
+      <div class="card"><div class="k">A12</div><div class="h">단기 일정</div>
+        <ul><li>9월 3일 스프린트</li><li>트랙별 일자 계획</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 ─ 지형 · canvas -->
+<section data-part="appx" class="tile">
+  <div class="subnav"><div class="cat">A01 지형 · 유사 서비스</div><div class="links"><span>Landscape</span></div></div>
+  <div class="stack">
+    <div class="grid g2">
+      <div class="card" style="border-color:var(--primary);">
+        <div class="k">핵심 대립각</div><div class="h ac">구글 포토 회상 기능과의 차이</div>
+        <ul>
+          <li class="key">구글 포토는 당신을 대신해 의미를 만든다. 휘서는 당신이 의미를 만들게 한다.</li>
+          <li class="key">구글 포토는 가장 좋은 사진을 고른다. 휘서는 가장 잊힌 사진을 고른다.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">같은 영역에 있는 서비스</div><div class="h">비교 대상</div>
+        <ul>
+          <li>Google Photos Memories — 자동 큐레이션</li>
+          <li>Apple 저널 — 회고 제안</li>
+          <li>StoryWorth · Remento — 가족 자서전</li>
+          <li>HereAfter AI — 인터뷰 아카이브</li>
+          <li>AI 사진 복원 · 생성 — 이미지 처리</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="k">휘서가 서는 자리</div>
+      <p class="airy">사진 한 장을 놓고 <span class="strong">꼬리를 무는 질문</span>으로 <span class="strong">본인의 발화</span>를 끌어내는 세션. 대신 골라주는 큐레이션도, 물어봐 줄 사람이 따로 필요한 수집도 아니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 07 ─ 리서치 4편 · canvas -->
+<section data-part="appx" class="tile parchment">
+  <div class="subnav"><div class="cat">A02 리서치 · 동료심사 근거</div><div class="links"><span>Peer-reviewed</span></div></div>
+  <div class="stack">
+    <div class="grid g2">
+      <div class="card">
+        <div class="k">Henkel 2014 · Psychological Science</div>
+        <div class="h">촬영은 기억을 오프로딩한다</div>
+        <ul>
+          <li>촬영한 대상의 기억 저하 — 대상 · 세부 · 위치 전부</li>
+          <li class="key">예외 — 줌인해 디테일을 찍으면 기억 보존</li>
+          <li>함의: 주의를 기울인 만큼 남는다 = 휘서가 하는 일</li>
+          <li>손택 「사진에 관하여」(1977)의 실증판</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">Roediger &amp; Karpicke 2006</div>
+        <div class="h">인출이 재노출을 이긴다</div>
+        <ul>
+          <li>5분 뒤 — 재독 83% / 인출 71%</li>
+          <li class="key">1주 뒤 — 재독 40% / 인출 61% · 역전</li>
+          <li>재독의 특성: 단기 우세 + 본인의 과신</li>
+          <li>“그냥 스크롤하면 되잖아”에 대한 최강 반론</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">Hirst &amp; Echterhoff 2012 · Annual Review</div>
+        <div class="h">대화로 꺼낸 기억은 다르게 남는다</div>
+        <ul>
+          <li>정교한 회상 대화 = 자전적 기억의 응고</li>
+          <li class="key">공유된 현실 경험 — 심리적 웰빙과 정적 상관</li>
+          <li>요양 현장의 개입 기법으로 교육 중</li>
+          <li>정직하게 병기 — 공동 회상의 억제 효과도 보고됨</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">Lucas et al. 2014 · Computers in Human Behavior</div>
+        <div class="h">사람보다 AI에게 더 많이 말한다</div>
+        <ul>
+          <li>사람 인터뷰어보다 가상 인터뷰어에게 더 많은 개방</li>
+          <li class="key">기제 — 판단받지 않는다는 인식</li>
+          <li>컴퓨터로 프레이밍 시 평가 불안 · 인상 관리 감소</li>
+          <li>설계 결론 — AI임을 숨기지 않음 · 얼굴 아바타 배제</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 ─ 프로토콜 · parchment -->
+<section data-part="appx" class="tile ">
+  <div class="subnav"><div class="cat">A03 리서치 · 검증된 프로토콜</div><div class="links"><span>Method</span></div></div>
+  <div class="stack">
+    <div class="grid g2">
+      <div class="card">
+        <div class="k">Fisher &amp; Geiselman 1992 · 40년 검증</div>
+        <div class="h">인지 면담 · Cognitive Interview</div>
+        <div class="pills">
+          <span class="pill">정확 세부 +41%</span>
+          <span class="pill ghost">현장 정확도 90% 이상</span>
+        </div>
+        <ul>
+          <li class="key">맥락 재구성 — 질문이 아니라 단계</li>
+          <li class="key">전부 말하기 — “사소해 보여도 괜찮아요”의 명시적 허락</li>
+          <li>순서 바꾸기 — “그 직전엔 뭘 하고 계셨어요?”</li>
+          <li>시점 바꾸기 — “옆 사람은 그때 당신을 어떻게 봤을까요?”</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:clamp(10px,1.4vw,24px);">
+        <div class="card" style="flex:1 1 auto;">
+          <div class="k">Harper 2002 · Visual Studies</div>
+          <div class="h">사진 유도 면담 · Photo Elicitation</div>
+          <ul>
+            <li>이미지 처리와 언어 처리는 뇌의 다른 영역</li>
+            <li class="key">산출 — 더 많은 정보가 아니라 다른 종류의 정보</li>
+            <li>시각사회학 · 인류학 · 공중보건의 확립된 방법론</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:var(--primary);">
+          <div class="k">정의</div>
+          <div class="h ac">휘서 = AI가 수행하는<br>photo elicitation</div>
+          <p class="caption">사진의 지위 — 소재가 아니라 <span class="strong">도구</span>.</p>
+        </div>
+      </div>
+    </div>
+    <p class="fine"><b>1차 세션 실패의 진단</b> — 프롬프트의 문제가 아니라 프로토콜의 부재. 맥락 재구성의 단발 질문화 · 전부 말하기 허락 누락 · 정확한 인출 요구 · 축 전환 규칙 부재.</p>
+  </div>
+</section>
+
+<!-- 13 ─ 기술 · 스택 결정 · dark -->
+<section data-part="appx" class="tile dark">
+  <div class="subnav"><div class="cat">A04 기술 · 스택 결정</div><div class="links"><span>Stack</span></div></div>
+  <div class="stack">
+    <div class="grid g4">
+      <div class="card">
+        <div class="k">애플리케이션</div><div class="h">Next.js · App Router</div>
+        <ul>
+          <li>Route Handler 내장 — 별도 서버 없이 API 키 은닉</li>
+          <li>웹 하나에 <code>mode</code>로 전시 / 다큐 분기</li>
+          <li>UI = React</li>
+          <li class="key">화면은 2종뿐 — 부스 · 폰</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">실행 위치</div><div class="h">두 빌드, 한 코드베이스</div>
+        <ul>
+          <li>앱 프로토타입 — 로컬 개발 서버 · 폰 뷰</li>
+          <li>전시 빌드 — 부스 맥북 <code>next start</code> 단일 프로세스</li>
+          <li class="key">클라우드 배포 없음 — 출시가 목적이 아니다</li>
+          <li>화면 — 앱은 폰, 전시는 맥북 16:10 · 1440×900</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">상태</div><div class="h">서버 메모리</div>
+        <ul>
+          <li>DB 없음 · 스키마 없음 · 마이그레이션 없음</li>
+          <li>세션 dict — <code>{sid: {image, messages, turn, ts}}</code></li>
+          <li>대화 로그만 텍스트 JSON으로 남김</li>
+          <li class="key">단일 프로세스라 메모리 공유가 성립</li>
+        </ul>
+      </div>
+      <div class="card ac" style="border-color:var(--primary-on-dark);">
+        <div class="k">모델</div><div class="h ac">이미지 입력 LLM</div>
+        <ul>
+          <li>시작은 Claude — 한국어 질문 품질로 최종 결정</li>
+          <li>요금은 결정 변수가 아님</li>
+          <li>로컬 모델 배제 — GPU 없는 맥북에서 추론 지연</li>
+          <li class="key">프롬프트 캐싱 — 입력 비용 약 1/3</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine"><b>탈락한 선택지와 사유</b> — 아이패드 부스(화상 키보드가 사진을 가림) · 클라우드 배포(현장 수정 불가 + 사진 외부 잔존) · 맥북 파일 선택창(macOS Finder에 개인 파일 노출) · 로컬 LLM(추론 지연으로 관람객 이탈).</p>
+  </div>
+</section>
+
+<!-- 14 ─ 기술 · 시스템 구성 · canvas -->
+<section data-part="appx" class="tile">
+  <div class="subnav"><div class="cat">A05 기술 · 시스템 구성</div><div class="links"><span>Architecture</span></div></div>
+  <div class="stack">
+    <div class="flow">
+      <div class="node">
+        <div class="n">관람객 소유</div>
+        <div class="t">폰 · LTE</div>
+        <ul><li>QR 스캔</li><li>업로드 전용 페이지</li><li>클라이언트 리사이즈</li><li>전시장 Wi-Fi 미사용</li></ul>
+      </div>
+      <div class="link"><div class="l">HTTPS</div><div class="g">→</div><div class="l">공개 주소</div></div>
+      <div class="node">
+        <div class="n">공개 진입점</div>
+        <div class="t">Cloudflare<br>이름 있는 터널</div>
+        <ul><li>인증서 자동</li><li>재시작해도 주소 유지 — 퀵 터널과의 차이</li><li>포트포워딩 불필요</li><li>계정 필요 · 무료</li></ul>
+      </div>
+      <div class="link"><div class="l">암호화 터널</div><div class="g">→</div><div class="l">로컬 서버</div></div>
+      <div class="node ac">
+        <div class="n">세션 본체</div>
+        <div class="t">부스 맥북<br>Next.js</div>
+        <ul><li>부스 화면 + 폰 페이지 동시 서빙</li><li>메모리 세션 dict</li><li>API 키 보관 — 서버 전용</li><li>인터넷은 테더링</li></ul>
+      </div>
+      <div class="link"><div class="l">서버 → 서버</div><div class="g">→</div><div class="l">키 노출 없음</div></div>
+      <div class="node">
+        <div class="n">외부</div>
+        <div class="t">LLM API</div>
+        <ul><li>이미지 + 대화 이력</li><li>질문 · 이야기 생성</li><li>프롬프트 캐싱</li><li>일 · 월 지출 상한</li></ul>
+      </div>
+    </div>
+    <div class="grid g3">
+      <div class="card"><div class="k">부스 맥북에서 나가지 않는 것</div>
+        <ul><li class="key">원본 사진 파일 — 디스크 기록 없음</li><li>세션 토큰 · 비밀키 쿠키</li><li>API 키 (<code>.env</code> · <code>.gitignore</code> 포함)</li></ul></div>
+      <div class="card"><div class="k">부스 맥북에 물리 연결</div>
+        <ul><li class="key">전원 어댑터 — 뚜껑을 닫으면 서버가 종료된다</li><li>인터넷은 테더링 또는 유선</li><li>결과지 출력 장치</li></ul></div>
+      <div class="card"><div class="k">전시장 인프라 의존도</div>
+        <ul><li class="key">공용 Wi-Fi 의존 0 — AP 격리 회피</li><li>필요한 것은 전기 콘센트뿐</li><li>망 장애 시 데모 모드로 존속</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 ─ 기술 · 세션 시퀀스 · parchment -->
+<section data-part="appx" class="tile parchment">
+  <div class="subnav"><div class="cat">A06 기술 · 전시 세션 시퀀스</div><div class="links"><span>Flow</span></div></div>
+  <div class="stack top" style="gap:var(--s-lg);">
+    <div class="seq">
+      <div class="step"><div class="i">00</div><div class="a">맥북</div><div class="x">대기 화면. 시작 버튼 없음 — 관람객이 임의로 세션을 열 수 없다</div><div class="s">B0 대기</div></div>
+      <div class="step"><div class="i">01</div><div class="a">맥북 → 서버</div><div class="x">운영자 조작 또는 리셋으로 세션 생성. 비밀키 쿠키를 가진 부스 브라우저만 발급 가능</div><div class="s">B1 소환</div></div>
+      <div class="step"><div class="i">02</div><div class="a">서버 → 맥북</div><div class="x"><code>sid</code> + 1회용 토큰 발급. 현재 터널 주소로 QR을 동적 렌더 — 종이 인쇄 금지</div><div class="s">B1 소환</div></div>
+      <div class="step"><div class="i">03</div><div class="a">맥북</div><div class="x">SSE 구독 시작 — <code>GET /events/{sid}</code></div><div class="s">B1 소환</div></div>
+      <div class="step"><div class="i">04</div><div class="a">폰</div><div class="x">QR 스캔 → 업로드 전용 페이지. 버튼 하나, 진행률 표시, 하단 개인정보 고지</div><div class="s">P1 올리기</div></div>
+      <div class="step"><div class="i">05</div><div class="a">폰 → 서버</div><div class="x">canvas 리사이즈 · EXIF 보정 후 전송. 토큰 검증 · 10분 만료 · 1회용</div><div class="s">P2 완료</div></div>
+      <div class="step"><div class="i">06</div><div class="a">서버 → 맥북</div><div class="x">SSE 이벤트 push → 사진이 부스 화면에 등장. 이후 폰은 사용하지 않음</div><div class="s">B2 확인</div></div>
+      <div class="step"><div class="i">07</div><div class="a">서버 → LLM</div><div class="x">사진 분석 → 확인 문장 생성. 단정 금지, 오독은 되묻는 형태로</div><div class="s">B2 확인</div></div>
+      <div class="step"><div class="i">08</div><div class="a">맥북 ↔ 서버</div><div class="x">질문 · 답변 <span class="strong">3턴</span>. 매 턴 대화 이력 전체를 전송, 꼬리물기 · 2연속 실패 시 축 전환</div><div class="s">B3 대화 ×3</div></div>
+      <div class="step"><div class="i">09</div><div class="a">서버 → LLM</div><div class="x">발화만으로 이야기 + 한 줄 정리 생성. 사용자 수정 가능</div><div class="s">B4 이야기</div></div>
+      <div class="step"><div class="i">10</div><div class="a">맥북</div><div class="x">영수증형 결과지 출력 — 한 줄 정리와 이야기를 관람객이 가져간다</div><div class="s">R1 영수증</div></div>
+      <div class="step"><div class="i">11</div><div class="a">서버</div><div class="x">세션 종료 — 이미지 · 대화 컨텍스트 <span class="strong">함께</span> 폐기, 새 <code>sid</code> 발급, QR 갱신</div><div class="s">B5 종료 → B0</div></div>
+    </div>
+    <p class="fine"><b>가장 자주 터지는 지점</b> — 관람객 A의 대화 맥락이 남은 채 B가 사진을 올리는 경우. 리셋 시 대화 기록과 이전 이미지를 반드시 함께 비우고, 3분 무입력이면 운영자 조작 없이 자동 리셋한다.</p>
+  </div>
+</section>
+
+<!-- 16 ─ 기술 · 엔드포인트 · canvas -->
+<section data-part="appx" class="tile">
+  <div class="subnav"><div class="cat">A07 기술 · 전시 엔드포인트와 상태</div><div class="links"><span>API</span></div></div>
+  <div class="stack top" style="gap:var(--s-lg);">
+    <div class="api">
+      <div class="ep head"><div>메서드</div><div>경로</div><div>역할</div><div>접근 통제</div></div>
+      <div class="ep"><div class="m">GET</div><div class="p">/</div><div class="r">부스 화면. 세션 생성 + QR 렌더</div><div class="r hi">비밀키 쿠키 필요</div></div>
+      <div class="ep"><div class="m">GET</div><div class="p">/u/{sid}</div><div class="r">폰 업로드 페이지</div><div class="r">유효 토큰 · 10분</div></div>
+      <div class="ep"><div class="m">POST</div><div class="p">/u/{sid}</div><div class="r">이미지 수신 → 메모리 적재</div><div class="r hi">1회용 · 10MB · MIME 검증</div></div>
+      <div class="ep"><div class="m">GET</div><div class="p">/events/{sid}</div><div class="r">SSE — 사진 도착 push (폴링 1s 폴백)</div><div class="r">부스만 구독</div></div>
+      <div class="ep"><div class="m">POST</div><div class="p">/chat/{sid}</div><div class="r">대화 턴 → 모델 호출 → 응답. 매 턴 이력 전체 전송</div><div class="r hi">턴 상한 3 강제</div></div>
+      <div class="ep"><div class="m">POST</div><div class="p">/reset</div><div class="r">세션 폐기 · 새 sid · QR 갱신</div><div class="r hi">부스만 · 자동 3분</div></div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><div class="k">세션 상태 모델</div>
+        <ul>
+          <li><code>sid</code> 랜덤 8자 · <code>token</code> 1회용 · <code>expires</code> +10분</li>
+          <li><code>image</code> 버퍼 · <code>messages[]</code> · <code>turn</code> 0–3</li>
+          <li><code>status</code> waiting_photo → active → done</li>
+          <li class="key"><code>last_active</code> — 3분 초과 시 자동 폐기</li>
+        </ul>
+      </div>
+      <div class="card"><div class="k">비용 · 남용 통제</div>
+        <ul>
+          <li>세션 생성 권한이 부스 브라우저에만 있음 — 링크가 유출돼도 무의미</li>
+          <li>일 세션 상한 + 제공자 월 지출 한도 동시 설정</li>
+          <li>3턴 상한이 세션당 호출 수를 고정</li>
+          <li class="key">프롬프트 캐싱 — 반복 전송되는 사진 · 시스템 프롬프트</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 ─ 기술 · 이미지 파이프라인 · parchment -->
+<section data-part="appx" class="tile parchment">
+  <div class="subnav"><div class="cat">A08 기술 · 이미지와 개인정보</div><div class="links"><span>Pipeline</span></div></div>
+  <div class="stack">
+    <div class="grid g4">
+      <div class="card">
+        <div class="k">폰 · 선택</div><div class="h">앨범에서 한 장</div>
+        <ul>
+          <li><code>&lt;input type="file" accept="image/*"&gt;</code></li>
+          <li class="key"><code>capture</code> 속성 금지 — 카메라가 켜짐</li>
+          <li>전시 모드는 <code>multiple</code> 없이 1장</li>
+          <li>버튼 하나 · 설명 없이 이해되는 화면</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">폰 · 변환</div><div class="h">클라이언트 리사이즈</div>
+        <ul>
+          <li>긴 변 1568px · JPEG 품질 0.8</li>
+          <li>4–8MB 원본 → 약 300KB</li>
+          <li class="key">LTE 업로드 10초 이상 = 관람객 이탈</li>
+          <li>토큰 비용도 함께 절감</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">폰 · 보정</div><div class="h">EXIF · HEIC</div>
+        <ul>
+          <li><code>createImageBitmap(f, {imageOrientation:'from-image'})</code></li>
+          <li class="key">보정 없으면 아이폰 세로 사진이 눕는다</li>
+          <li>HEIC는 canvas 경유로 JPEG 변환</li>
+          <li>폴백 경로는 서버가 명시적 에러 반환</li>
+        </ul>
+      </div>
+      <div class="card ac" style="border-color:var(--primary);">
+        <div class="k">서버 · 보관</div><div class="h ac">저장하지 않음</div>
+        <ul>
+          <li>메모리에만 적재 · 세션 종료 시 폐기</li>
+          <li class="key">디스크 기록 없음 → 관리할 파일도 없음</li>
+          <li>폰 화면 하단 + 부스 안내물에 동일 문구 고지</li>
+          <li>남기는 것은 대화 텍스트 로그뿐</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine"><b>왜 이 수준까지 다루는가</b> — 추억 사진에는 가족과 친구의 얼굴이 거의 확실히 포함된다. 개인정보이며, 졸업전시 심사에서 질문이 나올 수 있는 지점이다. <b>반드시 실제 아이폰과 안드로이드로 각각 테스트할 것</b> — 당일에 발견하면 늦는다.</p>
+  </div>
+</section>
+
+<!-- 18 ─ 기술 · 실패 금지 · dark -->
+<section data-part="appx" class="tile dark">
+  <div class="subnav"><div class="cat">A09 기술 · 실패 금지 설계</div><div class="links"><span>Resilience</span></div></div>
+  <div class="stack">
+    <div class="grid g3">
+      <div class="card">
+        <div class="k">API 장애</div><div class="h">8초 폴백</div>
+        <ul>
+          <li>샘플 세션 3종을 앱에 JSON으로 내장</li>
+          <li>8초 안에 응답이 없으면 자동 전환</li>
+          <li class="key">관람객은 전환 사실을 모른다</li>
+          <li>망 장애 · 한도 초과 · 지연 모두 동일 처리</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">전면 장애</div><div class="h">데모 모드</div>
+        <ul>
+          <li>준비된 사진 + 응답 하드코딩</li>
+          <li class="key">키보드 단축키 하나로 전환</li>
+          <li>최악의 경우에도 심사위원에게 보여줄 것이 남음</li>
+          <li>운영자가 단축키를 숙지할 것</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">기기</div><div class="h">키오스크</div>
+        <ul>
+          <li>Chrome 키오스크 모드 — 새로고침 · 주소창 차단</li>
+          <li>Wake Lock API로 화면 꺼짐 방지</li>
+          <li>절전 · 화면보호기 해제, 전원 어댑터 상시 연결</li>
+          <li class="key">뚜껑을 닫으면 서버가 죽는다</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><div class="k">보안</div>
+        <ul>
+          <li class="key">API 키는 <code>.env</code> 서버 환경변수만 — <code>NEXT_PUBLIC_</code> 접두사 금지</li>
+          <li>모든 모델 호출은 서버 경유. 공개 URL이므로 프론트에 두면 즉시 유출</li>
+          <li>업로드 10MB 상한 + MIME 검증 + sid를 모르면 업로드 불가</li>
+        </ul>
+      </div>
+      <div class="card"><div class="k">전시 당일 체크리스트</div>
+        <ul>
+          <li class="key">QR이 전날 주소가 아닌 <span class="strong">현재 터널 주소</span>를 가리키는지 확인</li>
+          <li>iOS · 안드로이드 실기기 리허설, API 사용량 상한 설정</li>
+          <li>프로덕션 고정 — 전시 중에는 배포하지 않는다</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 ─ 기술 · 프롬프트 운영 · canvas -->
+<section data-part="appx" class="tile">
+  <div class="subnav"><div class="cat">A10 기술 · 프롬프트 운영</div><div class="links"><span>Prompts</span></div></div>
+  <div class="stack">
+    <div class="grid g2">
+      <div class="card">
+        <div class="k">원칙</div><div class="h">프롬프트는 코드가 아니라 데이터</div>
+        <ul>
+          <li><code>/prompts/analyze.v1.md · ask.v1.md · compose.v1.md</code></li>
+          <li class="key">배포 없이 튜닝 가능해야 한다 — 교체 비용 거의 0</li>
+          <li>세션마다 <code>prompt_version</code>과 <code>model</code>을 기록 → A/B 비교</li>
+          <li class="key">패널에 그대로 게재 가능한 형태로 작성 — 이것이 디자인 산출물</li>
+        </ul>
+      </div>
+      <div class="card ac" style="border-color:var(--primary);">
+        <div class="k">ask 프롬프트 · 리서치 반영 규칙</div><div class="h ac">10개 조항</div>
+        <ul>
+          <li>① 맥락 재구성을 먼저, 단계로 · ② “사소해 보여도 괜찮아요” 명시</li>
+          <li>③ 반복적으로 존재했던 것 우선 · ④ 옷 · 소지품 허용, 외모 평가 금지</li>
+          <li>⑤ 확인받는 톤, 단정 금지 · ⑥ 채널만 열고 내용은 제안하지 않음</li>
+          <li>⑦ “기억 안 남”을 AI가 채우지 않음 · ⑧ 2연속 실패 시 축 전환</li>
+          <li class="key">⑨ 무조건 동조하지 않음 · ⑩ 사진 유형에 따라 층 순서 조정</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine"><b>검증 방식</b> — 프롬프트 품질은 코드 리뷰가 아니라 UT로 판정한다. W3에 2–3세션, W4에 5–6세션(세대 혼합). <b>9/17 프롬프트 확정 전에는 다큐 촬영에 들어가지 않는다</b> — 촬영본이 제품보다 앞서면 영상이 거짓말이 된다.</p>
+  </div>
+</section>
+
+<!-- 20 ─ 기술 · 개발 순서 · parchment -->
+<section data-part="appx" class="tile parchment">
+  <div class="subnav"><div class="cat">A11 기술 · 개발 순서</div><div class="links"><span>Build Order</span></div></div>
+  <div class="stack">
+    <div class="grid g2">
+      <div class="card">
+        <div class="k">순서 — 이 순서를 지킨다</div><div class="h">실기기 통과가 먼저</div>
+        <ul>
+          <li>① 서버 + 두 페이지 골격 — 사진이 부스 화면에 뜨는 것까지</li>
+          <li class="key">② 터널 연결 후 실제 폰으로 업로드 테스트 ← 여기서 막히면 나머지가 무의미</li>
+          <li>③ 클라이언트 리사이즈 · EXIF · HEIC</li>
+          <li>④ LLM 연동 및 대화 루프 · ⑤ 리셋 / 자동 타임아웃</li>
+          <li>⑥ 전시용 UI 마감 · ⑦ 데모 모드 · ⑧ 실기기 리허설</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="k">먼저 통과시켜야 하는 관문</div><div class="h">실기기 업로드</div>
+        <ul>
+          <li>iOS와 안드로이드 실기기로 각각 테스트</li>
+          <li>EXIF 회전 · HEIC · 업로드 속도를 여기서 전부 확인</li>
+          <li class="key">여기서 막히면 이후 작업이 전부 무의미하다</li>
+          <li>당일에 발견하면 대응이 불가능한 항목</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid g3">
+      <div class="card"><div class="k">전시 모드에서 뺀 것</div>
+        <ul><li class="key">4컷 이미지 생성 — 완전 제거</li><li>이어서 하기 · 이메일 수집</li><li>사유 — 토큰 비용과 시연 안정성</li></ul></div>
+      <div class="card"><div class="k">다큐 모드에서 켜는 것</div>
+        <ul><li class="key">턴 무제한 — <code>/booth?mode=doc</code></li><li>같은 코드베이스, 분기만 다름</li><li>촬영용 긴 세션 확보</li></ul></div>
+      <div class="card"><div class="k">화면이 코드보다 먼저</div>
+        <ul><li class="key">전시 화면 9장 확정 후 구현 착수</li><li>맥북 B0–B5 · 폰 P1–P2 · 영수증 R1</li><li>9/03 제출물이 곧 개발 명세</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 23 ─ 스프린트 · canvas -->
+<section data-part="appx" class="tile">
+  <div class="subnav"><div class="cat">A12 일정 · 9월 3일 스프린트</div><div class="links"><span>8/26 → 9/03</span><b>현재 목표</b></div></div>
+  <div class="stack top" style="gap:var(--s-lg);">
+    <div class="pills">
+      <span class="pill">프로모션 비디오 완성</span>
+      <span class="pill">앱 프로토타입 화면 디자인 전량 확정</span>
+      <span class="pill ghost">API 연동 직전까지 · 개발 진입 전</span>
+    </div>
+    <div class="tl">
+      <div class="row head"><div>날짜</div><div>가용</div><div>트랙 A · 영상</div><div>트랙 B · 앱 프로토타입 디자인</div></div>
+      <div class="row"><div class="d">08 / 26 수</div><div class="w">저녁</div><div class="c">P1 소스 확정 — C02a 재생성 · 사진 팩 수급</div><div class="c">화면 9장 목록 확정 · 레퍼런스 수집</div></div>
+      <div class="row"><div class="d">08 / 27 목</div><div class="w">종일</div><div class="c">C01–C05 드로잉 파이프라인 완주</div><div class="c">로우파이 와이어 9장</div></div>
+      <div class="row off"><div class="d">08 / 28 금</div><div class="w">0</div><div class="c">학원 수업 준비 — 작업 없음</div><div class="c">—</div></div>
+      <div class="row"><div class="d">08 / 29 토</div><div class="w">3h</div><div class="c">P2 · P3 룩 교체 — 재료 블록 5 · 6</div><div class="c">디자인 토큰 확정 — 색 · 타입 · 간격</div></div>
+      <div class="row"><div class="d">08 / 30 일</div><div class="w">3h</div><div class="c">P4 · P5 룩 교체 · 다섯 감각색</div><div class="c">맥북 고피델리티 4장 — B0 · B1 · B2 · B3</div></div>
+      <div class="row"><div class="d">08 / 31 월</div><div class="w">저녁</div><div class="c">자막 · 타이밍 · 침묵 구간 검수</div><div class="c">B4 이야기 · B5 종료 · 폰 P1 · P2</div></div>
+      <div class="row"><div class="d">09 / 01 화</div><div class="w">저녁</div><div class="c">1차 렌더 · 자체 검수</div><div class="c">영수증 R1 · 모션 스펙 — 등장 400ms · 이징</div></div>
+      <div class="row"><div class="d">09 / 02 수</div><div class="w">저녁</div><div class="c">최종 렌더 · 파일 정리</div><div class="c hi">프롬프트 v0 문서화 · 화면–API 매핑표</div></div>
+      <div class="row gate"><div class="d">09 / 03 목</div><div class="w">제출</div><div class="c hi">영상 완성본</div><div class="c hi">화면 9장 + 프롬프트 v0 + 연동 명세 → 개발 착수 가능</div></div>
+    </div>
+    <p class="fine"><b>구조적 제약</b> — 금요일 가용 0, 목요일 피드백 후 착수까지 48시간 공백. 대응은 목요일 그 자리에서 반영 항목을 메모로 확정하고 토요일 첫 블록에 즉시 착수하는 것.</p>
+  </div>
+</section>
+
+</div>
+
+<div class="track"><div class="fill" id="fill"></div></div>
+<div class="hud">
+  <span class="n"><b id="cur">01</b> / <span id="tot">16</span></span>
+  <button id="prev" aria-label="이전">←</button>
+  <button id="next" aria-label="다음">→</button>
+</div>
+
+<script>
+(function(){
+  var tiles = Array.prototype.slice.call(document.querySelectorAll('.tile'));
+  var i = 0, fill = document.getElementById('fill'), cur = document.getElementById('cur');
+  var tot = document.getElementById('tot');
+  var mainN = tiles.filter(function(t){ return t.dataset.part !== 'appx'; }).length;
+  var appxN = tiles.filter(function(t){ return t.dataset.part === 'appx' && !t.dataset.nonum; }).length;
+
+  function show(n){
+    i = Math.max(0, Math.min(tiles.length - 1, n));
+    tiles.forEach(function(t,k){ t.classList.toggle('on', k === i); });
+    document.body.dataset.surface = tiles[i].classList.contains('dark') ? 'dark' : 'light';
+    var t = tiles[i], appx = t.dataset.part === 'appx';
+    var idx = appx ? i - mainN : i;
+    var shown = appx ? idx : idx + 1;
+    var total = appx ? appxN : mainN;
+    fill.style.width = (Math.min(shown, total) / total * 100) + '%';
+    cur.textContent = t.dataset.nonum ? '부록' : (appx ? 'A' : '') + String(shown).padStart(2,'0');
+    tot.textContent = String(total).padStart(2,'0');
+    try { history.replaceState(null, '', '#' + (i + 1)); } catch(e){}
+  }
+
+  document.getElementById('next').addEventListener('click', function(e){ e.stopPropagation(); show(i + 1); });
+  document.getElementById('prev').addEventListener('click', function(e){ e.stopPropagation(); show(i - 1); });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' '){ e.preventDefault(); show(i + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home'){ show(0); }
+    else if (e.key === 'End'){ show(tiles.length - 1); }
+  });
+
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.hud')) return;
+    show(e.clientX > window.innerWidth * 0.5 ? i + 1 : i - 1);
+  });
+
+  var sx = null;
+  document.addEventListener('touchstart', function(e){ sx = e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 46) show(dx < 0 ? i + 1 : i - 1);
+    sx = null;
+  }, {passive:true});
+
+  var h = parseInt((location.hash || '').replace('#',''), 10);
+  show(isNaN(h) ? 0 : h - 1);
+})();
+</script>
+</body>
+</html>

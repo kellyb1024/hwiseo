@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&family=Noto+Sans+KR:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #E9A24A; } a:hover { color: #FFDCA8; }
+  </style>
+</helmet>
+<div style="width: 390px; height: 844px; background: #100D16; color: #EFEAF2; font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px;">
+
+  <div style="display: flex; align-items: center; gap: 9px;">
+    <svg viewBox="0 0 140 140" width="20" height="20" fill="none"><circle cx="70" cy="70" r="40" stroke="#EFEAF2" stroke-opacity="0.5" stroke-width="7"/><path d="M70 58 V88" stroke="#B3A5DC" stroke-width="11" stroke-linecap="round"/></svg>
+    <div style="font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 0.1em;">휘서</div>
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div style="font-family: 'Noto Serif KR', 'Nanum Myeongjo', serif; font-size: 25px; line-height: 1.65;">가장 오래된 사진부터<br>열어볼까요.</div>
+    <div style="font-size: 12px; color: #8C839B; line-height: 1.8;">의미 있는 사진을 고르지 않아도 됩니다.<br>오히려 그냥 지나쳤던 한 장이 좋아요.</div>
+  </div>
+
+  <div style="border: 1px dashed rgba(239,234,242,0.22); border-radius: 4px; padding: 34px 24px; display: flex; flex-direction: column; align-items: center; gap: 18px; background: #1B1724;">
+    <svg viewBox="0 0 120 84" width="112" height="78" fill="none" stroke="#EFEAF2" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="0.7" y="0.7" width="118.6" height="82.6" rx="2" stroke-opacity="0.2"/>
+      <circle cx="60" cy="33" r="11" stroke-opacity="0.42"/>
+      <path d="M41 66 q0 -20 19 -20 q19 0 19 20" stroke-opacity="0.42"/>
+      <path d="M26 72 h68" stroke-opacity="0.18"/>
+    </svg>
+    <div style="font-size: 14px; font-weight: 500;">사진 한 장 올리기</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-size: 11px; color: #6E6579; letter-spacing: 0.04em;">고르기 어렵다면</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+      <div style="font-size: 11px; color: #B3A5DC; border: 1px solid rgba(179,165,220,0.38); border-radius: 14px; padding: 7px 13px;">가장 오래된</div>
+      <div style="font-size: 11px; color: #B3A5DC; border: 1px solid rgba(179,165,220,0.38); border-radius: 14px; padding: 7px 13px;">가장 안 열어본</div>
+      <div style="font-size: 11px; color: #B3A5DC; border: 1px solid rgba(179,165,220,0.38); border-radius: 14px; padding: 7px 13px;">특정 연월 무작위</div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+
+  <div style="font-size: 11px; color: #6E6579; line-height: 1.8; border-top: 1px solid rgba(239,234,242,0.08); padding-top: 16px;">질문 5~7개 · 10분 남짓<br>답하기 어려운 질문은 넘겨도 됩니다.</div>
+
+</div>
+</x-dc>
+</body>
+</html>

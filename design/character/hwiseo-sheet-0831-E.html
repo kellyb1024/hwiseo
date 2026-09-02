@@ -1,0 +1,132 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HWISEO E — 레퍼 불꽃 머리 + 원래 치마 몸 (2026-08-31)</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#fff;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:#1D1B22}
+  .page{width:1000px;margin:0 auto;background:#F0F0F0}
+  .hero{height:520px;background:#7B5CD6;position:relative;overflow:hidden;border-bottom:18px solid #3D2A7A}
+  .hero svg{position:absolute;right:60px;top:20px;width:420px}
+  .hero .t{position:absolute;left:72px;top:70px;color:#fff}
+  .hero .t small{display:block;font-size:14px;opacity:.85;margin-bottom:18px}
+  .hero .t h1{font-size:64px;font-weight:900;line-height:1.05;letter-spacing:-.02em}
+  .hero .t h1 b{display:block;font-size:22px;font-weight:700;margin-bottom:6px}
+  .hero .t p{margin-top:14px;font-size:14px;opacity:.9;line-height:1.6}
+  .sec{padding:36px 60px 0}
+  .sec h2{font-size:17px;font-weight:900;color:#3D2A7A;margin-bottom:6px}
+  .sec p{font-size:12px;color:#5D5866;margin-bottom:14px}
+  .row{display:flex;justify-content:space-around;align-items:flex-end;padding:0 20px 24px}
+  .row figure{text-align:center}
+  .row svg{width:150px;height:172px;display:block}
+  .row figcaption{font-size:11px;color:#5D5866;margin-top:4px;font-family:ui-monospace,monospace}
+  .guide{position:relative;padding:10px 60px 30px;display:flex;gap:40px;align-items:flex-end}
+  .guide svg{width:280px;height:380px}
+  .guide .lines{position:absolute;left:0;right:0;border-top:2px dashed #C9B8FF}
+  .cw{display:flex;gap:20px;padding:10px 60px 50px}
+  .cw div{flex:1;border-radius:18px;padding:18px;text-align:center;font-size:12px;font-weight:700;display:flex;gap:8px;justify-content:center;align-items:flex-end}
+  .cw svg{width:150px;height:175px;display:block}
+  .foot{padding:0 60px 50px;font-size:12px;color:#5D5866;line-height:1.8}
+</style>
+<div class="page">
+  <section class="hero">
+    <div class="t"><small>Illustration · 휘서 프로젝트</small><h1><b>Hi there!</b>I'm HWISEO</h1>
+    <p>머리 = 레퍼 10 갈래 트레이스 + 둥근 턱 (3겹)<br>얼굴 = 점 눈 + 미소 + 볼 (레퍼 15)<br>몸 = 제안 2 — 촛농 칼라 + 퍼지는 왁스 가운</p></div>
+    <svg data-level="3" data-mood="friendly"></svg>
+  </section>
+  <section class="sec"><h2>COMPARE — 머리 스타일</h2><p>왼쪽부터: 레퍼 10 갈래 트레이스 + 둥근 턱 (기본) · 물방울(레퍼 16) · ★ 캐릭터/03 감정 시트 'watching' 실루엣 트레이스. 얼굴·몸은 같음</p></section>
+  <div class="row" id="compare" style="justify-content:center;gap:30px"></div>
+  <section class="sec"><h2>감정 시트 머리 — 표정 · 단계</h2></section>
+  <div class="row" id="sheetMood"></div>
+  <div class="row" id="sheetLv"></div>
+  <section class="sec"><h2>CHARACTER PREVIEW</h2></section>
+  <div class="row" id="turn"></div>
+  <section class="sec"><h2>RATIO — 머리 : 몸</h2><p>같은 머리, 몸 높이만 다름. 왼쪽부터 2 : 1 (지금) · 1.5 : 1 · 1.2 : 1</p></section>
+  <div class="guide" id="guide"></div>
+  <section class="sec"><h2>FLAME LEVEL — 불티가 는다 (머리 실루엣은 고정)</h2></section>
+  <div class="row" id="levels"></div>
+  <section class="sec"><h2>EXPRESSION</h2></section>
+  <div class="row" id="moods"></div>
+  <section class="sec"><h2>ON DARK / ON LIGHT</h2></section>
+  <div class="cw">
+    <div style="background:#7B5CD6;color:#fff"><svg data-level="3" data-mood="watching"></svg></div>
+    <div style="background:#fff;color:#3D2A7A"><svg data-level="3" data-mood="watching"></svg></div>
+    <div style="background:#FFD54A;color:#3D2A7A"><svg data-level="3" data-mood="watching"></svg></div>
+  </div>
+  <div class="foot">머리(트레이스): 바깥 <code>#FFD54A</code> · 속 갈래 <code>#FFE58A</code> · 하이라이트 <code>#FFF3CE</code> · 볼 <code>#F5B92E</code> · 아웃라인 <code>#3E294C</code>. 몸(제안 2): 촛농 캡 <code>#F8F5FF</code> · 왁스 가운 <code>#EADFEE</code> · 주름 <code>#D3C4DF</code> · 아웃라인 <code>#3E294C</code>. 눈은 6px 위로, 점 r 8.</div>
+</div>
+<script>
+const INK='#3E294C', FO='#F1C256', FM='#FFD54A', FI='#FFE58A', CH='#F5B92E', SM='#D3C4DF';
+const WAX='#EADFEE', SH='#D3C4DF', DK='#BAA4CD';
+const ST=`stroke="${INK}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"`;
+// ── 머리: 둥근 물방울 + 가운데 큰 갈래 + 옆 작은 갈래 (레퍼 16)
+const OUTER=`M51.4,138.9 L54.6,123.6 L57.5,113.8 L56.9,105.4 L54.3,99.4 L54.6,95.9 L56.1,94.8 L58.4,94.5 L66.4,97.4 L73.9,104.3 L73.6,104.8 L76.5,108.6 L77.7,108.0 L82.6,99.4 L86.0,91.3 L89.5,77.5 L89.5,69.7 L86.3,55.0 L86.9,50.1 L90.3,48.7 L99.9,49.2 L108.5,53.0 L117.1,59.0 L116.9,50.4 L117.7,41.4 L121.5,29.1 L124.9,22.7 L130.1,16.1 L137.0,9.7 L143.4,6.0 L143.4,6.0 L147.7,6.0 L149.1,7.2 L149.7,17.0 L154.0,24.4 L160.1,29.9 L172.8,37.1 L186.6,47.2 L201.0,62.5 L207.3,71.1 L211.4,78.3 L213.1,77.2 L213.4,75.7 L217.1,70.8 L222.0,66.8 L226.7,66.5 L228.1,67.4 L228.7,68.8 L227.8,76.9 L228.4,85.5 L231.8,94.2 L237.9,104.0 L242.5,113.2 L247.1,126.7 L248.8,139.1 C248.8,183.1 202,216 150,216 C98,216 51.4,182.9 51.4,138.9 Z`, YEL=`M145.4,9.7 L145.4,17.5 L146.8,21.3 L151.2,27.6 L157.8,33.7 L177.7,45.8 L188.9,55.6 L201.3,70.3 L207.1,79.2 L213.7,92.5 L214.8,91.6 L214.8,84.4 L216.3,79.5 L219.7,74.3 L224.6,70.6 L223.8,75.2 L223.8,83.8 L226.4,92.7 L223.8,97.4 L222.0,103.4 L222.0,122.7 L219.7,129.6 L216.9,133.7 L214.8,126.2 L211.1,119.5 L206.2,114.1 L201.3,110.6 L200.4,111.2 L197.8,119.3 L191.8,126.5 L186.6,129.6 L181.4,130.2 L184.9,124.2 L187.2,114.4 L187.2,107.2 L185.7,98.2 L181.7,87.6 L175.6,77.8 L167.3,68.5 L156.3,60.8 L146.0,57.0 L141.6,57.0 L140.5,57.3 L139.9,58.4 L146.0,61.3 L151.2,67.4 L155.2,76.6 L156.3,87.0 L155.5,91.9 L153.2,97.9 L149.4,103.4 L143.9,108.3 L135.6,111.5 L131.0,111.5 L127.5,110.6 L121.8,106.6 L119.5,102.3 L118.9,96.8 L118.3,95.9 L117.4,96.2 L111.1,105.1 L108.8,111.2 L107.1,119.0 L104.2,125.9 L98.7,133.1 L94.7,135.7 L91.5,136.5 L85.4,136.3 L79.4,134.0 L75.1,130.8 L65.9,119.3 L61.2,116.4 L61.5,108.6 L60.7,104.0 L58.4,98.5 L62.4,99.9 L67.3,103.4 L71.0,107.7 L76.5,116.7 L79.4,113.8 L87.8,98.5 L91.5,88.4 L93.5,78.6 L93.5,69.7 L92.4,61.9 L90.3,54.7 L90.6,52.7 L96.7,53.0 L106.8,57.0 L112.5,61.0 L117.7,65.9 L126.4,77.2 L127.8,76.6 L123.5,65.9 L121.5,56.4 L121.2,47.8 L122.9,38.0 L125.2,31.1 L129.5,23.6 L135.9,16.4 L141.1,12.1 L145.4,9.7 Z`, PALE=`M187.2,48.4 L195.8,56.4 L201.0,62.5 L207.3,71.1 L209.9,76.3 L205.6,69.1 L200.1,61.9 L187.2,48.4 Z`;
+const SHEET=`M133.4,6.0 L138.2,6.0 L141.3,8.4 L161.1,40.7 L168.2,47.8 L172.9,43.1 L180.0,24.2 L183.2,22.6 L188.7,26.5 L204.5,52.6 L223.4,100.7 L230.5,130.7 L232.1,146.5 L232.1,166.3 L228.9,187.6 L225.8,197.1 L221.1,204.2 L215.5,204.9 L206.1,199.4 L200.5,210.5 L193.4,216.0 L186.3,216.0 L180.0,213.6 L173.7,204.2 L133.4,204.9 L131.1,211.3 L127.9,214.4 L117.6,216.0 L107.4,210.5 L98.7,198.6 L88.4,208.1 L82.1,208.9 L76.6,203.4 L71.8,191.5 L67.9,168.6 L67.9,141.8 L73.4,105.5 L82.1,71.5 L92.4,45.5 L100.3,34.4 L104.2,33.6 L116.1,47.8 L119.2,46.3 L127.9,16.3 L133.4,6.0 Z`;
+const sheetLayer=(k,col)=>`<path d="${SHEET}" transform="translate(150,216) scale(${k}) translate(-150,-216)" fill="${col}"/>`;
+const HEAD='M150,216 C98,216 60,186 60,140 C60,118 68,100 82,86 C72,78 68,64 76,52 C88,64 96,72 102,66 C112,48 130,34 150,6 C170,34 188,48 198,66 C204,72 212,64 224,52 C232,64 228,78 218,86 C232,100 240,118 240,140 C240,186 202,216 150,216 Z';
+const layer=(sc,col)=>`<path d="${HEAD}" transform="translate(150,216) scale(${sc}) translate(-150,-216)" fill="${col}"/>`;
+const TONGUE='M0,0 C-14,-4 -18,-24 -8,-38 C-4,-44 0,-50 2,-60 C6,-46 14,-38 16,-28 C20,-14 12,-2 0,0 Z';
+const sp=(x,y,sc,rot)=>`<path d="${TONGUE}" transform="translate(${x},${y}) rotate(${rot}) scale(${sc})" fill="${FO}" stroke="${INK}" stroke-width="${3/sc}" stroke-linejoin="round"/><path d="${TONGUE}" transform="translate(${x},${y}) rotate(${rot}) scale(${sc*0.55})" fill="${FI}"/>`;
+const SPARK={0:'',1:'',2:sp(236,58,0.38,14),3:sp(236,58,0.38,14)+sp(64,62,0.34,-14),4:sp(240,52,0.42,14)+sp(60,56,0.38,-14)+sp(150,-2,0.3,0)};
+// ── 얼굴 (레퍼 15: 점 눈 + 넓은 미소) + 볼
+const VIEW={front:{ox:0,gap:52,eyes:2},q:{ox:-20,gap:42,eyes:2},side:{ox:-58,gap:0,eyes:1},back:{eyes:0}};
+function face(mood,v){
+  if(v.eyes===0) return '';
+  const cx=150+(v.ox||0), EY=158, xs=v.eyes===2?[cx-v.gap/2,cx+v.gap/2]:[cx];
+  const st=`stroke="${INK}" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
+  const cheek = v.eyes===2 ? `<circle cx="${cx-50}" cy="178" r="11" fill="${CH}"/><circle cx="${cx+50}" cy="178" r="12" fill="${CH}"/>` : `<circle cx="${cx+10}" cy="186" r="12" fill="${CH}"/>`;
+  const dots=(r=8)=>xs.map(x=>`<circle cx="${x}" cy="${EY}" r="${r}" fill="${INK}"/>`).join('');
+  const m=(d)=>`<g transform="translate(${cx-150},0)">${d}</g>`;
+  const MY=EY+24;
+  let f='';
+  switch(mood){
+    case 'watching': f=dots()+m(`<path d="M130,${MY} q20,18 40,0" ${st}/>`); break;
+    case 'friendly': f=dots()+m(`<path d="M124,${MY-2} q26,24 52,0" ${st}/>`); break;
+    case 'wink': f=`<circle cx="${xs[0]}" cy="${EY}" r="9" fill="${INK}"/>`+(xs[1]!==undefined?`<path d="M${xs[1]-10},${EY-1} q10,-10 20,0" ${st}/>`:'')+m(`<path d="M130,${MY} q20,18 40,0" ${st}/>`); break;
+    case 'surprise': f=dots(10)+m(`<ellipse cx="150" cy="${MY+4}" rx="7" ry="8" fill="${INK}"/>`); break;
+    case 'joy': f=xs.map(x=>`<path d="M${x-12},${EY+4} q12,-16 24,0" ${st}/>`).join('')+m(`<path d="M126,${MY-4} q24,26 48,0 z" fill="${INK}"/>`); break;
+    case 'sleep': f=xs.map(x=>`<path d="M${x-12},${EY-2} q12,12 24,0" ${st}/>`).join('')+m(`<path d="M138,${MY+2} q12,6 24,0" ${st.replace('5.5','4')}/>`); break;
+  }
+  return cheek+f;
+}
+// ── 몸: 턱 밑 촛농 칼라 → 짧은 왁스 치마 → 넓은 웅덩이 (레퍼 16 + 원래 캐릭터 촛농)
+// ── 몸: 제안 2 — 촛농 칼라 + 아래로 퍼지는 왁스 가운 + 웅덩이 밑단. H = 몸 높이
+const CWAX='#EADFEE', CCAP='#F8F5FF', CSH='#D3C4DF';
+function body(view,H=100){
+  const y0=214, y1=y0+H, k=H/100;
+  const gown=`M104,${y0} C100,${y0+0.45*H} 82,${y0+0.78*H} 74,${y1-10} q15,16 30,0 q13,10 26,0 q20,18 40,0 q13,10 26,0 q15,16 30,0 C218,${y0+0.78*H} 200,${y0+0.45*H} 196,${y0} Z`;
+  const cap=`M104,${y0} h92 v10 q-6,7 -12,2 c0,${20*k},-12,${20*k},-12,0 q-8,6 -16,0 c0,${32*k},-14,${32*k},-14,0 q-8,5 -16,0 c0,${14*k},-12,${14*k},-12,0 q-7,6 -14,0 Z`;
+  const arm=(flip)=>`<g transform="${flip?'translate(300,0) scale(-1,1) ':''}rotate(20 100 ${y0+30})"><rect x="82" y="${y0+24}" width="22" height="${30*k+4}" rx="11" fill="${CWAX}" ${ST}/></g>`;
+  const bx=view==='side'?'scale(0.62,1) translate(92,0)':(view==='q'?'scale(0.9,1) translate(17,0)':'');
+  return `<g transform="${bx}">
+    <ellipse cx="150" cy="${y1+2}" rx="80" ry="8" fill="#3D2A7A" opacity=".28"/>
+    ${view==='back'?'':arm(false)+arm(true)}
+    <path d="${gown}" fill="${CWAX}" ${ST}/>
+    <path d="M124,${y0+0.4*H} q-6,${0.25*H} -2,${0.5*H}" stroke="${CSH}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M176,${y0+0.4*H} q6,${0.25*H} 2,${0.5*H}" stroke="${CSH}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="${cap}" fill="${CCAP}" ${ST.replace('4','3')}/>
+  </g>`;
+}
+function char({level=3,mood='watching',view='front',vb=null,guide=false,hs='trace',bh=100}={}){
+  vb=vb||`0 -20 300 ${250+bh}`;
+  const v=VIEW[view];
+  const head = level===0
+    ? `<path d="M96,160 c-20,0 -28,-30 -5,-38 c-5,-26 30,-36 44,-16 c12,-22 52,-16 52,10 c22,-2 30,30 8,38 c2,22 -28,32 -44,16 c-16,18 -52,10 -55,-10 Z" fill="${SM}" ${ST}/><path d="M124,158 q14,12 28,0 M148,158 q14,12 28,0" ${ST} fill="none"/>`
+    : hs==='sheet'
+      ? `${SPARK[level]}<path d="${SHEET}" fill="${FM}" ${ST}/>${sheetLayer(0.78,FI)}${face(mood,v)}`
+    : hs==='trace'
+      ? `${SPARK[level]}<path d="${OUTER}" fill="${FM}" ${ST}/><path d="${YEL}" fill="${FI}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="${PALE}" fill="#FFF3CE"/>${face(mood,v)}`
+      : `${SPARK[level]}<path d="${HEAD}" fill="${FO}" ${ST}/>${layer(0.84,FM)}${layer(0.64,FI)}${face(mood,v)}`;
+  const g = guide?`<g stroke="#B9A3F2" stroke-width="1.5" stroke-dasharray="6 5" fill="none"><line x1="0" y1="6" x2="300" y2="6"/><line x1="0" y1="216" x2="300" y2="216"/><line x1="0" y1="${216+bh}" x2="300" y2="${216+bh}"/><text x="4" y="115" font-size="12" fill="#7B5CD6" stroke="none" font-family="monospace">2</text><text x="4" y="${216+bh/2}" font-size="12" fill="#7B5CD6" stroke="none" font-family="monospace">${(bh/104).toFixed(1)}</text></g>`:'';
+  return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${g}${body(view,bh)}${head}</svg>`;
+}
+document.querySelectorAll('svg[data-level]').forEach(el=>{const t=document.createElement('div');t.innerHTML=char({level:+el.dataset.level,mood:el.dataset.mood});const s=t.firstElementChild;s.setAttribute('style',el.getAttribute('style')||'');el.replaceWith(s);});
+document.getElementById('compare').innerHTML=`<figure style="width:300px">${char({level:3,mood:'watching',hs:'trace'})}<figcaption>이전 머리 (트레이스) ✓ 기본</figcaption></figure><figure style="width:300px">${char({level:3,mood:'watching',hs:'round'})}<figcaption>물방울 (레퍼 16)</figcaption></figure><figure style=\"width:300px\">${char({level:3,mood:'watching',hs:'sheet'})}<figcaption>감정 시트 실루엣 (★ 캐릭터/03)</figcaption></figure>`;
+document.querySelectorAll('#compare svg').forEach(e=>{e.style.width='300px';e.style.height='345px'});
+document.getElementById('guide').innerHTML=[104,139,173].map(b=>char({level:3,mood:'watching',guide:true,bh:b})).join('');
+const put=(id,items)=>{const el=document.getElementById(id);items.forEach(([o,l])=>el.insertAdjacentHTML('beforeend',`<figure>${char(o)}<figcaption>${l}</figcaption></figure>`));};
+put('turn',[['front','정면'],['back','뒷면'],['side','측면'],['q','3/4']].map(([v,l])=>[{level:3,mood:v==='front'?'wink':'watching',view:v},l]));
+put('sheetMood',['watching','friendly','wink','surprise','joy','sleep'].map(m=>[{level:3,mood:m,hs:'sheet'},m]));
+put('sheetLv',[0,1,2,3,4].map(l=>[{level:l,mood:'watching',hs:'sheet'},`level ${l}`]));
+put('levels',[0,1,2,3,4].map(l=>[{level:l,mood:'watching'},`level ${l}${l===0?' · 꺼짐':''}`]));
+put('moods',['watching','friendly','wink','surprise','joy','sleep'].map(m=>[{level:3,mood:m},m]));
+</script>

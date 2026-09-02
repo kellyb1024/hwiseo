@@ -1,0 +1,121 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>휘서 홈 화면 시안 0831 — Langvi 무드</title>
+<style>
+  :root{--pu:#7B5CD6;--dp:#3D2A7A;--ye:#FFD54A;--gr:#E6E3DE;--lv:#EADFEE;--ink:#1D1B22;--mute:#6F6A78}
+  *{box-sizing:border-box;margin:0}
+  body{background:#EFEDF3;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:var(--ink);padding:40px 16px 80px}
+  h1{font-size:22px;font-weight:900;color:var(--dp)}
+  .sub{font-size:13px;color:var(--mute);margin:6px 0 34px;line-height:1.7}
+  .row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+  figure{width:390px}
+  figcaption{font-size:12px;color:var(--mute);margin-top:12px;line-height:1.7}
+  figcaption b{color:var(--dp)}
+  .phone{width:390px;height:844px;border-radius:46px;overflow:hidden;background:#fff;position:relative;border:6px solid #1D1B22;display:flex;flex-direction:column}
+  .stage{background:var(--pu);position:relative;overflow:hidden;flex:0 0 auto}
+  .sb{height:54px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px;font-size:14px;font-weight:700;color:#fff;position:relative;z-index:3}
+  .hd{display:flex;justify-content:space-between;align-items:center;padding:8px 24px 0;position:relative;z-index:3}
+  .mark{font-size:24px;font-weight:900;color:var(--ye);letter-spacing:-.03em;font-style:italic}
+  .me{width:36px;height:36px;border-radius:50%;background:var(--ye);border:2.5px solid #3E294C;display:grid;place-items:center;font-size:13px;font-weight:800;color:#3E294C}
+  .bighead,.full{position:absolute;left:50%;transform:translateX(-50%);z-index:1}
+  .bighead svg,.full svg{width:100%;height:100%;display:block}
+  .bighead path,.full path,.full rect{vector-effect:non-scaling-stroke}
+  .bighead path[stroke],.full path[stroke],.full rect[stroke]{stroke-width:2.5px}
+  .bighead path[fill="#FFE58A"],.full path[fill="#FFE58A"]{stroke-width:1.5px}
+  .spark{position:absolute;color:#fff;font-size:22px;z-index:2;opacity:.95}
+  .bubble{position:absolute;z-index:3;background:#fff;color:var(--ink);font-size:14px;font-weight:700;padding:10px 14px;border-radius:18px;border:2.5px solid #3E294C}
+  .bubble:after{content:"";position:absolute;left:24px;bottom:-10px;width:14px;height:14px;background:#fff;border-right:2.5px solid #3E294C;border-bottom:2.5px solid #3E294C;transform:rotate(45deg)}
+  .panel{background:#fff;border-radius:40px 40px 0 0;margin-top:-40px;position:relative;z-index:4;flex:1;display:flex;flex-direction:column;padding:28px 24px 0}
+  .h2{font-size:30px;font-weight:900;line-height:1.22;letter-spacing:-.02em}
+  .h2 small{display:block;font-size:15px;font-weight:600;color:var(--mute);margin-top:8px;letter-spacing:0}
+  .cta{margin-top:20px;height:58px;border-radius:29px;background:var(--ye);color:#3E294C;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;border:2.5px solid #3E294C}
+  .sec{margin-top:22px}
+  .sec .t{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:800;color:var(--dp);margin-bottom:10px}
+  .sec .t span{font-weight:600;color:var(--mute)}
+  .card{background:var(--gr);border-radius:22px;padding:12px;display:flex;gap:12px;align-items:center}
+  .ph{border-radius:14px;flex:0 0 auto;position:relative;overflow:hidden}
+  .ph i{position:absolute;left:8px;bottom:6px;font-style:normal;font-size:10px;font-weight:800;color:#fff;opacity:.9}
+  .card .tx{font-size:12px;color:var(--mute);line-height:1.5}
+  .card .tx b{display:block;font-size:14px;color:var(--ink);margin-bottom:3px}
+  .card .tag{margin-left:auto;background:var(--pu);color:#fff;font-size:11px;font-weight:800;padding:6px 10px;border-radius:12px;white-space:nowrap}
+  .grid{display:flex;gap:10px}
+  .grid .ph{flex:1;height:100px}
+  .hint{margin-top:22px;font-size:13px;color:var(--mute);line-height:1.7;text-align:center}
+  .tabs{margin-top:auto;height:84px;border-top:1.5px solid #EFEDF3;display:flex;padding:10px 12px 18px}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#B5B0C0}
+  .tab.on{color:var(--pu)}
+  .tab svg{width:26px;height:26px}
+  .home{width:100px;height:5px;border-radius:3px;background:#1D1B22;position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:6}
+  .note{margin-top:40px;font-size:13px;color:var(--mute);line-height:1.85;max-width:820px}
+  .note b{color:var(--dp)}
+</style>
+
+<h1>홈 — Langvi 무드 시안</h1>
+<p class="sub">캐릭터 = E 시트 trace 머리 그대로 · 5색 고정(보라/딥보라/노랑/회백/연보라) · 그림자·그라데이션 없음.<br>
+①② 첫 방문 = 전신, 비율만 다름 (1.5:1 / 1.2:1). ③ 평소 = 화면 밖으로 잘린 거대 얼굴.</p>
+
+<div class="row" id="row"></div>
+
+<div class="note">
+<b>홈이 하는 일 셋:</b> 사진 고르고 시작(유일한 노랑 CTA) → 이어서 하기(있을 때만) → 최근 이야기 2~3장(→ 아카이브).<br>
+<b>두 층:</b> 위 보라 무대(캐릭터·마크·프로필) / 아래 흰 기능(문장·CTA·카드·탭). 경계는 40px 곡선. 인사 문장은 흰 층 첫 줄 = Langvi Login의 "Login" 자리.<br>
+<b>거대 얼굴 규칙:</b> 폭 400px, 위·아래·양옆 모두 잘림, 아웃라인 2.5px 고정. 눈·볼·입은 반드시 보임.<br>
+<b>탭:</b> 홈 = 불꽃 실루엣 · 아카이브 = 사진 두 장 · 나 = 프로필 원. 활성만 보라.
+</div>
+
+<script src="hw-character.js"></script>
+<script>
+// ── 홈 화면 조립 ─────────────────────────────────────────
+// 거대 얼굴: 무대 높이 H에서 입이 (패널 곡선 위 margin) 에 오도록 top 계산 → 캐릭터가 바뀌어도 얼굴은 항상 보임
+const giantAt = (mood, stageH, width=400, margin=64)=>{
+  const b=HW.giantBox, h=width*b.h/b.w, mouthPx=h*b.mouthY/b.h;
+  return `<div class="bighead" style="top:${stageH-40-margin-mouthPx}px;width:${width}px;height:${h}px">${HW.giant(mood)}</div>`;
+};
+const PH = (w,h,col,label)=>`<div class="ph" style="${w?`width:${w}px;height:${h}px;`:''}background:${col}"><i>${label}</i></div>`;
+const TABS = (on)=>`<div class="tabs">
+  <div class="tab ${on==='home'?'on':''}"><svg viewBox="${HW.markBox}"><path d="${HW.mark}" fill="currentColor"/></svg>홈</div>
+  <div class="tab ${on==='arc'?'on':''}"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="3" y="7" width="16" height="16" rx="4"/><path d="M8 3h13a2 2 0 0 1 2 2v13"/></svg>아카이브</div>
+  <div class="tab ${on==='me'?'on':''}"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="13" cy="13" r="10"/><circle cx="13" cy="11" r="3.2"/><path d="M6.5 20c1.5-3 4-4.5 6.5-4.5s5 1.5 6.5 4.5"/></svg>나</div>
+</div>`;
+const SB = `<div class="sb"><span>9:41</span><span>●●● ▲ ▮</span></div>`;
+const HD = `<div class="hd"><span class="mark">휘서</span><span class="me">민</span></div>`;
+
+function firstVisit(bh, label){
+  const H = HW.meta.total(bh), px = 292, w = px*HW.meta.unit/H;
+  return `<figure><div class="phone">
+    <div class="stage" style="height:470px">${SB}${HD}
+      <div class="spark" style="left:52px;top:170px">✦</div><div class="spark" style="left:318px;top:130px;font-size:16px">✦</div><div class="spark" style="left:300px;top:360px;font-size:14px">✦</div>
+      <div class="bubble" style="left:38px;top:122px">안녕하세요, 민지님!</div>
+      <div class="full" style="top:${470-44-px}px;width:${w}px;height:${px}px">${HW.full({mood:'friendly',bh})}</div>
+    </div>
+    <div class="panel">
+      <div class="h2">첫 사진을<br>골라볼까요?<small>사진 한 장이면 돼요. 나머지는 휘서가 물어볼게요.</small></div>
+      <div class="cta">＋ 사진 고르고 시작</div>
+      <p class="hint">이야기가 완성되면 여기에 쌓여요.</p>
+      ${TABS('home')}
+    </div><div class="home"></div>
+  </div><figcaption>${label}</figcaption></figure>`;
+}
+function usual(){
+  return `<figure><div class="phone">
+    <div class="stage" style="height:344px">${SB}${HD}
+      ${giantAt('watching',344)}
+    </div>
+    <div class="panel">
+      <div class="h2">민지님, 3일 만이에요.<small>오늘은 어떤 사진이 있나요?</small></div>
+      <div class="cta">＋ 사진 고르고 시작</div>
+      <div class="sec"><div class="t">이어서 하기</div>
+        <div class="card">${PH(64,64,'#C9B79A','1998')}<div class="tx"><b>8월 21일 · 3턴 진행</b>"김밥 두 줄이었는데, 그날은 …"</div><span class="tag">이어서</span></div>
+      </div>
+      <div class="sec"><div class="t">최근 이야기 <span>전체 12편 →</span></div>
+        <div class="grid">${PH(0,0,'#B9A6C8','2004')}${PH(0,0,'#A8BCC9','1996')}${PH(0,0,'#D8B4A0','2011')}</div>
+      </div>
+      ${TABS('home')}
+    </div><div class="home"></div>
+  </div><figcaption><b>③ 평소</b> — 거대 얼굴(폭 400, 위아래 잘림). 이어서 하기 1개 + 최근 이야기 3장. 인사 한 줄이 상태를 말함.</figcaption></figure>`;
+}
+document.getElementById('row').innerHTML =
+  firstVisit(139,'<b>① 첫 방문 · 1.5:1</b> — 전신 + 말풍선. 온보딩 직후 화면.') +
+  firstVisit(173,'<b>② 첫 방문 · 1.2:1</b> — 같은 화면, 몸만 김.') +
+  usual();
+</script>
