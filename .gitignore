@@ -18,6 +18,8 @@ promo-video/out/
 
 # 개인 사진 — 필요하면 이 줄을 지우세요
 photos/
+# 배포용 프로토타입 사진은 공개 OK
+!app-prototype/photos/
 
 # 작업 임시
 .omc/
