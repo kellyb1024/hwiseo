@@ -78,7 +78,7 @@ function capPath(wax='base'){
   const k=180/192, m=WAXD[wax]||WAXD.base;
   const segs=[[30,'b',6],[20,'d',38*m[0]],[26,'b',8],[24,'b',6],[20,'d',18*m[1]],[26,'b',6],[26,'b',8],[20,'d',54*m[2]]];
   let d=`M60,${TOP-4} H240 V${CAPB}`;
-  segs.forEach(([sw,t,dep],i)=>{ const ww=sw*k, r=ww/2, last=i===segs.length-1;
+  segs.forEach(([sw,t,dep],i)=>{ const last=i===segs.length-1, ww=sw*k+(last?3:0), r=ww/2;   // 왼쪽 끝 방울은 3 넓혀 몸 왼쪽 가장자리(x≈59)에 붙임 — 그전엔 1px 떠 보였음
     if(t==='d') d+=` v${dep} a${r},${r} 0 0 1 -${ww},0 `+(last?`h-4 V${TOP-4}`:`v-${dep}`); else d+=` a${r},${dep} 0 0 1 -${ww},0`; });
   return d+' Z';
 }
