@@ -1,5 +1,5 @@
 // 휘서 프로토타입 서비스워커 — 한 번 열면 오프라인에서도 동작
-const VERSION='hwiseo-v2';
+const VERSION='hwiseo-v3';
 const CORE=[
 "./",
 "index.html",
