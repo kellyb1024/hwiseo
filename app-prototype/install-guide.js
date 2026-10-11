@@ -1,10 +1,10 @@
-// 홈 화면 추가 안내 — 폰 브라우저로 처음 열었을 때 한 번만 뜬다 (설치 앱·데스크톱에서는 안 뜸)
+// 홈 화면 추가 안내 — 폰 브라우저로 열 때마다(탭 하나당 한 번) 뜬다 (설치 앱·데스크톱에서는 안 뜸)
 (function(){
   var KEY='hwiseo.installSeen';
   var ua=navigator.userAgent||'';
   var standalone=!!navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
   var phone=Math.min(innerWidth,innerHeight)<=600&&(window.matchMedia&&matchMedia('(pointer:coarse)').matches);
-  var seen=false;try{seen=localStorage.getItem(KEY)==='1';}catch(e){}
+  var seen=false;try{seen=sessionStorage.getItem(KEY)==='1';}catch(e){}
   var deferred=null;
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;});
   if(standalone||!phone||seen)return;
@@ -30,7 +30,7 @@
   '@keyframes hwigb{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}';
 
   function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
-  function remember(){try{localStorage.setItem(KEY,'1');}catch(e){}}
+  function remember(){try{sessionStorage.setItem(KEY,'1');}catch(e){}}
 
   function show(){
     var st=el('style');st.textContent=css;document.head.appendChild(st);
