@@ -1,5 +1,5 @@
 // 휘서 프로토타입 서비스워커 — 한 번 열면 오프라인에서도 동작
-const VERSION='hwiseo-v3';
+const VERSION='hwiseo-v4';
 const CORE=[
 "./",
 "index.html",
@@ -8,7 +8,7 @@ const CORE=[
 "hwiseo-en.js",
 "ios-frame.jsx",
 "manifest.webmanifest",
-"install-guide.js",
+"install-guide.js?v=3",
 "apple-touch-icon.png",
 "icon-192.png",
 "icon-512.png",
