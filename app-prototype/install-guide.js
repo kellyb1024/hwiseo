@@ -7,7 +7,8 @@
   var seen=false;try{seen=sessionStorage.getItem(KEY)==='1';}catch(e){}
   var deferred=null;
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;});
-  if(standalone||!phone||seen)return;
+  var force=/[?&]install(=|&|$)/.test(location.search);   // 주소 끝에 ?install — 조건 무시하고 띄움(폰 확인용)
+  if(!force&&(standalone||!phone||seen))return;
 
   var isIOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   var isKakao=/KAKAOTALK/i.test(ua);
