@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&amp;display=swap" rel="stylesheet">
 <script src="./hwiseo-F.js"></script>
-<script src="./hwiseo-en.js?v=3"></script>
+<script src="./hwiseo-en.js?v=6"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&amp;family=Gaegu:wght@700&amp;family=Silkscreen&amp;display=swap" rel="stylesheet">
 <style>
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}
@@ -255,7 +255,7 @@ input{font-family:inherit}
         <div style="align-self:stretch;font-size:14px;font-weight:600;color:#5D5866;margin-top:8px;line-height:1.6;text-wrap:pretty">폰 카메라로 QR을 찍고, 사진을 1~3장 올려줘.</div>
         <div style="margin-top:30px;width:244px;height:244px;border-radius:28px;background:#fff;box-shadow:0 0 0 2px #EDE7FF,0 10px 24px rgba(91,63,176,.12);display:grid;place-items:center"><div role="img" aria-label="QR" style="width:204px;height:204px;image-rendering:pixelated;background: {{ qrBg }}"></div></div>
         <div style="margin-top:16px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#7B5CD6">{{ qrStatus }}</div>
-        <div style="margin-top:8px;font-size:11px;font-weight:600;color:#8C8798;text-align:center;line-height:1.6">사진은 대화 중에만 사용되며, 체험이 끝나면 즉시 삭제됩니다.</div>
+        <div style="margin-top:10px;font-size:11px;font-weight:600;color:#8C8798;text-align:center;line-height:1.6;word-break:keep-all"><div>사진은 대화 중에만 사용되며, 체험이 끝나면 즉시 삭제됩니다.</div><div style="margin-top:4px">스티커로 만든 사진은 전시 기간 동안 스크랩북에 보관되며,<br>체험 후 언제든지 삭제할 수 있습니다.</div></div>
       </div>
       <div style="padding:14px 24px 44px;flex:0 0 auto"><button onClick="{{ useSample }}" style="width:100%;height:54px;border-radius:27px;border:1.5px solid #E2DDEA;background:#fff;color:#5B3FB0;font-size:15px;font-weight:800;cursor:pointer" style-active="transform:scale(.97)">사진 없이 해볼래</button></div>
     </sc-if>
