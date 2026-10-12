@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+body{margin:0;background:#7B5CD6;font-family:Pretendard,-apple-system,'Apple SD Gothic Neo',sans-serif;color:#1D1B22;-webkit-font-smoothing:antialiased}
+a{color:#7B5CD6}a:hover{color:#5B3FB0}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="min-height:100dvh;display:flex;flex-direction:column;background:#7B5CD6">
+  <div style="padding:52px 28px 30px;color:#fff">
+    <div style="font-size:13px;font-weight:800;opacity:.85;letter-spacing:.02em">HWISEO · 휘서</div>
+    <div style="font-size:28px;font-weight:800;line-height:1.3;letter-spacing:-.02em;margin-top:10px">{{ title }}</div>
+    <div style="font-size:14px;font-weight:600;line-height:1.6;margin-top:8px;opacity:.92;text-wrap:pretty;white-space:pre-line;word-break:keep-all">{{ sub }}</div>
+  </div>
+  <div style="flex:1;background:#fff;border-radius:28px 28px 0 0;padding:26px 22px 40px;display:flex;flex-direction:column;gap:16px">
+    <sc-if value="{{ bad }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:15px;font-weight:700;line-height:1.6;color:#5D5866">{{ badMsg }}</div>
+    </sc-if>
+    <sc-if value="{{ picking }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <sc-for list="{{ slots }}" as="sl" hint-placeholder-count="3">
+          <button onClick="{{ sl.tap }}" aria-label="{{ sl.label }}" style="aspect-ratio:1;border:0;border-radius:16px;padding:0;cursor:pointer;position:relative;display:grid;place-items:center;font-size:26px;font-weight:600;color:#B8A6EA;background: {{ sl.bg }};box-shadow: {{ sl.ring }}">{{ sl.plus }}<sc-if value="{{ sl.has }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:6px;top:6px;width:22px;height:22px;border-radius:50%;background:rgba(29,27,34,.7);color:#fff;font-size:12px;line-height:22px;text-align:center">✕</span></sc-if></button>
+        </sc-for>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:#8C8798;line-height:1.6">{{ note }}</div>
+      <div style="flex:1"></div>
+      <button onClick="{{ send }}" style="height:56px;border-radius:28px;border:0;font-size:16px;font-weight:800;cursor:pointer;background: {{ sendBg }};color: {{ sendFg }}" style-active="transform:scale(.98)">{{ sendLabel }}</button>
+    </sc-if>
+    <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center">
+        <div style="width:72px;height:72px;border-radius:50%;background:#FFD54A;display:grid;place-items:center;font-size:32px;font-weight:800;color:#1D1B22">✓</div>
+        <div style="font-size:20px;font-weight:800;letter-spacing:-.02em">{{ doneTitle }}</div>
+        <div style="font-size:14px;font-weight:600;color:#5D5866;line-height:1.6">{{ doneSub }}</div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { files: [], busy: false, done: false, prog: 0 };
+  componentDidMount() {
+    const q = new URLSearchParams(location.search);
+    this.sid = q.get('s') || ''; this.en = q.get('l') === 'en';
+    this.forceUpdate();
+  }
+  t(ko, en) { return this.en ? en : ko; }
+  pick() {
+    const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.multiple = true;
+    i.onchange = () => {
+      const add = [...(i.files || [])].slice(0, 3 - this.state.files.length);
+      add.forEach(f => { const u = URL.createObjectURL(f); this.setState(s => ({ files: [...s.files, { f, u }].slice(0, 3) })); });
+    };
+    i.click();
+  }
+  shrink(file) {
+    return new Promise((res, rej) => {
+      const im = new Image(); const u = URL.createObjectURL(file);
+      im.onload = () => { const k = Math.min(1, 1280 / Math.max(im.naturalWidth, im.naturalHeight)); const c = document.createElement('canvas');
+        c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); res(c.toDataURL('image/jpeg', .8)); };
+      im.onerror = rej; im.src = u;
+    });
+  }
+  async send() {
+    const st = this.state; if (st.busy || !st.files.length || !/^[a-z0-9]{8}$/.test(this.sid)) return;
+    this.setState({ busy: true, err: false });
+    try {
+      for (let k = 0; k < st.files.length; k++) {
+        const img = await this.shrink(st.files[k].f);
+        const r = await fetch('/api/upload?s=' + this.sid, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img }) });
+        if (!r.ok) throw new Error('up');
+        this.setState({ prog: k + 1 });
+      }
+      const r = await fetch('/api/upload?s=' + this.sid + '&done=1', { method: 'POST' });
+      if (!r.ok) throw new Error('done');
+      this.setState({ done: true, busy: false });
+    } catch (e) { this.setState({ busy: false, err: true, prog: 0 }); }
+  }
+  renderVals() {
+    const st = this.state, bad = this.sid !== undefined && !/^[a-z0-9]{8}$/.test(this.sid || ''), n = st.files.length;
+    const slots = [0, 1, 2].map(i => { const f = st.files[i];
+      return { has: !!f, plus: f ? '' : '+', label: f ? this.t('사진 빼기', 'Remove photo') : this.t('사진 추가', 'Add photo'),
+        bg: f ? 'url("' + f.u + '") center/cover no-repeat' : '#F5F2FB', ring: f ? 'none' : 'inset 0 0 0 1.5px #E2DDEA',
+        tap: () => { if (st.busy) return; if (f) this.setState(s => ({ files: s.files.filter((_, j) => j !== i) })); else this.pick(); } }; });
+    return {
+      title: st.done ? this.t('잘 받았어!', 'Got them!') : this.t('추억을 보내줘!', 'Send me your memories!'),
+      sub: this.t('휘서와 이야기하고 싶은 사진을 1~3장 골라주세요.\n사진은 대화 중에만 사용되며, 체험이 끝나면 즉시 삭제됩니다.', 'Choose 1–3 photos you want to talk about with Hwiseo.\nPhotos are used only during the chat and deleted as soon as the experience ends.'),
+      bad, badMsg: this.t('QR을 다시 찍어 줘. 아이패드 화면의 QR이어야 해요.', 'Please scan the QR on the iPad screen again.'),
+      picking: !bad && !st.done, done: st.done, slots,
+      note: st.err ? this.t('보내기에 실패했어요. 와이파이를 확인하고 다시 눌러 주세요.', 'Upload failed. Check the connection and try again.') : '',
+      sendBg: n && !st.busy ? '#FFD54A' : '#F0EDE6', sendFg: n && !st.busy ? '#1D1B22' : '#B4AEC0',
+      sendLabel: st.busy ? this.t('보내는 중… ', 'Sending… ') + st.prog + '/' + n : (n ? this.t(n + '장 보내기', 'Send ' + n) : this.t('사진 골라줘', 'Pick photos')),
+      send: () => this.send(),
+      doneTitle: this.t('이제 아이패드를 봐!', 'Now look at the iPad!'),
+      doneSub: this.t('전시 아이패드로 돌아가 체험을 계속해주세요.', 'Head back to the exhibition iPad to continue.'),
+    };
+  }
+}
+</script>
+</body>
+</html>

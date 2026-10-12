@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/Hwiseo Exhibition.dc.html"
+    },
+    {
+      "source": "/up",
+      "destination": "/Hwiseo Upload.dc.html"
+    }
+  ]
+}
