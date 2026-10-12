@@ -20,11 +20,16 @@ button{font-family:inherit}
   <div style="padding:52px 28px 30px;color:#fff">
     <div style="font-size:13px;font-weight:800;opacity:.85;letter-spacing:.02em">HWISEO · 휘서</div>
     <div style="font-size:28px;font-weight:800;line-height:1.3;letter-spacing:-.02em;margin-top:10px">{{ title }}</div>
-    <div style="font-size:14px;font-weight:600;line-height:1.6;margin-top:8px;opacity:.92;text-wrap:pretty;white-space:pre-line;word-break:keep-all">{{ sub }}</div>
+    <div style="font-size:15px;font-weight:700;line-height:1.5;margin-top:8px;word-break:keep-all;text-wrap:balance">{{ sub }}</div>
+    <div style="font-size:12px;font-weight:500;line-height:1.65;margin-top:10px;opacity:.82;white-space:pre-line;word-break:keep-all;text-wrap:balance">{{ privacy }}</div>
+    <div style="font-size:12px;font-weight:500;line-height:1.65;margin-top:2px;opacity:.82;white-space:pre-line;word-break:keep-all;text-wrap:balance">{{ privacy2 }}</div>
   </div>
   <div style="flex:1;background:#fff;border-radius:28px 28px 0 0;padding:26px 22px 40px;display:flex;flex-direction:column;gap:16px">
     <sc-if value="{{ bad }}" hint-placeholder-val="{{ false }}">
       <div style="font-size:15px;font-weight:700;line-height:1.6;color:#5D5866">{{ badMsg }}</div>
+    </sc-if>
+    <sc-if value="{{ expired }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:16px;font-weight:700;line-height:1.65;color:#5D5866;white-space:pre-line;word-break:keep-all">{{ expiredMsg }}</div>
     </sc-if>
     <sc-if value="{{ picking }}" hint-placeholder-val="{{ true }}">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
@@ -53,6 +58,7 @@ class Component extends DCLogic {
     const q = new URLSearchParams(location.search);
     this.sid = q.get('s') || ''; this.en = q.get('l') === 'en';
     this.forceUpdate();
+    if (/^[a-z0-9]{8}$/.test(this.sid)) fetch('/api/upload?s=' + this.sid, { cache: 'no-store' }).then(r => r.json()).then(j => { if (j.used && !this.state.done) this.setState({ expired: true }); }).catch(() => {});
   }
   t(ko, en) { return this.en ? en : ko; }
   pick() {
@@ -79,10 +85,12 @@ class Component extends DCLogic {
       for (let k = 0; k < st.files.length; k++) {
         const img = await this.shrink(st.files[k].f);
         const r = await fetch('/api/upload?s=' + this.sid, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img }) });
+        if (r.status === 410) { this.setState({ expired: true, busy: false }); return; }
         if (!r.ok) throw new Error('up');
         this.setState({ prog: k + 1 });
       }
       const r = await fetch('/api/upload?s=' + this.sid + '&done=1', { method: 'POST' });
+      if (r.status === 410) { this.setState({ expired: true, busy: false }); return; }
       if (!r.ok) throw new Error('done');
       this.setState({ done: true, busy: false });
     } catch (e) { this.setState({ busy: false, err: true, prog: 0 }); }
@@ -95,9 +103,13 @@ class Component extends DCLogic {
         tap: () => { if (st.busy) return; if (f) this.setState(s => ({ files: s.files.filter((_, j) => j !== i) })); else this.pick(); } }; });
     return {
       title: st.done ? this.t('잘 받았어!', 'Got them!') : this.t('추억을 보내줘!', 'Send me your memories!'),
-      sub: this.t('휘서와 이야기하고 싶은 사진을 1~3장 골라주세요.\n사진은 대화 중에만 사용되며, 체험이 끝나면 즉시 삭제됩니다.', 'Choose 1–3 photos you want to talk about with Hwiseo.\nPhotos are used only during the chat and deleted as soon as the experience ends.'),
+      sub: this.t('휘서와 이야기하고 싶은 사진을 1~3장 골라주세요.', 'Choose 1–3 photos you want to talk about with Hwiseo.'),
+      privacy: this.t('사진은 대화 중에만 사용되며, 체험이 끝나면 즉시 삭제됩니다.', 'Photos are used only during the chat and deleted as soon as it ends.'),
+      privacy2: this.t('스티커로 만든 사진은 전시 기간 동안 스크랩북에 보관되며,\n체험 후 언제든지 삭제할 수 있습니다.', 'Photos you turn into stickers stay in the exhibition scrapbook, and you can delete them anytime.'),
       bad, badMsg: this.t('QR을 다시 찍어 줘. 아이패드 화면의 QR이어야 해요.', 'Please scan the QR on the iPad screen again.'),
-      picking: !bad && !st.done, done: st.done, slots,
+      picking: !bad && !st.done && !st.expired, done: st.done, slots,
+      expired: !bad && !st.done && !!st.expired,
+      expiredMsg: this.t('이미 전송이 완료된 링크예요.\n아이패드에서 새 QR을 찍어주세요.', 'This link has already been used.\nPlease scan the new QR code on the iPad.'),
       note: st.err ? this.t('보내기에 실패했어요. 와이파이를 확인하고 다시 눌러 주세요.', 'Upload failed. Check the connection and try again.') : '',
       sendBg: n && !st.busy ? '#FFD54A' : '#F0EDE6', sendFg: n && !st.busy ? '#1D1B22' : '#B4AEC0',
       sendLabel: st.busy ? this.t('보내는 중… ', 'Sending… ') + st.prog + '/' + n : (n ? this.t(n + '장 보내기', 'Send ' + n) : this.t('사진 골라줘', 'Pick photos')),
