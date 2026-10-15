@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     const answers = msgs.filter(x => x.who === 'u').length;
     let system = PROMPT[L];
     if (answers >= 4) system += L === 'en' ? '\n\nThe user has now answered four times. Do not ask a question. Wrap up as described.' : '\n\n지금 사용자가 네 번째 대답을 했어. 질문하지 말고 위에 적힌 대로 마무리해.';
-    const text = await claude(system, messages, 2000);
+    const text = await claude(system, messages, 2000, msgs.length ? 'turn' : 'start');
     res.json({ text });
   } catch (e) { res.status(500).json({ error: String(e.message || e) }); }
 };

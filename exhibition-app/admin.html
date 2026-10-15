@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>휘서 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{--purple:#765DCF;--purple-d:#5B3FB0;--yellow:#F8D764;--ink:#1D1B22;--sub:#6B6575;--line:#ECE8F3;--bg:#F6F4FA;--card:#fff;--red:#D9534F}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+.meta{font-size:12px;color:var(--sub);font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.dot{width:8px;height:8px;border-radius:50%;background:#3DBE6B;display:inline-block}
+.dot.off{background:#C9C3D3}
+.pill{background:#EDE7FF;color:var(--purple-d);padding:3px 8px;border-radius:99px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--line)}
+.k{font-size:12px;font-weight:700;color:var(--sub)}
+.v{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums}
+.s{font-size:12px;color:var(--sub);margin-top:4px;font-weight:600}
+.hero{background:var(--purple);color:#fff;border:0}
+.hero .k,.hero .s{color:rgba(255,255,255,.8)}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.25);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--yellow);border-radius:99px}
+section{margin-top:12px}
+h2{font-size:14px;font-weight:800;margin:0 0 12px}
+.days{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;align-items:end;height:150px}
+.day{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.day b{width:100%;max-width:34px;background:var(--purple);border-radius:8px 8px 3px 3px;min-height:3px}
+.day.today b{background:var(--yellow)}
+.day .n{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
+.day .d{font-size:11px;color:var(--sub);font-weight:600}
+.day .c{font-size:10px;color:var(--sub);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left;font-variant-numeric:tabular-nums}
+th{font-size:11px;color:var(--sub);font-weight:700}
+td.r,th.r{text-align:right}
+.tag{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:#F0EDE6}
+.tag.start{background:#EDE7FF;color:var(--purple-d)}
+.tag.sticker{background:#FFF3C4;color:#7A5B00}
+.err{color:var(--red);font-weight:700}
+.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gate{max-width:360px;margin:16vh auto 0;background:#fff;border-radius:22px;padding:28px 22px;border:1px solid var(--line);text-align:center}
+.gate input{width:100%;height:50px;border-radius:14px;border:1.5px solid var(--line);padding:0 16px;font-size:16px;font-family:inherit;margin-top:16px;outline:none}
+.gate input:focus{border-color:var(--purple)}
+button{font-family:inherit}
+.btn{width:100%;height:50px;border:0;border-radius:25px;background:var(--purple);color:#fff;font-size:16px;font-weight:800;margin-top:10px;cursor:pointer}
+.link{background:none;border:0;color:var(--sub);font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;padding:0}
+.msg{font-size:13px;color:var(--red);font-weight:700;margin-top:10px;min-height:18px}
+.note{font-size:11px;color:var(--sub);margin-top:14px;line-height:1.6}
+.hide{display:none}
+@media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.totals{grid-template-columns:repeat(2,1fr)}.v{font-size:24px}.hide-sm{display:none}}
+</style>
+</head>
+<body>
+<div id="gate" class="gate hide">
+  <div style="font-size:20px;font-weight:800">휘서 대시보드</div>
+  <div class="s">비밀번호를 입력해 주세요.</div>
+  <form id="f"><input id="pw" type="password" autocomplete="current-password" placeholder="비밀번호"><button class="btn" type="submit">열기</button></form>
+  <div id="gmsg" class="msg"></div>
+</div>
+
+<div id="app" class="wrap hide">
+  <header>
+    <h1>휘서 대시보드</h1>
+    <div class="meta"><span class="dot" id="live"></span><span id="upd">불러오는 중…</span><span class="pill" id="model"></span><button class="link" id="out">로그아웃</button></div>
+  </header>
+
+  <div class="grid">
+    <div class="card hero" style="grid-column:span 2">
+      <div class="k">남은 크레딧 (예상)</div>
+      <div class="v" id="left">–</div>
+      <div class="bar"><i id="leftBar" style="width:100%"></i></div>
+      <div class="s" id="leftSub"></div>
+    </div>
+    <div class="card"><div class="k">오늘 체험</div><div class="v" id="tStart">–</div><div class="s" id="tTurn"></div></div>
+    <div class="card"><div class="k">오늘 스티커</div><div class="v" id="tSticker">–</div><div class="s" id="tCost"></div></div>
+  </div>
+
+  <section class="card">
+    <h2>날짜별 체험 수 · 비용</h2>
+    <div class="days" id="days"></div>
+  </section>
+
+  <section class="card">
+    <h2>전체 누적</h2>
+    <div class="totals">
+      <div><div class="k">체험</div><div class="v" id="aStart">–</div></div>
+      <div><div class="k">스티커</div><div class="v" id="aSticker">–</div></div>
+      <div><div class="k">대화 주고받기</div><div class="v" id="aTurn">–</div></div>
+      <div><div class="k">입력 토큰</div><div class="v" id="aIn">–</div></div>
+      <div><div class="k">출력 토큰</div><div class="v" id="aOut">–</div></div>
+      <div><div class="k">오류</div><div class="v" id="aErr">–</div></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>최근 기록</h2>
+    <table><thead><tr><th>시각</th><th>종류</th><th class="r hide-sm">입력</th><th class="r hide-sm">출력</th><th class="r">비용</th></tr></thead><tbody id="recent"></tbody></table>
+    <div class="note">대화 내용은 저장하지 않고 숫자만 기록해요. 비용은 토큰 수로 계산한 예상치예요. 정확한 잔액은 Claude Console의 크레딧에서 확인하세요. 10초마다 자동으로 새로고침돼요.</div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var KEY='hw.admin.pass', PRICE={'claude-sonnet-5-5':[2,10],'claude-haiku-5-5':[0.1,0.5],'claude-opus-5-5':[4,20]};
+  var $=function(id){return document.getElementById(id)}, timer=null;
+  function get(){try{return localStorage.getItem(KEY)||''}catch(e){return ''}}
+  function set(v){try{v?localStorage.setItem(KEY,v):localStorage.removeItem(KEY)}catch(e){}}
+  var pass=get();
+  var usd=function(m){return '$'+((m||0)/1e6).toFixed(m<1e5?3:2)};
+  var num=function(n){return (n||0).toLocaleString('ko-KR')};
+  var hhmm=function(t){var d=new Date(t);return [d.getHours(),d.getMinutes(),d.getSeconds()].map(function(x){return String(x).padStart(2,'0')}).join(':')};
+  var KIND={start:['대화 시작','start'],turn:['대화',''],sticker:['스티커','sticker'],other:['기타','']};
+  function showGate(msg){$('app').classList.add('hide');$('gate').classList.remove('hide');$('gmsg').textContent=msg||'';$('pw').value='';$('pw').focus();if(timer){clearInterval(timer);timer=null}}
+  function showApp(){$('gate').classList.add('hide');$('app').classList.remove('hide');if(!timer)timer=setInterval(load,10000)}
+  async function load(){
+    if(!pass)return showGate();
+    try{
+      var r=await fetch('/api/stats',{headers:{'x-admin-pass':pass},cache:'no-store'});
+      if(r.status===401){set('');pass='';return showGate('비밀번호가 맞지 않아요.')}
+      if(r.status===503)return showGate('아직 비밀번호가 설정되지 않았어요. Vercel에 ADMIN_PASS를 넣어 주세요.');
+      if(!r.ok)throw new Error(r.status);
+      var j=await r.json(); showApp(); render(j);
+      $('live').classList.remove('off');
+    }catch(e){$('live').classList.add('off');$('upd').textContent='연결 안 됨 · 다시 시도 중'}
+  }
+  function render(j){
+    var T=j.total||{}, today=(j.perDay||[]).find(function(d){return d.day===j.today})||{};
+    var spent=(T.micro||0)/1e6, left=Math.max(0,j.budget-spent);
+    $('model').textContent=j.model; $('upd').textContent=hhmm(j.now)+' 갱신';
+    $('left').textContent='$'+left.toFixed(2);
+    $('leftBar').style.width=Math.max(2,left/j.budget*100)+'%';
+    $('leftSub').textContent='이 앱에서 쓴 돈 $'+spent.toFixed(2)+' / '+j.budget+'달러';
+    $('tStart').textContent=num(today.k_start); $('tTurn').textContent='대화 '+num(today.k_turn)+'번 주고받음';
+    $('tSticker').textContent=num(today.k_sticker); $('tCost').textContent='오늘 '+usd(today.micro);
+    $('aStart').textContent=num(T.k_start); $('aSticker').textContent=num(T.k_sticker); $('aTurn').textContent=num(T.k_turn);
+    $('aIn').textContent=num(T.in_tok); $('aOut').textContent=num(T.out_tok);
+    $('aErr').textContent=num(T.errors); $('aErr').className='v'+(T.errors?' err':'');
+    var max=Math.max.apply(null,(j.perDay||[]).map(function(d){return d.k_start||0}).concat([1]));
+    var days=$('days'); days.textContent='';
+    (j.perDay||[]).forEach(function(d){
+      var el=document.createElement('div'); el.className='day'+(d.day===j.today?' today':'');
+      var n=document.createElement('div'); n.className='n'; n.textContent=num(d.k_start);
+      var b=document.createElement('b'); b.style.height=((d.k_start||0)/max*100)+'px';
+      var dd=document.createElement('div'); dd.className='d'; dd.textContent=+d.day.slice(5,7)+'/'+(+d.day.slice(8));
+      var c=document.createElement('div'); c.className='c'; c.textContent=usd(d.micro);
+      el.append(n,b,dd,c); days.append(el);
+    });
+    var tb=$('recent'); tb.textContent='';
+    (j.recent||[]).forEach(function(x){
+      var p=PRICE[x.model]||PRICE['claude-sonnet-5-5'], m=Math.round(x.in*p[0]+x.out*p[1]), k=KIND[x.kind]||KIND.other;
+      var tr=document.createElement('tr');
+      var cells=[hhmm(x.t),null,num(x.in),num(x.out),usd(m)];
+      cells.forEach(function(v,i){var td=document.createElement('td');
+        if(i===1){var s=document.createElement('span');s.className='tag '+k[1];s.textContent=k[0];td.append(s);if(!x.ok){var e=document.createElement('span');e.className='err';e.textContent=' 오류';td.append(e)}}
+        else td.textContent=v;
+        if(i>=2)td.className='r'+(i<4?' hide-sm':''); tr.append(td)});
+      tb.append(tr);
+    });
+    if(!(j.recent||[]).length){var tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=5;td.textContent='아직 기록이 없어요.';td.style.color='#6B6575';tr.append(td);tb.append(tr)}
+  }
+  $('f').addEventListener('submit',function(e){e.preventDefault();pass=$('pw').value.trim();if(!pass)return;set(pass);$('gmsg').textContent='확인 중…';load()});
+  $('out').addEventListener('click',function(){set('');pass='';showGate()});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&pass)load()});
+  pass?load():showGate();
+})();
+</script>
+</body>
+</html>

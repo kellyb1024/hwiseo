@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
     const { lang = 'ko', msgs = [] } = req.body || {};
     const conv = msgs.map(x => (x.who === 'u' ? '사용자: ' : '휘서: ') + x.text).join('\n');
     const prompt = TPL.replace('{lang}', lang === 'en' ? '영어' : '한국어').replace('{conversation}', conv);
-    let text = await claude('너는 짧은 색인 문구를 쓰는 도우미야.', [{ role: 'user', content: prompt }], 1000);
+    let text = await claude('너는 짧은 색인 문구를 쓰는 도우미야.', [{ role: 'user', content: prompt }], 1000, 'sticker');
     text = text.split('\n')[0].replace(/^["'“”]+|["'“”]+$/g, '').replace(/[.。]$/, '');
     res.json({ text });
   } catch (e) { res.status(500).json({ error: String(e.message || e) }); }
