@@ -1105,7 +1105,7 @@ class Component extends DCLogic {
   gMove(e){const g=this._g;if(!g)return;const p=this.gPos(e);
     if(g.mode==='ball'){const b=g.ball;if(b.drag){b.x=Math.max(24,Math.min(g.W-24,p.x));b.y=Math.max(g.H*.62,Math.min(g.H-30,p.y));g.smp.push(p);if(g.smp.length>8)g.smp.shift();}}
     else if(e.buttons||e.pointerType==='touch')g.tx=p.x;}
-  gUp(e){const g=this._g;if(!g)return;
+  gUp(e){const g=this._g;if(!g)return;if(g.mode==='jump')g.tx=null;
     if(g.mode==='ball'){const b=g.ball;if(!b.drag)return;b.drag=false;const s=g.smp||[];const now=performance.now();const a=s.find(q=>now-q.t<110)||s[0];const z=s[s.length-1];
       const dt=Math.max(16,z.t-a.t),vx=(z.x-a.x)/dt,vy=(z.y-a.y)/dt;
       if(vy<-.35){const pw=Math.min(3,-vy);const dur=Math.max(480,1150-pw*230);let tx=b.x+(vx/-vy)*(b.y-g.hwY);tx=Math.max(30,Math.min(g.W-30,tx));
@@ -1141,7 +1141,7 @@ class Component extends DCLogic {
     const hint=b.st==='held'&&!b.drag&&this.state.gHintOn;if(hint!==!!this.state.gHintShown)this.setState({gHintShown:hint});}
   gJumpStep(g,dt,now){const {ctx,W,H,S}=g,hw=g.hw,k=dt/16.7;if(g.over)return;
     hw.vy+=.4*k;const py=hw.y;hw.y+=hw.vy*k;
-    if(g.tx!=null)hw.x+=(g.tx-hw.x)*Math.min(1,.16*k);if(g.kx)hw.x+=g.kx*6*k;
+    if(g.tx!=null){const d=g.tx-hw.x,st=6*k;hw.x+=Math.abs(d)<=st?d:Math.sign(d)*st;}if(g.kx)hw.x+=g.kx*6*k;
     {const m=S*.35;if(hw.x<m)hw.x=m;if(hw.x>W-m)hw.x=W-m;}
     for(const p of g.plats){if(p.fall){p.fv=(p.fv||0)+.5*k;p.y+=p.fv*k;p.r+=p.fr*k;continue;}
       if(p.vx){p.x+=p.vx*k;if(p.x<40){p.x=40;p.vx=Math.abs(p.vx);}if(p.x>W-40){p.x=W-40;p.vx=-Math.abs(p.vx);}}
