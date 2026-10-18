@@ -23,6 +23,8 @@
 <style>
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 [data-om-starter="ios-frame"]{box-shadow:none!important}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 [data-om-starter="ios-frame"]>div:last-child{display:none!important}
 body{margin:0;background:#FFFFFF;-webkit-tap-highlight-color:transparent;font-family:Pretendard,-apple-system,'Apple SD Gothic Neo',sans-serif;color:#1D1B22;-webkit-font-smoothing:antialiased}
 a{color:#7B5CD6}a:hover{color:#5B3FB0}
@@ -72,7 +74,7 @@ input{font-family:inherit}
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#7B5CD6"></rect><path d="M50 26 C58 34 60 44 50 52 C40 44 42 34 50 26 Z" fill="#FFD54A"></path><rect x="34" y="54" width="32" height="22" rx="6" fill="#FFD54A"></rect></svg></template>
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#7B5CD6"/><rect x="34" y="44" width="32" height="30" rx="6" fill="#FFD54A"/><path d="M50 22c6 6 8 10 8 14a8 8 0 0 1-16 0c0-4 2-8 8-14z" fill="#FFD54A"/><circle cx="44" cy="58" r="2.5" fill="#1D1B22"/><circle cx="56" cy="58" r="2.5" fill="#1D1B22"/></svg></template>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<script>(function(){window.__inkGuard=1;var f=function(e){if(e.target&&e.target.closest&&e.target.closest("[data-ink-ov]"))e.preventDefault();};document.addEventListener("touchstart",f,{passive:false});document.addEventListener("touchmove",f,{passive:false});})();</script>
+<script>(function(){window.__inkGuard=1;var f=function(e){if(e.target&&e.target.closest&&e.target.closest("[data-ink-ov]"))e.preventDefault();};var g=function(e){if(e.target&&e.target.closest&&e.target.closest("[data-no-select]"))e.preventDefault();};document.addEventListener("touchstart",f,{passive:false});document.addEventListener("touchmove",f,{passive:false});document.addEventListener("touchmove",g,{passive:false});document.addEventListener("selectstart",function(e){var t=e.target&&e.target.nodeType===1?e.target:e.target&&e.target.parentElement;if(t&&t.closest&&!t.closest("input,textarea"))e.preventDefault();});})();</script>
 </helmet>
 <div data-hw-stage="1" style="display: flex; align-items: center; justify-content: center; height: 100vh; height: 100dvh; padding-top: env(safe-area-inset-top); overflow: hidden; box-sizing: border-box">
   
@@ -732,7 +734,7 @@ input{font-family:inherit}
           <button onClick="{{ gJump }}" style="height:30px;padding:0 14px;border-radius:15px;border:0;font-size:13px;font-weight:800;cursor:pointer;background: {{ gJumpBg }};color: {{ gJumpFg }}">사진탐험</button>
         </div><span></span>
       </div>
-      <div ref="{{ gField }}" onPointerDown="{{ gDown }}" onPointerMove="{{ gMove }}" onPointerUp="{{ gUp }}" onPointerCancel="{{ gUp }}" style="position:absolute;inset:0;overflow:hidden;touch-action:none;user-select:none">
+      <div ref="{{ gField }}" onPointerDown="{{ gDown }}" onPointerMove="{{ gMove }}" onPointerUp="{{ gUp }}" onPointerCancel="{{ gUp }}" data-no-select="1" style="position:absolute;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent">
         <canvas ref="{{ gCanvas }}" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
         <div ref="{{ gHw }}" style="position:absolute;left:0;top:0;width:120px;height:120px;pointer-events:none;will-change:transform">
           {{ gChar }}
