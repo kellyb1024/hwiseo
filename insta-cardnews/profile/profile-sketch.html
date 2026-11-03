@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><script src="../../design/character/hwiseo-F.js"></script>
+<style>*{margin:0}html,body{width:1080px;height:1080px;background:#765DCF;overflow:hidden}
+#c{width:1080px;height:1080px}#c svg{width:100%;height:100%;display:block}</style></head><body><div id="c"></div>
+<script>
+// 손그림 버전: 영상(HwiseoCharF pencil)과 같은 문법 — 잉크 윤곽 + (3,-2) 어긋난 채움 + 쭈글. 캐릭터 소스는 안 건드림
+const P=new URLSearchParams(location.search);
+const TEX=P.get('tex')||'flat';
+const INK=P.get('ink')||'#2E2418', SW=+(P.get('sw')||3.4), OX=2.6, OY=-1.8, SEED=+(P.get('seed')||7);
+HWF.POSE.hi={arms:[42,42]};
+document.head.insertAdjacentHTML('beforeend',`<style>${HWF.CSS} .hw *{animation:none!important}</style>`);
+let h=HWF.char({pose:'hi',level:3,mood:P.get('mood')||'wink',vb:P.get('vb')||'6 4 288 288'});
+const m1=(re)=>(h.match(re)||[])[1]||'';
+const BODYD=m1(/class="hw-bodyfill" d="([^"]+)"/), DRIPD=m1(/class="hw-drips" d="([^"]+)"/);
+const FLAMED=m1(/<g class="hw-flame[^"]*"><path d="([^"]+)"/);
+const defs=`<defs>
+ <filter id="ol" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="${SEED+22}" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="3.4" xChannelSelector="R" yChannelSelector="G"/></filter>
+ <filter id="fl" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="${SEED+24}" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="5.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+ <filter id="fc" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="${SEED+30}" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="2.2" xChannelSelector="R" yChannelSelector="G"/></filter>
+ <filter id="fg" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="3" seed="7" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="table" tableValues="0 0.45 0.85 1 1 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="${SEED+24}" result="w"/><feDisplacementMap in="g" in2="w" scale="5.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+ <filter id="fh" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="${SEED+26}" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+ <pattern id="hb" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(34)"><path d="M0 3.5h7" stroke="#F7C331" stroke-width="2.2"/></pattern>
+ <pattern id="hc" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-26)"><path d="M0 3.5h7" stroke="#E29A1E" stroke-width="2.2"/></pattern>
+ <pattern id="hf" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(58)"><path d="M0 3h6" stroke="#EFA92A" stroke-width="2"/></pattern>
+ <clipPath id="bc"><path d="${BODYD}"/></clipPath>
+ <mask id="ob" maskUnits="userSpaceOnUse" x="-100" y="-100" width="500" height="500"><rect x="-100" y="-100" width="500" height="500" fill="#fff"/><path d="${BODYD}" fill="#000" transform="translate(${OX},${OY})"/></mask></defs>`;
+const FF = TEX==='grain' ? 'fg' : 'fl';
+// 팔: 몸 뒤로 보내고 윤곽을 붙임 (몸 채움이 어깨 쪽 선을 덮음)
+const arms=[...h.matchAll(/<g class="hw-arm hw-arm-[lr]"[^>]*>.*?<\/g>/g)].map(m=>m[0]);
+arms.forEach(a=>h=h.replace(a,''));
+const armInk='<g mask="url(#ob)">'+arms.map(a=>a.replace(/fill="[^"]+"/,`fill="none" stroke="${INK}" stroke-width="${SW}" filter="url(#ol)"`)).join('')+'</g>';
+const armFill=arms.map(a=>a.replace('<rect',`<rect filter="url(#${FF})" transform="translate(${OX},${OY})"`)).join('');
+const paper = TEX==='flat' ? '' : arms.map(a=>a.replace(/fill="[^"]+"/,'fill="#FFF4D6"')).join('')+`<path d="${BODYD}" fill="#FFF4D6"/><path d="${FLAMED}" fill="#FFF4D6"/>`;
+h=h.replace('<g class="hw-body">',`${paper}${armFill}${armInk}<g class="hw-body">`);
+// 채움 어긋남
+h=h.replace('<g class="hw-body">',`<g class="hw-body" filter="url(#${FF})" transform="translate(${OX},${OY})">`);
+h=h.replace('<g class="hw-cap">',`<g class="hw-cap" filter="url(#${FF})" transform="translate(${OX},${OY})">`);
+h=h.replace(/<g class="hw-flame-wrap"\s*>/,`<g class="hw-flame-wrap" filter="url(#${FF})" transform="translate(${OX},${OY})">`);
+// 얼굴도 살짝 쭈글
+h=h.replace('<g class="hw-eyes">','<g filter="url(#fc)"><g class="hw-eyes">').replace(/(<path class="hw-mouth"[^>]*\/>)/,'$1</g>');
+// 잉크 윤곽 + 심지를 맨 위로
+const wick=(h.match(/<rect class="hw-wick"[^>]*\/>/)||[''])[0]; h=h.replace(wick,'');
+let texL='';
+if(TEX==='grain') texL=`<g clip-path="url(#bc)" transform="translate(${OX},${OY})" filter="url(#fg)"><path d="${BODYD}" fill="none" stroke="#E9A62B" stroke-width="10" opacity=".4"/></g>`;
+if(TEX==='hatch') texL=`<g transform="translate(${OX},${OY})" filter="url(#fh)"><path d="${BODYD}" fill="url(#hb)"/><g clip-path="url(#bc)"><path d="${DRIPD}" fill="url(#hc)"/></g><path d="${FLAMED}" fill="url(#hf)"/></g>`;
+if(TEX==='hatch'){h=h.replace('<g filter="url(#fc)"><g class="hw-eyes">',texL+'<g filter="url(#fc)"><g class="hw-eyes">');texL='';}
+const ink=texL+`<g fill="none" stroke="${INK}" stroke-width="${SW}" stroke-linejoin="round" stroke-linecap="round" filter="url(#ol)">
+ <path d="${BODYD}"/><g clip-path="url(#bc)"><path d="${DRIPD}"/></g><path d="${FLAMED}"/></g>${wick}`;
+const i=h.lastIndexOf('</g></g>'); h=h.slice(0,i)+ink+h.slice(i);
+if(TEX==='hatch'){h=h.replace('<g class="hw-body" ','<g class="hw-body" opacity=".5" ').replace('<g class="hw-cap" ','<g class="hw-cap" opacity=".55" ');}
+h=h.replace(/(<svg[^>]*>)/,'$1'+defs).replace(/<ellipse class="hw-shadow"[^>]*\/>/,'');
+document.getElementById('c').innerHTML=h;
+</script></body></html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>휘서 셰이딩 비교</title>
+<!-- 2026-09-29 셰이딩 시안: 원본 / 셀 셰이딩 / 그라데이션. hwiseo-F.js 는 건드리지 않고, 렌더된 SVG 에 레이어만 덧붙인다 -->
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#FAF6EE;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:#2E2418}
+  .page{max-width:1100px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:28px;font-weight:900;letter-spacing:-.02em}
+  .lead{margin-top:8px;font-size:14px;color:#6F6A78;line-height:1.7}
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px}
+  .col h2{font-size:16px;font-weight:900;border-bottom:1.5px solid #E5DCC8;padding-bottom:8px}
+  .col p{font-size:12.5px;color:#6F6A78;line-height:1.6;margin-top:8px;min-height:40px}
+  .hero{aspect-ratio:1;margin-top:8px}
+  .hero svg{width:100%;height:100%}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:10px}
+  .grid div{aspect-ratio:1;background:#F3EDE0;border-radius:10px}
+  .grid svg{width:100%;height:100%}
+  .bg-row{display:flex;gap:8px;margin-top:20px;font-size:13px;align-items:center}
+  .bg-row button{border:1.5px solid #E5DCC8;background:#fff;border-radius:14px;padding:5px 12px;font:inherit;cursor:pointer}
+  body.dark{background:#241E2E} body.dark .col h2,body.dark h1{color:#FAF6EE} body.dark .grid div{background:#2F2839}
+  body.purple{background:#765DCF} body.purple .col h2,body.purple h1{color:#fff} body.purple .grid div{background:#8670D6}
+  @media (max-width:760px){.cols{grid-template-columns:1fr}}
+</style>
+<div class="page">
+  <h1>휘서 셰이딩 비교</h1>
+  <p class="lead">빛은 왼쪽 위에서 들어온다고 잡았어요. 세 칸 모두 같은 hwiseo-F.js 로 그린 캐릭터에 레이어만 얹은 것이라, 모양·표정·애니메이션은 그대로예요.</p>
+  <div class="bg-row">배경:
+    <button data-bg="">크림</button><button data-bg="purple">보라</button><button data-bg="dark">어두운</button>
+  </div>
+  <div class="cols">
+    <div class="col" data-style="flat"><h2>원본 (플랫)</h2><p>지금 버전. 바닥 그림자와 윗면 타원만 있어요.</p><div class="hero"></div><div class="grid"></div></div>
+    <div class="col" data-style="cel"><h2>A. 셀 셰이딩</h2><p>오른쪽·아래에 딱 떨어지는 그림자 면 + 왼쪽 하이라이트 획. 플랫 그림체를 유지해요.</p><div class="hero"></div><div class="grid"></div></div>
+    <div class="col" data-style="grad"><h2>B. 그라데이션</h2><p>몸통 방사형 그라데이션 + 촛농이 몸에 드리우는 흐린 그림자 + 번지는 하이라이트.</p><div class="hero"></div><div class="grid"></div></div>
+  </div>
+</div>
+<script src="hwiseo-F.js"></script>
+<script>
+const NS='http://www.w3.org/2000/svg';
+document.head.insertAdjacentHTML('beforeend',`<style>${HWF.CSS}</style>`);
+let n=0;
+const el=(tag,attrs={},kids=[])=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);kids.forEach(c=>e.appendChild(c));return e};
+
+// 모양 s 에서, 같은 모양을 (dx,dy) 만큼 옮긴 것을 빼고 남는 초승달 면 = 셀 그림자
+function crescent(src,defs,dx,dy,fill,opacity=1){
+  const id='m'+(n++);
+  const hole=src.cloneNode(); hole.removeAttribute('class'); hole.setAttribute('fill','#000'); hole.setAttribute('transform',`translate(${dx},${dy})`);
+  defs.appendChild(el('mask',{id,maskUnits:'userSpaceOnUse',x:-100,y:-100,width:500,height:540},[el('rect',{x:-100,y:-100,width:500,height:540,fill:'#fff'}),hole]));
+  const s=src.cloneNode(); s.removeAttribute('class'); s.setAttribute('fill',fill); s.setAttribute('opacity',opacity); s.setAttribute('mask',`url(#${id})`);
+  return s;
+}
+
+function cel(svg){
+  const defs=el('defs'); svg.prepend(defs);
+  const body=svg.querySelector('.hw-bodyfill');
+  if(body){
+    const g=body.parentNode;
+    g.insertBefore(crescent(body,defs,-16,-11,'#F2B43A'),body.nextSibling);
+    // 하이라이트 획 (촛농 아래 왼쪽 옆면)
+    g.appendChild(el('path',{d:'M74,200 V252',stroke:'#FFF0B0',"stroke-width":8,"stroke-linecap":'round',fill:'none'}));
+    g.appendChild(el('circle',{cx:74,cy:268,r:4,fill:'#FFF0B0'}));
+  }
+  const drips=svg.querySelector('.hw-drips');
+  if(drips){
+    drips.parentNode.insertBefore(crescent(drips,defs,-12,-7,'#DD951F'),drips.nextSibling);
+    // 캡 윗면 하이라이트
+    drips.parentNode.appendChild(el('path',{d:'M76,132 h22',stroke:'#FFE39A',"stroke-width":6,"stroke-linecap":'round',fill:'none'}));
+  }
+  svg.querySelectorAll('.hw-arm rect,.hw-foot').forEach(r=>r.parentNode.insertBefore(crescent(r,defs,-3,-4,'#F2B43A'),r.nextSibling));
+}
+
+function grad(svg){
+  const id='g'+(n++);
+  const defs=el('defs'); svg.prepend(defs);
+  defs.innerHTML=`
+    <radialGradient id="${id}b" gradientUnits="userSpaceOnUse" cx="112" cy="176" r="190">
+      <stop offset="0" stop-color="#FFEC9A"/><stop offset=".42" stop-color="#FFD54A"/><stop offset="1" stop-color="#EFA934"/></radialGradient>
+    <linearGradient id="${id}f" x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#E08A1C" stop-opacity="0"/><stop offset="1" stop-color="#E08A1C" stop-opacity=".32"/></linearGradient>
+    <linearGradient id="${id}w" gradientUnits="userSpaceOnUse" x1="0" y1="116" x2="0" y2="205"><stop offset="0" stop-color="#F9C84C"/><stop offset="1" stop-color="#E29A22"/></linearGradient>
+    <radialGradient id="${id}l" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFE78A"/><stop offset="1" stop-color="#EFAE36"/></radialGradient>
+    <filter id="${id}s" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="${id}h" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+    <filter id="${id}fg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  const body=svg.querySelector('.hw-bodyfill');
+  if(body){
+    body.setAttribute('fill',`url(#${id}b)`);
+    const g=body.parentNode, foot=body.cloneNode(); foot.removeAttribute('class'); foot.setAttribute('fill',`url(#${id}f)`);
+    g.insertBefore(foot,body.nextSibling);
+    g.appendChild(el('ellipse',{cx:86,cy:220,rx:9,ry:34,fill:'#FFF6CC',opacity:.75,filter:`url(#${id}h)`}));
+  }
+  const drips=svg.querySelector('.hw-drips');
+  if(drips){
+    const sh=drips.cloneNode(); sh.removeAttribute('class');
+    sh.setAttribute('fill','#B8700F'); sh.setAttribute('opacity','.28'); sh.setAttribute('filter',`url(#${id}s)`); sh.setAttribute('transform','translate(3,7)');
+    drips.parentNode.insertBefore(sh,drips);
+    drips.setAttribute('fill',`url(#${id}w)`);
+    drips.parentNode.appendChild(el('ellipse',{cx:92,cy:134,rx:18,ry:5,fill:'#FFF1B8',opacity:.7,filter:`url(#${id}s)`}));
+  }
+  svg.querySelectorAll('.hw-arm rect,.hw-foot').forEach(r=>r.setAttribute('fill',`url(#${id}l)`));
+  const sh=svg.querySelector('.hw-shadow'); if(sh){sh.setAttribute('filter',`url(#${id}s)`); sh.setAttribute('opacity',(+sh.getAttribute('opacity'))*1.6)}
+  const fl=svg.querySelector('.hw-flame'); if(fl) fl.setAttribute('filter',`url(#${id}fg)`);
+}
+
+const SHADE={flat:()=>{},cel,grad};
+const make=(box,style,opts)=>{box.insertAdjacentHTML('beforeend',HWF.char(opts)); SHADE[style](box.lastElementChild)};
+const SMALL=[{mood:'happy'},{view:'q'},{view:'side'},{pose:'cheer'},{pose:'jump'},{mood:'sad',level:1}];
+document.querySelectorAll('.col').forEach(col=>{
+  const s=col.dataset.style;
+  make(col.querySelector('.hero'),s,{level:2,cls:'hw-live'});
+  SMALL.forEach(o=>{const d=document.createElement('div'); col.querySelector('.grid').appendChild(d); make(d,s,{level:2,...o})});
+});
+document.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>document.body.className=b.dataset.bg);
+</script>

@@ -10,19 +10,19 @@
 ## P1
 
 **C01**  *(3.2s)*  
-Remember when a camera could only hold twenty-four shots?
+Remember when you only got twenty-four shots on a camera roll?
 
 **C02**  *(5.9s)*  
-We cherished every frame, waited patiently for them to print, and gathered around to talk about them.
+Every picture meant something. We'd wait days for the prints, and gathered around to talk about them.
 
 **C03**  *(4.4s)*  
 Now we take more photos in a single year than our grandparents did in a lifetime.
 
 **C04**  *(5.5s)*  
-But now that capturing a moment costs nothing, a single photo doesn't hold what it used to.
+But now that capturing a moment costs nothing, a single photo isn't as special anymore.
 
 **C05**  *(5.7s)*  
-So many pieces of my life lose their context, swept away and buried under an endless scroll.
+So many pieces of a life lose their context, swept away and buried under an endless scroll.
 
 
 ---

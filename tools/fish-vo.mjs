@@ -14,6 +14,9 @@ const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? proces
 const SPEED = parseFloat(arg('--speed', '1.0'));
 const MODEL = arg('--model', 's2.1-pro-free');   // 기본은 무료 모델. 유료는 --model s2.1-pro 로 명시해야만 쓰임
 const ONLY  = (arg('--only', '') || '').split(',').filter(Boolean);
+const OUTDIR = arg('--out', 'vo-fish');
+// 대사 덮어쓰기 — cuts.ts는 그대로 두고 TTS용으로만 줄인 문장
+const OVR = JSON.parse(readFileSync(`${ROOT}/tools/vo-script-tts.json`, 'utf8'));
 
 // 발음 교정 — CMU Arpabet. cuts.ts는 그대로 두고 여기서만 치환한다.
 // 긴 단어 먼저 치환되도록 길이순 정렬.
@@ -30,9 +33,9 @@ const applyPron = (t) => Object.keys(PRON)
 const src = readFileSync(`${ROOT}/promo-video/src/cuts.ts`, 'utf8');
 const re = /\{id: '(C\d\d)', part: '(P\d)', vo: '([^']+)', start: \d+, voFrames: (\d+),[\s\S]*?en: '((?:[^'\\]|\\.)*)'/g;
 const cuts = [];
-let m; while ((m = re.exec(src))) cuts.push({id:m[1], part:m[2], vo:m[3], oldF:+m[4], en:m[5].replace(/\\'/g,"'")});
+let m; while ((m = re.exec(src))) cuts.push({id:m[1], part:m[2], vo:m[3], oldF:+m[4], en: OVR[m[1]] || m[5].replace(/\\'/g,"'")});
 
-const OUT = `${ROOT}/vo-fish`;
+const OUT = `${ROOT}/${OUTDIR}`;
 mkdirSync(OUT, {recursive:true});
 const targets = ONLY.length ? cuts.filter(c => ONLY.includes(c.id)) : cuts;
 console.log(`${targets.length}컷 생성 · model=${MODEL}${MODEL.endsWith('-free') ? ' (무료)' : ' ⚠️ 유료'} · speed=${SPEED}\n`);

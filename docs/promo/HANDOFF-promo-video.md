@@ -190,3 +190,46 @@ C01 필름 롤 24프레임 → C02a 뷰파인더 → C02b 사진관 → C02c 탁
 - **아이콘**: `design/icons/hwiseo-app-icon-2048.png`(사용자 제작) → 투명부를 배경 보라 #7B5CD6로 채운 `public/img/logo/hwiseo-icon-1024/480.png`. 옛 것은 `public/img/logo/_old-0828/`.
 - **환경**: 헤드리스 셸 다운로드 실패 → 렌더는 `--browser-executable="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"` 필수. 번들 ffmpeg는 필터 파싱 실패 → concat은 homebrew ffmpeg. 확인 스틸 `out/charF/`.
 - 남은 것: 사용자 직접 녹음 VO → 전 컷 재실측·재렌더 (변동 없음).
+
+---
+
+## VO 방향 전환 (2026-09-03) — 직접 녹음 ✗ → fish.audio TTS
+
+위쪽 "다음 할 일 ②"의 **직접 녹음 계획은 폐기**. 대사가 계속 바뀌는 프로젝트라 한 줄 고칠 때마다 재녹음하는 비용이 커서, 무료 TTS로 전환했다.
+
+**도구 (새로 만듦)**
+- `tools/fish-vo.mjs` — `cuts.ts`의 `en`을 읽어 25컷 wav 생성. 파일명·44.1k 모노까지 맞추고 컷별 실측을 기존 `voFrames`와 비교 출력. `_measure.json`에 저장. 출력은 `vo-fish/`
+  ```
+  FISH_KEY=$(cat ~/.fish-key) FISH_VOICE=bfd21400b3e941148dfab11f42187575 \
+    node tools/fish-vo.mjs --speed 0.9
+  ```
+  옵션: `--only C13,C24` (일부만) · `--speed` · `--model` (기본 `s2.1-pro-free` 무료)
+- `tools/split-vo.sh` — 직접 녹음으로 되돌아갈 경우 한 파일을 무음 기준 25개로 분할
+- `docs/promo/VO-녹음대본.md` — 직접 녹음용 25줄 시트
+
+**설정**: 목소리 모델 `bfd21400b3e941148dfab11f42187575` · 속도 0.9 (1.0은 "너무 빠르다") · 무료 모델
+
+**발음 교정**: CMU Arpabet 음소 태그를 `fish-vo.mjs`의 `PRON` 맵에서 치환. `Hwi`→`HH W IY1` · `Seo`→`S AH1` · `Hwiseo`→`HH W IY1 S AH0`. 안 하면 알파벳을 하나씩 읽는다. **`cuts.ts`는 건드리지 않는다** — 자막은 `kr`만 쓰므로 `en`은 VO 전용이고 발음 해킹은 생성 스크립트에만 둔다.
+
+**과금**: 무료 플랜 + 무료 모델. API 잔액 0 · 누적 충전 0 · 카드 미등록이라 청구 경로 없음. 전체 25컷 2,016바이트라 유료로 가도 $0.03.
+
+**시험 생성 결과** (speed 0.9, 발음 교정 적용): C13 7.95s(+9f) · C14 6.72s(+6f) · C17 4.50s(-4f) · C25 4.08s(+8f). **기존 Daniel TTS와 길이가 거의 같아 재타이밍 부담이 적다.**
+
+**남은 일**
+1. 사용자 청취 확인 — 속도 0.9가 맞는지, Hwi/Seo 발음이 걸렸는지. 안 걸렸으면 Arpabet 조합을 바꿔 재시도
+2. 통과하면 나머지 21컷 생성 → `vo-fish/*.wav`를 `promo-video/public/vo/`로 교체
+3. 전 컷 실측 → `cuts.ts`의 `voFrames`/`duration`/`start` 재체인 → P4Flat·P5Flat 호흡 경계(`B`) 재조정
+4. 5파트 재렌더 → `out/p12345.txt`로 concat (렌더는 `--browser-executable` 필요, 위 9/3 항목 참조)
+5. **API 키가 채팅에 노출됨 — fish.audio Developer에서 폐기하고 재발급할 것.** 로컬은 `~/.fish-key` (600)
+
+---
+
+## 2026-09-07 — C10 화살표 수정 → 통합본 `out/hwiseo-full-flat-0907.mp4`
+
+- **증상**: C10에서 사진 → 옆모습 머리로 가는 손그림 화살표가 화살촉만 떠 있고 축이 안 보임.
+- **원인**: 8/28에 사진을 480×320 → 600×400으로 키우면서 `PW`만 바꾸고 화살표 좌표는 그대로 둠. `ax = PX+PW+34`(774) / `bx = HX-214`(786) → **축 길이 12px**. 화살촉(폭 28)만 남아 깨져 보였다.
+- **수정** (`src/scenes/P2Flat.tsx:409`): `ax = PX+PW+34`(774) / `bx = HX-170`(830). 사진 오른쪽 끝(740)에서 34px, 옆얼굴 앞선(≈850)에서 20px — 양쪽 여백을 비슷하게. 화살촉도 축 길이에 맞춰 26/22 → 19/15로 축소.
+  - 이 구간은 사진 오른쪽~옆얼굴 사이 **총 110px뿐**이라 화살표를 더 길게 하면 어느 한쪽에 붙는다. 사진 쪽 여백 18px 안은 "너무 붙는다"고 반려됨(사용자).
+- **통합본 `out/hwiseo-full-flat-0907.mp4`** (4524f / 150.805s, `out/p12345-0907.txt` concat -c copy, homebrew ffmpeg). 바뀐 건 P2뿐(`out/p2flat/P2flat-0907.mp4`), 나머지는 P1·P3B·P4가 8/28, P5가 9/3 파일. 새 P2는 구 P2와 길이 동일(33.130667s)이라 타임라인 영향 없음.
+- **정리**: 구 전체 통합본 3개(`hwiseo-full-flat-0903.mp4`, `hwiseo-full-flat.mp4`, `hwiseo-full-v11.1.mp4`)를 휴지통으로 보냄. 개별 파트 파일과 `P1P2flat.mp4`(P1+P2 부분본)는 유지.
+- **확인 스틸**: `out/arrowfix/` (f800/f812 = 수정 전후 비교, `verify-full-0907.png` = 통합본에서 추출)
