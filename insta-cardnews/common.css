@@ -1,0 +1,23 @@
+:root{--purple:#765DCF;--yellow:#F8D764;--ink:#2B2233;--paper:#FBF8F1;--grid:#E9E3F3;--sub:#5A5066;--mute:#9A90A6}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;background:var(--paper)}
+.card{position:relative;width:1080px;height:1350px;overflow:hidden;font-family:Pretendard,sans-serif;color:var(--ink);word-break:keep-all;
+  background:linear-gradient(var(--grid) 2px,transparent 2px) 0 0/54px 54px,linear-gradient(90deg,var(--grid) 2px,transparent 2px) 0 0/54px 54px,var(--paper)}
+.pen{font-family:'Nanum Pen Script',cursive}
+.tag{position:absolute;left:84px;top:92px;display:flex;gap:14px;align-items:center}
+.chip{background:var(--purple);color:#fff;font-weight:700;font-size:30px;padding:10px 22px;border-radius:999px}
+.chip.o{background:transparent;color:var(--purple);border:3px solid var(--purple)}
+.page{position:absolute;right:84px;top:100px;font-size:46px;color:var(--purple)}
+.title{position:absolute;left:84px;top:110px;font-weight:800;font-size:96px;line-height:1.18;letter-spacing:-3px}
+.hl{position:relative;display:inline-block;z-index:0}
+.hl::after{content:"";position:absolute;left:-8px;right:-10px;bottom:8px;height:38px;background:var(--yellow);z-index:-1;transform:rotate(-1.5deg);border-radius:6px}
+.p{color:var(--purple)}
+.sub{position:absolute;left:88px;font-size:36px;line-height:1.55;font-weight:500;color:var(--sub)}
+.foot{position:absolute;right:84px;bottom:82px;font-size:28px;font-weight:600;color:var(--mute);letter-spacing:.5px}
+.swipe{position:absolute;right:84px;bottom:74px;font-size:50px;color:var(--purple)}
+.tape{position:absolute;width:170px;height:48px;background:rgba(248,215,100,.82);top:-22px;left:50%;transform:translateX(-50%) rotate(-5deg);z-index:2}
+.polaroid{position:absolute;background:#fff;padding:20px 20px 74px;box-shadow:0 16px 36px rgba(60,40,90,.16)}
+.polaroid img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+.polaroid .cap{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:42px}
+.hw-slot svg{width:100%;height:100%;display:block}
+.note{position:absolute;background:#fff;box-shadow:0 14px 32px rgba(60,40,90,.14);border-radius:6px}

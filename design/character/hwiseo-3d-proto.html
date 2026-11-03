@@ -1,0 +1,207 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>휘서 3D 시안</title>
+<!-- 2026-09-30 3D 시안: hwiseo-F.js 의 비율·색을 그대로 3D 로 옮김 (2D 100px = 3D 1). 블렌더 없이 Three.js 로 절차 생성 -->
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#FAF6EE;font-family:-apple-system,Pretendard,'Apple SD Gothic Neo',sans-serif;color:#2E2418;transition:background .3s}
+  body.purple{background:#765DCF;color:#fff} body.dark{background:#241E2E;color:#FAF6EE}
+  .page{max-width:900px;margin:0 auto;padding:28px 16px 40px}
+  h1{font-size:26px;font-weight:900;letter-spacing:-.02em}
+  .lead{margin-top:6px;font-size:13.5px;opacity:.7}
+  #stage{width:100%;height:min(70vh,620px);margin-top:14px;touch-action:none;cursor:grab}
+  #stage:active{cursor:grabbing}
+  .ctl{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:10px;font-size:13px;align-items:center}
+  .ctl div{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .ctl b{font-weight:800;margin-right:2px}
+  .ctl button{border:1.5px solid #E5DCC8;background:#fff;color:#2E2418;border-radius:14px;padding:5px 12px;font:inherit;cursor:pointer}
+  .ctl button.on{background:#F8D764;border-color:#F8D764;font-weight:800}
+</style>
+<div class="page">
+  <h1>휘서 3D 시안</h1>
+  <p class="lead">드래그하면 돌아가고, 휘서를 톡 누르면 반응해요. 눈은 포인터를 따라가요.</p>
+  <div id="stage"></div>
+  <div class="ctl">
+    <div data-g="mood"><b>표정</b><button data-v="neutral" class="on">기본</button><button data-v="happy">행복</button><button data-v="sad">슬픔</button><button data-v="surprised">놀람</button></div>
+    <div data-g="level"><b>불꽃</b><button data-v="0">꺼짐</button><button data-v="1">작게</button><button data-v="2" class="on">기본</button><button data-v="3">크게</button></div>
+    <div data-g="bg"><b>배경</b><button data-v="" class="on">크림</button><button data-v="purple">보라</button><button data-v="dark">어두운</button></div>
+  </div>
+</div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+
+const C={body:'#FFD54A',wax:'#F2B233',top:'#FFE9A0',ink:'#2E2418',white:'#FFFBF3',cheek:'#F7A59B',fOuter:'#FBE38A',fInner:'#F2A93B',fCore:'#FFF6D8'};
+const stage=document.getElementById('stage');
+
+// ── 렌더러·씬 ─────────────────────────────────────────
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.NeutralToneMapping; renderer.toneMappingExposure=1.12;   // ACES 는 노랑을 탁하게 만든다 → 쨍한 색 유지용
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;
+scene.environmentIntensity=.55;
+const camera=new THREE.PerspectiveCamera(30,1,.1,100);
+camera.position.set(2,2.3,8);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,1.3,0); controls.enablePan=false; controls.enableDamping=true;
+controls.minDistance=5; controls.maxDistance=11; controls.minPolarAngle=.6; controls.maxPolarAngle=1.62;
+
+// 조명: 왼쪽 위 키라이트(그림자) + 오른쪽 차가운 채움 + 뒤 역광 (2D 시안과 같은 방향)
+const key=new THREE.DirectionalLight('#FFF4E0',2.4); key.position.set(-2.2,6,3.2); key.castShadow=true;
+key.shadow.mapSize.set(1024,1024); key.shadow.radius=6; key.shadow.bias=-.0005;
+Object.assign(key.shadow.camera,{left:-4,right:4,top:4,bottom:-3,near:.5,far:16});
+scene.add(key);
+const fill=new THREE.DirectionalLight('#E6E0FF',.7); fill.position.set(4,2,3); scene.add(fill);
+const rim=new THREE.DirectionalLight('#FFFFFF',1.6); rim.position.set(1,3,-5); scene.add(rim);
+scene.add(new THREE.HemisphereLight('#FFF8EA','#C9B48A',.5));
+
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(20,20),new THREE.ShadowMaterial({opacity:.13}));
+ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+// 접지 그늘 (바닥에 닿는 곳의 진한 그림자)
+const radTex=(stops)=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);stops.forEach(([o,s])=>gr.addColorStop(o,s));g.fillStyle=gr;g.fillRect(0,0,128,128);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t};
+const contact=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.1),new THREE.MeshBasicMaterial({map:radTex([[0,'rgba(46,36,24,.42)'],[.55,'rgba(46,36,24,.14)'],[1,'rgba(46,36,24,0)']]),transparent:true,depthWrite:false}));
+contact.rotation.x=-Math.PI/2; contact.position.y=.002; scene.add(contact);
+
+// ── 재질 ─────────────────────────────────────────────
+const wax=(color,o={})=>new THREE.MeshPhysicalMaterial({color,roughness:.5,clearcoat:.35,clearcoatRoughness:.35,sheen:.35,sheenColor:'#FFF3C0',sheenRoughness:.5,emissive:'#FFB020',emissiveIntensity:.06,...o});
+const M={body:wax(C.body),wax:wax(C.wax,{roughness:.35,clearcoat:.6}),top:wax(C.top,{roughness:.3}),
+  ink:new THREE.MeshPhysicalMaterial({color:C.ink,roughness:.25,clearcoat:1}),
+  white:new THREE.MeshPhysicalMaterial({color:C.white,roughness:.2,clearcoat:1}),
+  cheek:new THREE.MeshStandardMaterial({color:C.cheek,roughness:.8,transparent:true,opacity:.85})};
+const mesh=(geo,mat,shadow=true)=>{const m=new THREE.Mesh(geo,mat);m.castShadow=shadow;m.receiveShadow=true;return m};
+
+// ── 몸 (2D: 폭 180, 윗면 y118, 밑단 y294, 방울 끝 y313 → 3D 폭 1.8, y = (314-y)/100) ──
+const W=1.8,D=1.4,R=.26;
+const hw=new THREE.Group(); scene.add(hw);          // 바닥 중심이 원점 → 스쿼시가 발밑 기준
+const fig=new THREE.Group(); hw.add(fig);
+const body=mesh(new RoundedBoxGeometry(W,1.86,D,6,R),M.body); body.position.y=.1+.93; fig.add(body);
+// 앞면 곡선(모서리 둥글림)을 따라 붙이기 위한 z
+const frontZ=(x,half=D/2,hw_=W/2,r=R)=>{const dx=Math.abs(x)-(hw_-r);return dx<=0?half:half-r+Math.sqrt(Math.max(0,r*r-dx*dx))};
+// 녹은 밑단: 2D 의 앞 방울 2개(x120·178) + 둘레 방울
+[[-.3,.5,.23],[.28,.5,.23],[-.7,.35,.2],[.72,.3,.19],[-.72,-.3,.2],[.7,-.35,.2],[0,-.52,.22],[-.3,-.52,.18],[.35,-.5,.19],[0,.52,.16]]
+  .forEach(([x,z,r])=>{const b=mesh(new THREE.SphereGeometry(r*1.25,32,20),M.body);b.scale.set(1,.72,1);b.position.set(x*.92,r*.9,z*.9);fig.add(b)});
+
+// ── 촛농 캡 ──
+const cap=mesh(new RoundedBoxGeometry(W+.06,.34,D+.06,5,.12),M.wax); cap.position.y=1.96-.14; fig.add(cap);
+const topShape=new THREE.Shape(); {const w=1.5,d=1.1,r=.3;topShape.moveTo(-w/2+r,-d/2);topShape.lineTo(w/2-r,-d/2);topShape.quadraticCurveTo(w/2,-d/2,w/2,-d/2+r);topShape.lineTo(w/2,d/2-r);topShape.quadraticCurveTo(w/2,d/2,w/2-r,d/2);topShape.lineTo(-w/2+r,d/2);topShape.quadraticCurveTo(-w/2,d/2,-w/2,d/2-r);topShape.lineTo(-w/2,-d/2+r);topShape.quadraticCurveTo(-w/2,-d/2,-w/2+r,-d/2)}
+const topM=mesh(new THREE.ShapeGeometry(topShape,12),M.top,false); topM.rotation.x=-Math.PI/2; topM.position.y=1.991; fig.add(topM);
+// 방울: 2D 캡 아랫선 실측(오른 x+.53 깊이.38 · 가운데 x-.13 깊이.18 · 왼 x-.81 깊이.54) + 옆·뒤
+const drip=(x,z,dep,r=.095,axis='z')=>{
+  const topY=1.84, botY=1.66-dep, len=Math.max(.01,topY-botY-2*r);
+  const d=mesh(new THREE.CapsuleGeometry(r,len,8,16),M.wax); d.position.y=(topY+botY)/2;
+  if(axis==='z') d.position.set(x,d.position.y,z*frontZ(x,D/2+.03,W/2+.03)); else d.position.set(x*frontZ(z,W/2+.03,D/2+.03),d.position.y,z);
+  fig.add(d);
+};
+drip(.525,1,.38); drip(-.13,1,.18); drip(-.81,1,.54);
+drip(-1,.3,.3,.09,'x'); drip(-1,-.25,.12,.08,'x'); drip(1,.1,.45,.095,'x'); drip(1,-.4,.15,.08,'x');
+drip(.4,-1,.28); drip(-.35,-1,.42,.09);
+// 캡 아래 가장자리 물결 (작은 볼록)
+if(false)for(let i=0;i<9;i++){const x=-.8+i*.2; if([-.8,-.2,.6].some(v=>Math.abs(v-x)<.05))continue; const b=mesh(new THREE.SphereGeometry(.07,16,12),M.wax); b.scale.set(1.3,1,.6); b.position.set(x,1.66,frontZ(x,D/2+.02,W/2+.02)); fig.add(b)}
+
+// ── 심지·불꽃 ──
+const wick=mesh(new THREE.CylinderGeometry(.045,.045,.22,12),M.ink); wick.position.y=2.05; fig.add(wick);
+const flame=new THREE.Group(); flame.position.y=2.14; fig.add(flame);
+const tear=(h,w)=>{const p=[];for(let i=0;i<=24;i++){const t=i/24;const y=t*h;const r=w*Math.sin(Math.PI*Math.pow(t,.62))*(1-t*.15);p.push(new THREE.Vector2(Math.max(r,.0001),y))}return new THREE.LatheGeometry(p,32)};
+const fmat=(c,o)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,toneMapped:false,depthWrite:false});
+const fOuter=new THREE.Mesh(tear(.62,.2),fmat(C.fOuter,.92)), fInner=new THREE.Mesh(tear(.3,.11),fmat(C.fInner,1)), fCore=new THREE.Mesh(tear(.16,.05),fmat(C.fCore,1));
+fInner.position.z=.02; fCore.position.z=.04; fInner.renderOrder=1; fCore.renderOrder=2;
+flame.add(fOuter,fInner,fCore);
+const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:radTex([[0,'rgba(255,214,90,.55)'],[.4,'rgba(255,200,80,.18)'],[1,'rgba(255,200,80,0)']]),depthWrite:false,toneMapped:false}));
+glow.scale.set(1.4,1.6,1); glow.position.y=.3; flame.add(glow);
+const flameLight=new THREE.PointLight('#FFB84A',1.6,3.2,1.6); flameLight.position.y=.3; flame.add(flameLight);
+
+// ── 얼굴 (2D: 눈 y203 x116/179 r15, 동공 r6.5, 입 y232 폭19) ──
+const face=new THREE.Group(); face.position.z=D/2; fig.add(face);
+const EY=1.11, EX=.315;
+const eyes=[-EX,EX].map(x=>{
+  const g=new THREE.Group(); g.position.set(x,EY,0);
+  const w=mesh(new THREE.SphereGeometry(.15,32,20),M.white,false); w.scale.z=.35;
+  const p=mesh(new THREE.SphereGeometry(.07,24,16),M.ink,false); p.scale.z=.5; p.position.z=.045;
+  const hl=new THREE.Mesh(new THREE.SphereGeometry(.018,12,8),new THREE.MeshBasicMaterial({color:'#fff'})); hl.position.set(-.022,.024,.035); p.add(hl);
+  g.add(w,p); face.add(g); return {g,w,p};
+});
+const tube=(pts,r=.024)=>{const V=pts.map(([x,y,z=0])=>new THREE.Vector3(x,y,z));
+  const curve = V.length===3 ? new THREE.QuadraticBezierCurve3(V[0],V[1].clone().multiplyScalar(2).sub(V[0].clone().add(V[2]).multiplyScalar(.5)),V[2]) : new THREE.LineCurve3(V[0],V[1]);   // 가운데 점을 '지나가는' 곡선
+  const m=mesh(new THREE.TubeGeometry(curve,24,r,10),M.ink,false);
+  const cap=(v)=>{const s=new THREE.Mesh(new THREE.SphereGeometry(r,10,8),M.ink);s.position.set(v[0],v[1],v[2]||0);m.add(s)}; cap(pts[0]); cap(pts[pts.length-1]); return m};
+const arcs=(up)=>[-EX,EX].map(x=>tube(up?[[x-.11,EY-.02,.03],[x,EY+.09,.05],[x+.11,EY-.02,.03]]:[[x-.11,EY+.03,.03],[x,EY-.05,.05],[x+.11,EY+.03,.03]],.03));
+const MOUTH={
+  neutral:()=>tube([[-.1,.86,.02],[0,.77,.03],[.1,.86,.02]]),
+  happy:()=>{const s=new THREE.Shape();s.moveTo(-.15,.87);s.quadraticCurveTo(0,.62,.15,.87);s.lineTo(-.15,.87);const m=mesh(new THREE.ExtrudeGeometry(s,{depth:.02,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:3}),M.ink,false);
+    const tg=new THREE.Mesh(new THREE.SphereGeometry(.06,16,10),new THREE.MeshStandardMaterial({color:'#F07A7A'}));tg.scale.set(1.2,.6,.3);tg.position.set(0,.735,.03);m.add(tg);return m},
+  sad:()=>tube([[-.1,.76,.02],[0,.84,.03],[.1,.76,.02]]),
+  surprised:()=>{const m=mesh(new THREE.TorusGeometry(.065,.025,12,32),M.ink,false);m.scale.y=1.25;m.position.y=.8;m.position.z=.02;const f=new THREE.Mesh(new THREE.CircleGeometry(.066,24),M.ink);m.add(f);return m},
+};
+const cheeks=[-.56,.56].map(x=>{const c=mesh(new THREE.SphereGeometry(.075,20,12),M.cheek,false);c.scale.set(1.2,.8,.2);c.position.set(x,.94,.005);face.add(c);return c});
+let faceParts=[];
+const st={mood:'neutral',level:2,poked:0};
+function setMood(mood){
+  faceParts.forEach(p=>face.remove(p)); faceParts=[];
+  const arc = mood==='happy';
+  eyes.forEach(e=>e.g.visible=!arc);
+  if(arc) faceParts.push(...arcs(true));
+  const m=MOUTH[mood](); faceParts.push(m);
+  if(mood==='sad'){[-EX,EX].forEach(x=>{const inX=x<0?x+.1:x-.1, outX=x<0?x-.1:x+.1; faceParts.push(tube([[outX,EY+.2,.02],[inX,EY+.27,.02]],.022))})}   // 안쪽 끝이 올라가야 슬픔(내려가면 화남)
+  faceParts.forEach(p=>face.add(p));
+  cheeks.forEach(c=>c.visible=(mood==='happy'||mood==='surprised'));
+  eyes.forEach(e=>e.p.scale.setScalar(mood==='surprised'?.7:1)), eyes.forEach(e=>e.p.scale.z=.5);
+}
+
+// ── 불꽃 레벨 ──
+const LV={0:0,1:.6,2:1,3:1.45};
+function flameScale(){return (LV[st.level]??1)*(st.mood==='sad'?.75:1)*(1+st.poked*.35)}
+
+// ── 상호작용: 톡 누르면 찌부 → 튕김 (감쇠 스프링), 드래그는 회전 ──
+const ray=new THREE.Raycaster(), ptr=new THREE.Vector2(), look=new THREE.Vector2();
+let down=null, sq=0, sqV=0, pokeT=0, blinkT=2+Math.random()*3;
+renderer.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
+renderer.domElement.addEventListener('pointerup',e=>{
+  if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6) return;
+  const r=renderer.domElement.getBoundingClientRect(); ptr.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
+  ray.setFromCamera(ptr,camera);
+  if(ray.intersectObject(fig,true).length){ sqV-=5.5; pokeT=1.4; if(st.mood!=='happy'){st.prev=st.mood; setMood('happy')} }
+});
+addEventListener('pointermove',e=>{const r=renderer.domElement.getBoundingClientRect();look.set(THREE.MathUtils.clamp((e.clientX-r.left)/r.width*2-1,-1,1),THREE.MathUtils.clamp(-(e.clientY-r.top)/r.height*2+1,-1,1))});
+
+// ── 루프 ──
+const clock=new THREE.Clock();
+function tick(){
+  const dt=Math.min(clock.getDelta(),.05), t=clock.elapsedTime;
+  // 스프링
+  sqV+=(-sq*120 - sqV*9)*dt; sq+=sqV*dt;
+  const breathe=Math.sin(t*1.85)*.012;
+  fig.scale.set(1-sq*.5-breathe*.4,1+sq+breathe,1-sq*.5-breathe*.4);
+  if(pokeT>0){pokeT-=dt; st.poked=Math.max(0,pokeT/1.4); if(pokeT<=0&&st.prev!==undefined){setMood(st.prev); st.prev=undefined}}
+  // 불꽃 흔들림
+  const k=flameScale(); flame.visible=k>0;
+  const n=Math.sin(t*9.1)*.04+Math.sin(t*13.7)*.03+Math.sin(t*4.3)*.03;
+  flame.scale.set(k*(1-n*.6),k*(1+n),k*(1-n*.6)); flame.rotation.z=Math.sin(t*3.1)*.06+Math.sin(t*7.3)*.03;
+  flameLight.intensity=k?1.6*k*(1+n*1.5):0; glow.material.opacity=.9+n*2;
+  // 눈: 포인터 따라가기 + 깜빡임
+  eyes.forEach(e=>{e.p.position.x+=(look.x*.055-e.p.position.x)*.15; e.p.position.y+=((look.y*.05-(st.mood==='sad'?.03:0))-e.p.position.y)*.15});
+  blinkT-=dt; const bl=blinkT<0?Math.max(.08,Math.abs(blinkT*12+1)%1||.08):1; if(blinkT<-.16)blinkT=2+Math.random()*3.5;
+  eyes.forEach(e=>e.g.scale.y=bl);
+  controls.update(); renderer.render(scene,camera); requestAnimationFrame(tick);
+}
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix()}
+addEventListener('resize',resize); resize(); setMood('neutral'); tick();
+
+// ── 컨트롤 ──
+document.querySelectorAll('.ctl [data-g]').forEach(g=>g.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  const v=b.dataset.v, k=g.dataset.g;
+  if(k==='mood'){st.mood=v; st.prev=undefined; pokeT=0; setMood(v)}
+  if(k==='level'){st.level=+v}
+  if(k==='bg'){document.body.className=v}
+}));
+window.__hw={scene,camera,fig};
+</script>

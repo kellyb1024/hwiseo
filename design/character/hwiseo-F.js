@@ -82,22 +82,27 @@ function capPath(wax='base'){
   const k=180/192, m=WAXD[wax]||WAXD.base;
   const segs=[[30,'b',6],[20,'d',38*m[0]],[26,'b',8],[24,'b',6],[20,'d',18*m[1]],[26,'b',6],[26,'b',8],[20,'d',54*m[2]]];
   let d=`M60,${TOP-4} H240 V${CAPB}`;
-  for(const [sw,t,dep] of segs){ const ww=sw*k, r=ww/2;
-    if(t==='d') d+=` v${dep} a${r},${r} 0 0 1 -${ww},0 v-${dep}`; else d+=` a${r},${dep} 0 0 1 -${ww},0`; }
+  segs.forEach(([sw,t,dep],i)=>{ const last=i===segs.length-1, ww=sw*k+(last?3:0), r=ww/2;   // 왼쪽 끝 방울은 3 넓혀 몸 왼쪽 가장자리(x≈59)에 붙임 — 그전엔 1px 떠 보였음 (2026-10-07)
+    if(t==='d') d+=` v${dep} a${r},${r} 0 0 1 -${ww},0 `+(last?`h-4 V${TOP-4}`:`v-${dep}`); else d+=` a${r},${dep} 0 0 1 -${ww},0`; });
   return d+' Z';
 }
-const bodyEl=(view='front')=>`<g class="hw-body" transform="${bodyT(view)}"><path class="hw-bodyfill" d="${BODYD}" fill="${C.body}"/></g>`;
+// ⚠ 뷰 스케일(가로 축소)은 반드시 class 없는 안쪽 <g class="hw-vw">에 건다.
+//   .hw-body/.hw-cap 에는 CSS transform-origin:150px 316px 이 걸려 있어서, 속성 transform 이 그 기준점으로 한 번 더 감싸진다
+//   → scale 중심이 x150 이 아니라 x300 이 되어 측면 몸이 오른쪽으로 58 밀렸었다(불꽃만 제자리, 2026-09-07 수정).
+//   style 로 transform-origin:0 0 을 못박아 스타일시트가 없을 때도 같은 결과가 나오게 한다.
+const VWG=(view,inner)=>`<g class="hw-vw" style="transform-origin:0 0" transform="${bodyT(view)}">${inner}</g>`;
+const bodyEl=(view='front')=>`<g class="hw-body">${VWG(view,`<path class="hw-bodyfill" d="${BODYD}" fill="${C.body}"/>`)}</g>`;
 let uid=0;
 const capEl=(wax='base',view='front')=>{
   const [x0,w]=VW[view]||VW.front, id='hwclip'+(uid++);
   const puddle = wax==='full' ? `<ellipse class="hw-puddle" cx="150" cy="310" rx="${w*.62}" ry="12" fill="${C.wax}"/>` : '';
-  return `${puddle}<g class="hw-cap" transform="${bodyT(view)}"><defs><clipPath id="${id}"><path d="${BODYD}"/></clipPath></defs>
+  return `${puddle}<g class="hw-cap">${VWG(view,`<defs><clipPath id="${id}"><path d="${BODYD}"/></clipPath></defs>
     <g clip-path="url(#${id})"><path class="hw-drips" d="${capPath(wax)}" fill="${C.wax}"/></g>
-    <ellipse class="hw-top" cx="150" cy="${TOP+9}" rx="72" ry="5" fill="${C.top}" opacity=".45"/></g>`;
+    <ellipse class="hw-top" cx="150" cy="${TOP+9}" rx="72" ry="5" fill="${C.top}" opacity=".45"/>`)}</g>`;
 };
 
 // ── 얼굴 ──────────────────────────────────────────────────────
-let LIDS=true;
+let LIDS=true, ZZZ=true;   // ZZZ: 포즈가 zzz 소품을 갖고 있으면 표정 쪽 zzz 를 끈다(누우면 얼굴 zzz 만 같이 돌아 두 개가 엇갈렸음)
 function faceEl(mood,view){
   if(view==='back'||view==='side') return '';        // 레퍼: 측면·후면은 얼굴이 안 보임
   const q=view==='q';
@@ -135,12 +140,12 @@ function faceEl(mood,view){
     case 'laugh':     return wrap(xs.map(arcUp).join(''))+cheeks(.9)+grin();
     case 'wink':      return wrap(eye(L,'l',{dx:1})+arcUp(Rx))+cheeks(.6)+mouth(`M${MX-11},${MY} q13,11 24,-2`);
     case 'sad':       return wrap(eyes({dy:4}))+brows(-6,2)+frown()+tear(Rx);   // 보는 사람 기준 오른쪽 눈 밑
-    case 'cry':       return wrap(xs.map(arcDn).join(''))+frown(12,9)+tear(L)+tear(Rx-36)+`<path d="M${L-6},${Y+10} q-4,22 2,34 M${Rx+6},${Y+10} q4,22 -2,34" stroke="${C.tear}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    case 'cry':       return wrap(xs.map(arcDn).join(''))+frown(12,9)+`<path class="hw-tear" d="M${L-6},${Y+10} q-4,22 2,34 M${Rx+6},${Y+10} q4,22 -2,34" stroke="${C.tear}" stroke-width="5" fill="none" stroke-linecap="round"/>`;   // 제일 바깥 두 줄기만 (안쪽 물방울 2개 삭제 2026-09-07)
     case 'worried':   return wrap(eyes({dx:-2,dy:2,r:6.5}))+brows(-7,4)+wavy()+sweat;
     case 'angry':     return wrap(eyes({dy:-1,r:6.5,lid:.35}))+brows(8,-2)+frown(11,8);
     case 'confused':  return wrap(eye(L,'l',{dx:4,dy:-2})+eye(Rx,'r',{dx:4,dy:-2,lid:.4}))+brow(L,'l',0,6)+wavy();
     case 'surprised': return wrap(eyes({r:9.5}))+brows(0,9)+oh();
-    case 'sleepy':    return wrap(xs.map(arcDn).join(''))+mouth(`M${MX-7},${MY+2} q7,5 14,0`)+zzz;
+    case 'sleepy':    return wrap(xs.map(arcDn).join(''))+mouth(`M${MX-7},${MY+2} q7,5 14,0`)+(ZZZ?zzz:'');
     case 'unlit':     return wrap(xs.map(arcDn).join(''));                       // 0단계: 감은 눈만 (레퍼 28)
     case 'shy':       return cheeks(1)+wrap(eyes({dx:3,dy:5,r:6.5}))+brows(-4,2)+mouth(`M${MX-7},${MY+1} q7,6 14,0`);
     case 'excited':   return wrap(xs.map(cross).join(''))+cheeks(.8)+grin();
@@ -188,6 +193,7 @@ const SPARKS=`<g class="hw-sparks" stroke="${C.body}" stroke-width="6" stroke-li
 function char({level=3,mood='neutral',view='front',flame=null,wax='base',spark=false,vb=VB,cls='',lids=true,pose='idle',guide=false}={}){
   LIDS=lids;
   const P=POSE[pose]||POSE.idle;
+  ZZZ=!(P.props||[]).includes('zzz');
   if(P.mood && mood==='neutral') mood=P.mood;
   if(P.level!=null) level=P.level;
   const f = flame || P.flame || LV[level];
@@ -242,6 +248,7 @@ const CSS=`
 .hw.hw-pose-cheer .hw-arm-l{animation:hwCheer .8s ease-in-out infinite}
 .hw.hw-pose-cheer .hw-prop-flag{transform-origin:50px 218px;animation:hwCheerFlag .8s ease-in-out infinite}
 .hw.hw-pose-celebrate .hw-figure{animation:hwBounceLoop 1s ease-in-out infinite}
+.hw.hw-pose-celebrate .hw-prop-hat{transform-origin:150px 316px;animation:hwBounceLoop 1s ease-in-out infinite}   /* 소품은 .hw-figure 밖이라 몸 애니메이션을 안 받는다 — 모자만 같은 origin·같은 키프레임으로 붙여 준다 */
 .hw.hw-pose-sleep .hw-flame{animation:hwFlicker 3s ease-in-out infinite}
 @keyframes hwFlicker{0%,100%{transform:scale(1,1) rotate(0)}30%{transform:scale(1.06,.94) rotate(-4deg)}60%{transform:scale(.95,1.06) rotate(3deg)}80%{transform:scale(1.03,.98) rotate(-1deg)}}
 @keyframes hwGlow{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.06);opacity:.24}}

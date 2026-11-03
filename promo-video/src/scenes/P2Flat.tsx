@@ -406,12 +406,12 @@ export const P2Flat: React.FC = () => {
 
           {/* ── C10: 사진 → 머리 손그림 화살표 ── */}
           {link > 0 && (() => {
-            const ax = PX + PW + 34, ay = PY + PH / 2 + 10, bx = HX - 214, by = ay;
+            const ax = PX + PW + 34, ay = PY + PH / 2 + 10, bx = HX - 170, by = ay;   // 사진 오른쪽~옆얼굴 앞선 사이를 실제로 잇도록 (이전엔 축이 12px라 화살촉만 떠 보였음)
             const o = 0.95 * F(f, T.c11 + 10, T.c11 + 50, 1, 0);
             return (
               <g>
                 <Line d={`M${ax},${ay} Q${(ax + bx) / 2},${ay - 14} ${bx},${by}`} p={Math.min(1, link * 1.3)} stroke={ink} sw={5} o={o} />
-                <Line d={`M${bx - 26},${by - 22} L${bx + 2},${by} L${bx - 26},${by + 20}`} p={F(link, 0.7, 1, 0, 1)} stroke={ink} sw={5} o={o} />
+                <Line d={`M${bx - 19},${by - 15} L${bx + 2},${by} L${bx - 19},${by + 14}`} p={F(link, 0.7, 1, 0, 1)} stroke={ink} sw={5} o={o} />
               </g>
             );
           })()}

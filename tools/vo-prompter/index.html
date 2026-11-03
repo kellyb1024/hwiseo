@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>휘서 VO 프롬프터</title>
+<style>
+  :root {
+    --purple: #765DCF; --yellow: #F8D764; --ink: #1d1b22; --sub: #6b6578;
+    --bg: #fbf9f4; --line: #e7e2d6; --rec: #e5484d;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Apple SD Gothic Neo", "Pretendard", sans-serif; }
+  body { display: flex; flex-direction: column; border: 10px solid transparent; transition: border-color .15s; }
+  body.rec { border-color: var(--rec); }
+
+  header { display: flex; align-items: center; gap: 16px; padding: 14px 24px; }
+  .pos { font-weight: 700; font-size: 18px; color: var(--purple); min-width: 120px; }
+  .meter { flex: 1; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; max-width: 320px; }
+  .meter i { display: block; height: 100%; width: 0; background: var(--purple); transition: width .05s; }
+  .meter.hot i { background: var(--rec); }
+  .status { font-size: 15px; color: var(--sub); min-width: 220px; text-align: right; }
+  body.rec .status { color: var(--rec); font-weight: 700; }
+
+  .dots { display: flex; gap: 6px; padding: 0 24px; flex-wrap: wrap; }
+  .dots button { width: 34px; height: 26px; border-radius: 6px; border: 1px solid var(--line);
+    background: #fff; font-size: 11px; color: var(--sub); cursor: pointer; padding: 0; }
+  .dots button.done { background: var(--yellow); border-color: var(--yellow); color: var(--ink); font-weight: 700; }
+  .dots button.cur { outline: 2px solid var(--purple); outline-offset: 1px; }
+  .dots button.redo { background: #fde2e2; border-color: var(--rec); color: var(--rec); font-weight: 700; }
+
+  /* 타이밍 가이드 — 모션에 맞춘 길이 */
+  .timing { padding: 18px 24px 0; }
+  .tbar { position: relative; height: 18px; border-radius: 9px; background: var(--line); overflow: hidden; max-width: 760px; }
+  .tbar .zone { position: absolute; top: 0; bottom: 0; }
+  .tbar .z-ok { left: 0; background: #d9f2df; }
+  .tbar .z-max { background: #fbefc6; }
+  .tbar .fill { position: absolute; left: 0; top: 4px; bottom: 4px; width: 0; border-radius: 5px; background: var(--purple); }
+  .tbar .fill.over { background: var(--rec); }
+  .tlabel { margin-top: 8px; font-size: 15px; color: var(--sub); max-width: 760px; display: flex; justify-content: space-between; }
+  .tlabel b { color: var(--ink); }
+  .verdict { font-weight: 700; }
+  .verdict.good { color: #1f8a3b; } .verdict.bad { color: var(--rec); }
+
+  main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 8vw; }
+  .en { font-size: clamp(32px, 4.6vw, 64px); line-height: 1.35; font-weight: 600; letter-spacing: -.01em; }
+  .kr { margin-top: 22px; font-size: clamp(16px, 1.6vw, 22px); color: var(--sub); word-break: keep-all; }
+  .next { margin-top: 48px; font-size: clamp(15px, 1.5vw, 20px); color: #b3adbd; }
+  .next b { font-weight: 600; margin-right: 8px; }
+
+  footer { padding: 14px 24px 18px; font-size: 14px; color: var(--sub); display: flex; gap: 22px; flex-wrap: wrap; }
+  kbd { display: inline-block; min-width: 22px; padding: 2px 7px; border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 5px; background: #fff; font: 600 12px -apple-system, sans-serif; color: var(--ink); text-align: center; }
+
+  .gate { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--bg); z-index: 9; }
+  .gate button { font-size: 22px; padding: 18px 34px; border-radius: 14px; border: 0; background: var(--purple); color: #fff; cursor: pointer; }
+  .gate p { color: var(--sub); text-align: center; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <div style="text-align:center">
+    <button id="startBtn">마이크 켜고 시작</button>
+    <p>버튼을 누르면 마이크 권한을 물어봐요. <b>허용</b>을 눌러 주세요.<br>
+    녹음한 파일은 프로젝트의 <b>vo-rec/</b> 폴더에 바로 저장돼요.</p>
+  </div>
+</div>
+
+<header>
+  <div class="pos" id="pos"></div>
+  <div class="meter" id="meter"><i></i></div>
+  <div class="status" id="status">대기</div>
+</header>
+<div class="dots" id="dots"></div>
+<div class="timing">
+  <div class="tbar" id="tbar"><div class="zone z-ok" id="zok"></div><div class="zone z-max" id="zmax"></div><div class="fill" id="tfill"></div></div>
+  <div class="tlabel"><span>목표 <b id="tTarget"></b> · 최대 <b id="tMax"></b></span><span class="verdict" id="verdict"></span></div>
+</div>
+
+<main>
+  <div class="en" id="en"></div>
+  <div class="kr" id="kr"></div>
+  <div class="next" id="next"></div>
+</main>
+
+<footer>
+  <span><kbd>Space</kbd> 녹음 시작 / 끝(저장 후 다음 빨간 줄) — <b>마지막 단어 끝나고 반 박자 쉬고</b> 누르기</span>
+  <span>막대: 초록 안에서 끝내면 최고, 노랑까지 OK, 빨강이면 조금 빠르게</span>
+  <span><kbd>←</kbd> <kbd>→</kbd> 줄 이동</span>
+  <span><kbd>Enter</kbd> 방금 테이크 듣기</span>
+  <span><kbd>Esc</kbd> 녹음 취소(저장 안 함)</span>
+  <span>마음에 안 들면 그 줄에서 다시 <kbd>Space</kbd> — 테이크가 쌓이고, 제가 제일 나은 걸 골라요</span>
+</footer>
+
+<script src="lines.js"></script>
+<script>
+const L = window.LINES;
+const $ = (id) => document.getElementById(id);
+let i = 0, rec = null, chunks = [], stream = null, analyser = null, cancelled = false, ctx = null, onset = 0, lastLoud = 0;
+const SPEEDUP = 1.12;      // 이만큼은 티 안 나게 빠르게 돌릴 수 있다
+const len = {};            // id → 지금 쓰는 테이크의 실제 말 길이(초)
+L.forEach((c) => { if (c.have) len[c.id] = c.have; });
+const fits = (c) => !c.redo && len[c.id] != null && len[c.id] / SPEEDUP <= c.max;
+const red = (c) => c.redo || (len[c.id] != null && !fits(c));
+const firstRedo = (from) => { for (let k = from; k < L.length; k++) if (red(L[k])) return k; return -1; };
+const takes = {};          // id → 저장된 테이크 수
+const lastBlob = {};       // id → 이 세션에서 방금 녹음한 Blob (듣기용)
+
+const mime = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find((m) => MediaRecorder.isTypeSupported(m)) || '';
+const ext = mime.includes('mp4') ? 'mp4' : 'webm';
+
+function render() {
+  const c = L[i];
+  $('pos').textContent = `${c.id} · ${i + 1} / ${L.length}`;
+  $('en').textContent = c.en;
+  $('kr').textContent = c.kr;
+  const n = L[i + 1];
+  $('next').innerHTML = n ? `<b>다음</b>${n.en}` : '<b>마지막 줄이에요</b>';
+  [...$('dots').children].forEach((b, k) => {
+    b.classList.toggle('cur', k === i);
+    b.classList.toggle('done', (takes[L[k].id] || 0) > 0);
+    b.classList.toggle('redo', red(L[k]));
+    b.title = `${L[k].id} · 테이크 ${takes[L[k].id] || 0}개`;
+  });
+  renderTiming(c);
+  if (!rec) status(takes[c.id] ? `테이크 ${takes[c.id]}개 있음 · Space로 다시` : 'Space를 누르고 읽으세요');
+}
+const status = (t) => { $('status').textContent = t; };
+
+function buildDots() {
+  L.forEach((c, k) => {
+    const b = document.createElement('button');
+    b.textContent = c.id.slice(1);
+    b.onclick = () => { if (!rec) { i = k; render(); } };
+    $('dots').appendChild(b);
+  });
+}
+
+async function loadTakes() {
+  try {
+    const names = await (await fetch('/takes')).json();
+    names.forEach((n) => { const id = n.slice(0, 3); takes[id] = (takes[id] || 0) + 1; });
+    // 새로고침해도 이미 다시 녹음한 줄은 빨간색에서 뺀다 (길이는 모르니 판정은 비워 둠)
+    L.forEach((c) => { if (c.redo && takes[c.id] > c.redoAfter) { c.redo = false; delete len[c.id]; } });
+  } catch (e) { /* 서버 없이 열면 그냥 0부터 */ }
+}
+
+function renderTiming(c) {
+  const full = c.max * 1.35;
+  $('zok').style.width = `${(c.target / full) * 100}%`;
+  $('zmax').style.left = `${(c.target / full) * 100}%`;
+  $('zmax').style.width = `${((c.max * SPEEDUP - c.target) / full) * 100}%`;
+  $('tTarget').textContent = `${c.target.toFixed(1)}초`;
+  $('tMax').textContent = `${(c.max * SPEEDUP).toFixed(1)}초`;
+  const v = $('verdict'), l = len[c.id];
+  if (!rec) {
+    setFill(l, c);
+    if (l == null) { v.textContent = ''; v.className = 'verdict'; }
+    else if (c.redo) { v.textContent = '다시 녹음할 줄 — 마지막 단어 끝나고 반 박자 쉬고 Space'; v.className = 'verdict bad'; }
+    else if (fits(c)) { v.textContent = `✓ ${l.toFixed(1)}초 — 맞아요`; v.className = 'verdict good'; }
+    else { v.textContent = `저장됨 · ${l.toFixed(1)}초 — ${(l / SPEEDUP - c.max).toFixed(1)}초 길어요 (다시 Space, 또는 → 넘어가기)`; v.className = 'verdict bad'; }
+  }
+}
+function setFill(sec, c) {
+  const f = $('tfill');
+  f.style.width = sec ? `${Math.min(100, (sec / (c.max * 1.35)) * 100)}%` : '0';
+  f.classList.toggle('over', !!sec && sec / SPEEDUP > c.max);
+}
+
+// 녹음된 소리에서 앞뒤 무음을 뺀 실제 말 길이
+async function speechLen(blob) {
+  const buf = await ctx.decodeAudioData(await blob.arrayBuffer());
+  // 20ms 창 RMS로 본다 — 샘플 하나하나로 보면 잡음 튐을 말소리로 착각해 뒤 쉼까지 길이에 넣었다
+  const d = buf.getChannelData(0), sr = buf.sampleRate, w = Math.floor(0.02 * sr), th = 0.01;
+  const head = Math.floor(0.15 * sr), tail = d.length - Math.floor(0.12 * sr);   // 스페이스 키 소리 구간 제외
+  const loud = [];
+  for (let k = head; k + w <= tail; k += w) {
+    let s = 0;
+    for (let j = k; j < k + w; j++) s += d[j] * d[j];
+    loud.push(Math.sqrt(s / w) > th);
+  }
+  const run = (k) => loud[k] && loud[k + 1] && loud[k + 2];   // 60ms 이상 이어져야 말소리
+  let a = 0, b = loud.length - 3;
+  while (a < loud.length - 2 && !run(a)) a++;
+  while (b > a && !run(b)) b--;
+  return b > a ? ((b + 3 - a) * w) / sr : 0;
+}
+
+function meterLoop() {
+  const buf = new Uint8Array(analyser.fftSize);
+  const bar = $('meter').firstElementChild;
+  (function tick() {
+    analyser.getByteTimeDomainData(buf);
+    let peak = 0;
+    for (const v of buf) peak = Math.max(peak, Math.abs(v - 128) / 128);
+    bar.style.width = `${Math.min(100, peak * 140)}%`;
+    $('meter').classList.toggle('hot', peak > 0.92);   // 빨갛게 = 너무 큼(찢어짐)
+    if (rec) {
+      if (peak > 0.06) { if (!onset) onset = performance.now(); lastLoud = performance.now(); }
+      if (onset) setFill((lastLoud - onset) / 1000, L[i]);   // 말 끝나고 쉬는 동안은 막대가 안 늘어남
+    }
+    requestAnimationFrame(tick);
+  })();
+}
+
+async function start() {
+  // 브라우저 자동 보정은 끈다 — 잡음 정리는 녹음 후 ffmpeg로 일관되게
+  stream = await navigator.mediaDevices.getUserMedia({
+    audio: {echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1},
+  });
+  ctx = new AudioContext();
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 1024;
+  ctx.createMediaStreamSource(stream).connect(analyser);
+  meterLoop();
+  $('gate').remove();
+  render();
+}
+
+function recStart() {
+  const c = L[i];
+  chunks = []; cancelled = false; onset = 0; setFill(0, c); $('verdict').textContent = '';
+  rec = new MediaRecorder(stream, mime ? {mimeType: mime, audioBitsPerSecond: 192000} : undefined);
+  rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  rec.onstop = () => save(c);
+  rec.start();
+  document.body.classList.add('rec');
+  status(`● 녹음 중 — ${c.id}`);
+}
+
+function recStop(cancel) {
+  cancelled = !!cancel;
+  rec.stop();
+  document.body.classList.remove('rec');
+}
+
+async function save(c) {
+  rec = null;
+  if (cancelled) { status('취소함 (저장 안 함)'); return; }
+  const blob = new Blob(chunks, {type: mime || 'audio/webm'});
+  const n = (takes[c.id] || 0) + 1;
+  const name = `${c.id}_${c.vo}_t${n}.${ext}`;
+  status('저장 중…');
+  try {
+    const r = await fetch(`/save/${name}`, {method: 'POST', body: blob});
+    if (!r.ok) throw new Error(r.status);
+    takes[c.id] = n;
+    lastBlob[c.id] = blob;
+    len[c.id] = await speechLen(blob);
+    c.redo = false;
+    status(`✓ 저장: ${name}`);
+    render();
+    // 맞으면 다음 빨간 줄로, 안 맞으면 그 자리에서 다시
+    if (fits(c)) setTimeout(() => {
+      if (rec || L[i] !== c) return;
+      const n = firstRedo(i + 1);
+      i = n >= 0 ? n : (firstRedo(0) >= 0 ? firstRedo(0) : i);
+      render();
+      if (firstRedo(0) < 0) status('🎉 전부 모션 길이에 맞아요!');
+    }, 1200);
+    return;
+  } catch (e) {
+    status(`⚠️ 저장 실패 (${e.message}) — 서버가 켜져 있는지 확인`);
+  }
+  render();
+}
+
+function play() {
+  const b = lastBlob[L[i].id];
+  if (b) new Audio(URL.createObjectURL(b)).play();
+  else status('이 줄은 이번에 녹음한 테이크가 없어요');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!stream) return;
+  if (e.code === 'Space') { e.preventDefault(); rec ? recStop(false) : recStart(); }
+  else if (e.key === 'Escape' && rec) recStop(true);
+  else if (rec) return;
+  else if (e.key === 'ArrowRight' && i < L.length - 1) { i++; render(); }
+  else if (e.key === 'ArrowLeft' && i > 0) { i--; render(); }
+  else if (e.key === 'Enter') play();
+});
+
+buildDots();
+loadTakes().then(() => { const n = firstRedo(0); if (n >= 0) i = n; render(); });
+$('startBtn').onclick = () => start().catch((e) => alert('마이크를 못 켰어요: ' + e.message));
+</script>
+</body>
+</html>
